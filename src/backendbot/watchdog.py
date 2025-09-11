@@ -1,6 +1,5 @@
-import asyncio  # Added import
+import asyncio
 import time
-from typing import Dict
 
 import psutil
 
@@ -8,17 +7,16 @@ from .config import settings
 from .utils import load_memory, log_event, notify, store_watchdog_decision
 
 
-async def _handle_process_monitoring(  # Made async
-    p: psutil.Process, uso_alto: Dict[int, float], memory: Dict[str, Dict[str, int]]
+async def _handle_process_monitoring(
+    p: psutil.Process, uso_alto: dict[int, float], memory: dict[str, dict[str, int]]
 ) -> None:
-    """Handles the monitoring and decision-making for a single process.
+    """Handle the monitoring and decision-making for a single process.
 
     Args:
-        p (psutil.Process): The process object to monitor.
-        uso_alto (Dict[int, float]): A dictionary tracking processes with high resource usage.
-                                     Keys are PIDs, values are timestamps when high usage started.
-        memory (Dict[str, Dict[str, int]]): The loaded memory of past decisions for programs.
-
+        p: The process object to monitor.
+        uso_alto: A dictionary tracking processes with high resource usage.
+                 Keys are PIDs, values are timestamps when high usage started.
+        memory: The loaded memory of past decisions for programs.
     """
     try:
         pid, name = p.info["pid"], p.info["name"]
@@ -39,29 +37,28 @@ async def _handle_process_monitoring(  # Made async
                         notify(f"🔄 {name} suspendido automáticamente")
                         await store_watchdog_decision(
                             name, "suspendido", cpu, ram
-                        )  # Awaited
+                        )
                     except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                         log_event(f"Error al suspender {name} (PID {pid}): {e}")
                 elif acciones["rechazos"] >= settings.REJECTION_THRESHOLD:
                     log_event(f"{name} ignorado")
-                    await store_watchdog_decision(name, "ignorado", cpu, ram)  # Awaited
+                    await store_watchdog_decision(name, "ignorado", cpu, ram)
                 else:
-                    notify(f"⚠️ {name} alto consumo. Revisa dashboard.", subtle=True)
+                    notify(f"⚠️ {name} alto consumo. Revisa dashboard.", duration=10)
                     await store_watchdog_decision(
                         name, "notificado", cpu, ram
-                    )  # Awaited
-                uso_alto.pop(pid, None)
+                    )
         else:
-            uso_alto.pop(pid, None)
+            if pid in uso_alto:
+                del uso_alto[pid]
+
     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-        log_event(f"Error al procesar PID {p.info.get('pid', 'N/A')}: {e}")
+        log_event(f"Error monitoreando proceso PID {p.info.get('pid', 'N/A')}: {e}")
     except Exception as e:
-        log_event(
-            f"Error inesperado en _handle_process_monitoring para PID {p.info.get('pid', 'N/A')}: {e}"
-        )
+        log_event(f"Error inesperado en _handle_process_monitoring para PID {p.info.get('pid', 'N/A')}: {e}")
 
 
-async def watchdog() -> None:  # Made async
+async def watchdog() -> None:
     """Main watchdog function to continuously monitor processes.
 
     This function runs in a loop, periodically checking all running processes
@@ -69,8 +66,18 @@ async def watchdog() -> None:  # Made async
     decisions (suspensions or rejections) and takes automated actions like
     suspending processes or notifying the user.
     """
-    uso_alto: Dict[int, float] = {}
+    uso_alto: dict[int, float] = {}
     while True:
+        try:
+            memory = load_memory()
+            for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
+                await _handle_process_monitoring(p, uso_alto, memory)
+
+            await asyncio.sleep(settings.CHECK_TIME)
+
+        except Exception as e:
+            log_event(f"Error en watchdog principal: {e}")
+            await asyncio.sleep(settings.CHECK_TIME)
         try:
             memory = load_memory()
             for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
