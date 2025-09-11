@@ -5,5 +5,8 @@ tk
 win10toast
 pystray
 pillow
-psycopg2-binary
+psycopg2-binary  # Necesario para Neon/Postgres en Railway/Fly.io
 pydantic-settings
+ruff
+black
+sqlalchemy

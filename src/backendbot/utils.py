@@ -1,19 +1,69 @@
-import os, json, time, subprocess
+import json
+import os
+import subprocess
+import time
+
+import psutil
+from sqlalchemy import (
+    Column,
+    Float,
+    Integer,
+    MetaData,
+    String,
+    Table,
+    create_engine,
+)
+from sqlalchemy.orm import sessionmaker
 from win10toast import ToastNotifier
-import dataset
-import psutil # Added psutil
+
 from .config import settings
 
-ttoaster = ToastNotifier()
+toaster = ToastNotifier()
 
-# Inicializar la base de datos
-db = dataset.connect(settings.DATABASE_URL)
+# --- DB setup ---
+engine = create_engine(settings.DATABASE_URL)
+Session = sessionmaker(bind=engine)
+session = Session()
+metadata = MetaData()
+
+process_history = Table(
+    "process_history",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("timestamp", Float),
+    Column("pid", Integer),
+    Column("name", String),
+    Column("ram_mb", Float),
+    Column("cpu_percent", Float),
+)
+optimization_events = Table(
+    "optimization_events",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("timestamp", Float),
+    Column("freed_ram_mb", Float),
+)
+watchdog_decisions = Table(
+    "watchdog_decisions",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("timestamp", Float),
+    Column("program_name", String),
+    Column("action", String),
+    Column("cpu_usage", Float),
+    Column("ram_usage", Float),
+)
+metadata.create_all(engine)
+
 
 def notify(msg, subtle=True):
     try:
-        toaster.show_toast("BackendBot", msg, duration=4 if subtle else 8, threaded=True)
+        toaster.show_toast(
+            "BackendBot", msg, duration=4 if subtle else 8, threaded=True
+        )
     except Exception as e:
         log_event(f"Error en notificación: {e}")
+
 
 def log_event(msg, notify_user=False):
     os.makedirs(os.path.dirname(settings.LOG_FILE), exist_ok=True)
@@ -22,41 +72,69 @@ def log_event(msg, notify_user=False):
     if notify_user:
         notify(msg)
 
+
 def load_memory():
     if os.path.exists(settings.MEMORY_FILE):
         try:
-            with open(settings.MEMORY_FILE, "r", encoding="utf-8") as f:
+            with open(settings.MEMORY_FILE, encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError:
-            log_event(f"Error: El archivo de memoria '{settings.MEMORY_FILE}' está corrupto o vacío. Se creará uno nuevo.")
+            log_event(
+                f"Error: El archivo de memoria '{settings.MEMORY_FILE}' está corrupto o vacío. Se creará uno nuevo."
+            )
             return {}
-        except IOError as e:
+        except OSError as e:
             log_event(f"Error de E/S al cargar la memoria: {e}")
             return {}
     return {}
+
 
 def save_memory(memory):
     with open(settings.MEMORY_FILE, "w", encoding="utf-8") as f:
         json.dump(memory, f, indent=2)
 
+
 # --- Funciones para almacenar datos históricos ---
 
+
 def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: float):
-    table = db['process_history']
-    table.insert(dict(timestamp=time.time(), pid=pid, name=name, ram_mb=ram_mb, cpu_percent=cpu_percent))
+    ins = process_history.insert().values(
+        timestamp=time.time(),
+        pid=pid,
+        name=name,
+        ram_mb=ram_mb,
+        cpu_percent=cpu_percent,
+    )
+    engine.execute(ins)
+
 
 def store_optimization_event(freed_ram_mb: float):
-    table = db['optimization_events']
-    table.insert(dict(timestamp=time.time(), freed_ram_mb=freed_ram_mb))
+    ins = optimization_events.insert().values(
+        timestamp=time.time(), freed_ram_mb=freed_ram_mb
+    )
+    engine.execute(ins)
 
-def store_watchdog_decision(program_name: str, action: str, cpu_usage: float = None, ram_usage: float = None):
-    table = db['watchdog_decisions']
-    table.insert(dict(timestamp=time.time(), program_name=program_name, action=action, cpu_usage=cpu_usage, ram_usage=ram_usage))
+
+def store_watchdog_decision(
+    program_name: str, action: str, cpu_usage: float = None, ram_usage: float = None
+):
+    ins = watchdog_decisions.insert().values(
+        timestamp=time.time(),
+        program_name=program_name,
+        action=action,
+        cpu_usage=cpu_usage,
+        ram_usage=ram_usage,
+    )
+    engine.execute(ins)
+
 
 def restore_closed_processes(modo):
     # Aquí puedes definir cómo restaurar procesos cerrados, por ejemplo, abrir apps importantes si no están corriendo
     for proc in settings.PROCESOS_IMPORTANTES:
-        running = any(proc.lower() in p.info['name'].lower() for p in psutil.process_iter(['name']))
+        running = any(
+            proc.lower() in p.info["name"].lower()
+            for p in psutil.process_iter(["name"])
+        )
         if not running:
             try:
                 subprocess.Popen(proc)
@@ -64,19 +142,15 @@ def restore_closed_processes(modo):
             except Exception as e:
                 log_event(f"Error al restaurar {proc}: {e}")
 
+
 def _get_process_info(p):
     """Helper to get process info and handle common errors."""
     try:
-        pid, name = p.info['pid'], p.info['name']
-        ram_mb = round(p.info['memory_info'].rss/1024/1024,2)
-        cpu_percent = p.info['cpu_percent'](interval=0.1)
+        pid, name = p.info["pid"], p.info["name"]
+        ram_mb = round(p.info["memory_info"].rss / 1024 / 1024, 2)
+        cpu_percent = p.info["cpu_percent"](interval=0.1)
         store_process_data(pid, name, ram_mb, cpu_percent)
-        return {
-            "pid": pid,
-            "name": name,
-            "ram_mb": ram_mb,
-            "cpu_percent": cpu_percent
-        }
+        return {"pid": pid, "name": name, "ram_mb": ram_mb, "cpu_percent": cpu_percent}
     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
         log_event(f"Error al procesar PID {p.info.get('pid', 'N/A')}: {e}")
         return None
@@ -84,17 +158,19 @@ def _get_process_info(p):
         log_event(f"Error inesperado al obtener info de proceso: {e}")
         return None
 
+
 def _optimize_processes():
     """Helper to suspend hibernatable processes."""
     freed = 0
-    for p in psutil.process_iter(['pid','name','memory_info']):
+    for p in psutil.process_iter(["pid", "name", "memory_info"]):
         try:
-            if p.info['name'] in settings.HIBERNABLES:
-                psutil.Process(p.info['pid']).suspend()
-                freed += p.info['memory_info'].rss
+            if p.info["name"] in settings.HIBERNABLES:
+                psutil.Process(p.info["pid"]).suspend()
+                freed += p.info["memory_info"].rss
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-            log_event(f"Error al suspender proceso {p.info.get('name', 'N/A')} (PID {p.info.get('pid', 'N/A')}): {e}")
+            log_event(
+                f"Error al suspender proceso {p.info.get('name', 'N/A')} (PID {p.info.get('pid', 'N/A')}): {e}"
+            )
         except Exception as e:
             log_event(f"Error inesperado al optimizar proceso: {e}")
     return freed
-
