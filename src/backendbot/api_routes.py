@@ -296,3 +296,13 @@ def get_automation_status():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting automation status: {e}")
+
+@router.post("/staging-preview", dependencies=[Depends(get_api_key)])
+def run_staging_preview():
+    """Ejecuta el workflow de preview de staging (dry-run)."""
+    try:
+        plan = run_preview_workflow()
+        log_event("Staging preview ejecutado via API", notify_user=True)
+        return {"status": "ok", "plan": plan}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en staging preview: {e}")
