@@ -1,8 +1,8 @@
-import os
 from collections.abc import AsyncGenerator
 
+from sqlalchemy import Integer
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
 from .config import settings
 
@@ -18,7 +18,8 @@ AsyncSessionLocal = None
 
 if DATABASE_URL and DATABASE_URL != "sqlite:///":
     try:
-        async_engine = create_async_engine(DATABASE_URL, echo=True)
+        # Set echo to False for production
+        async_engine = create_async_engine(DATABASE_URL, echo=settings.DEBUG)
         AsyncSessionLocal = async_sessionmaker(
             autocommit=False, autoflush=False, bind=async_engine
         )
@@ -37,11 +38,40 @@ def to_dict(self):
 Base.to_dict = to_dict
 
 
+class ProcessHistory(Base):
+    __tablename__ = "process_history"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    pid: Mapped[int]
+    name: Mapped[str]
+    ram_mb: Mapped[float]
+    cpu_percent: Mapped[float]
+
+
+class OptimizationEvent(Base):
+    __tablename__ = "optimization_events"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    freed_ram_mb: Mapped[float]
+
+
+class WatchdogDecision(Base):
+    __tablename__ = "watchdog_decisions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    program_name: Mapped[str]
+    action: Mapped[str]
+    cpu_usage: Mapped[float] = mapped_column(nullable=True)
+    ram_usage: Mapped[float] = mapped_column(nullable=True)
+
+
 async def init_db():
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    if async_engine:
+        async with async_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
 
-async def async_get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
-        yield session
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    if AsyncSessionLocal:
+        async with AsyncSessionLocal() as session:
+            yield session

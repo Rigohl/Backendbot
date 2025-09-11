@@ -1,30 +1,33 @@
+
+
+
 import psutil
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # New import
 
 from .config import settings
 from .utils import (
     _get_process_info,
-    _optimize_processes,
     log_event,
     restore_closed_processes,
     store_optimization_event,
 )
+from ..ram_optimizer import run_ram_optimization # New import
 
 process_router = APIRouter()
 
 
 # Dependency to check API Key
-def get_api_key(
-    api_key: str = Depends(
-        HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-        )
+security = HTTPBearer()
+
+def get_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if credentials.credentials == settings.API_KEY:
+        return credentials.credentials
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Invalid authentication credentials. Please provide a valid API Key in the Authorization header (Bearer token).",
     )
-):
-    if api_key == settings.API_KEY:
-        return api_key
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key")
 
 
 @process_router.get("/procesos", dependencies=[Depends(get_api_key)])
@@ -107,12 +110,21 @@ def kill(pid: int):
 
 
 @process_router.post("/optimize", dependencies=[Depends(get_api_key)])
-def optimize():
-    freed = _optimize_processes()
-    msg = f"Optimización automática: {round(freed/1024/1024,1)} MB liberados"
-    log_event(msg, notify_user=True)
-    store_optimization_event(round(freed / 1024 / 1024, 1))
-    return {"status": "ok", "ram_liberada_mb": round(freed / 1024 / 1024, 1)}
+async def optimize(): # Make it async because run_ram_optimization might be async in the future
+    optimization_results = run_ram_optimization(dry_run=False)
+    
+    if optimization_results["status"] == "completed":
+        freed_mb = optimization_results["ram_freed_mb"]
+        msg = f"Optimización automática: {freed_mb:.2f} MB liberados"
+        log_event(msg, notify_user=True)
+        await store_optimization_event(freed_mb) # Await the async function
+        return {"status": "ok", "ram_liberada_mb": freed_mb}
+    else:
+        log_event(f"Error during RAM optimization: {optimization_results.get('message', 'Unknown error')}", level="error", notify_user=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error during RAM optimization: {optimization_results.get('message', 'Unknown error')}",
+        )
 
 
 @process_router.post("/set-modo/{modo}", dependencies=[Depends(get_api_key)])

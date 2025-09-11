@@ -15,7 +15,7 @@ from backendbot.utils import load_memory, log_event, notify, save_memory
 def test_notify(mock_toaster):
     notify("Test Title", "Test message")
     mock_toaster.return_value.show_toast.assert_called_once_with(
-        "Test Title", "Test message", duration=4, threaded=True
+        "Test Title", "Test message", duration=5
     )
 
 

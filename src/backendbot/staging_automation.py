@@ -80,15 +80,23 @@ def optimize_ram(dry_run: bool = True, max_processes: int = 10) -> Dict[str, Any
         # Get real process data when not in dry-run
         if not dry_run:
             processes = []
-            for proc in psutil.process_iter(['pid', 'name', 'memory_percent', 'cpu_percent']):
+            from ..config import settings # Import settings
+
+            important_processes = [p.lower() for p in settings.PROCESOS_IMPORTANTES]
+            total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) # Total RAM in MB
+
+            for proc in psutil.process_iter(['pid', 'name', 'memory_info', 'cpu_percent']): # Changed memory_percent to memory_info for accurate RSS
                 try:
-                    if proc.info['memory_percent'] > 5.0:  # Only consider processes using >5% RAM
-                        memory_mb = (proc.info['memory_percent'] / 100) * psutil.virtual_memory().total / (1024 * 1024)
+                    # Get RSS (Resident Set Size) which is a better indicator of actual RAM usage
+                    memory_mb = proc.memory_info().rss / (1024 * 1024) 
+                    
+                    # Filter based on RAM_THRESHOLD from settings and exclude important processes
+                    if memory_mb > settings.RAM_THRESHOLD and proc.info['name'].lower() not in important_processes:
                         processes.append({
                             "pid": proc.info['pid'],
                             "name": proc.info['name'],
                             "memory_mb": round(memory_mb, 2),
-                            "memory_percent": round(proc.info['memory_percent'], 2),
+                            "memory_percent": round((memory_mb / total_ram_mb) * 100, 2), # Calculate percentage based on RSS
                             "cpu_percent": round(proc.info['cpu_percent'], 2)
                         })
                 except (psutil.NoSuchProcess, psutil.AccessDenied):

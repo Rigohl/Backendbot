@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from .config import settings
 from .process_routes import process_router  # New import
+from .services.ai_service import ai_service  # AI Service import
 from .utils import (
     db,
     load_memory,
@@ -306,3 +307,264 @@ def run_staging_preview():
         return {"status": "ok", "plan": plan}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en staging preview: {e}")
+
+@router.get("/metrics/ultra", dependencies=[Depends(get_api_key)])
+def get_ultra_metrics():
+    """Devuelve métricas avanzadas para el dashboard ultra."""
+    import psutil
+    import time
+    try:
+        ram = psutil.virtual_memory()
+        cpu = psutil.cpu_percent(interval=0.5)
+        cores = psutil.cpu_count()
+        uptime = time.time() - psutil.boot_time()
+        processes = [
+            {"pid": p.pid, "name": p.name(), "memory": p.memory_info().rss // 1024 // 1024}
+            for p in psutil.process_iter(['pid', 'name', 'memory_info'])
+        ][:10]
+        # GPU (si disponible)
+        try:
+            import GPUtil
+            gpus = GPUtil.getGPUs()
+            gpu_usage = gpus[0].load * 100 if gpus else 0
+        except Exception:
+            gpu_usage = 0
+        return {
+            "ram": {"used": ram.used // 1024 // 1024, "total": ram.total // 1024 // 1024},
+            "cpu": {"usage": cpu, "cores": cores},
+            "gpu": {"usage": gpu_usage},
+            "uptime": int(uptime),
+            "processes": processes
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo métricas ultra: {e}")
+
+
+# ===== AI ROUTES =====
+
+@router.get("/ai/status")
+async def get_ai_status():
+    """Obtiene el estado del servicio de IA y Ollama"""
+    try:
+        status = await ai_service.check_ollama_status()
+        return {
+            "ai_enabled": settings.AI_ENABLED,
+            "ollama_status": status,
+            "default_model": settings.DEFAULT_AI_MODEL,
+            "conversations_count": len(ai_service.conversations),
+            "agents_count": len(ai_service.agents)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo estado de IA: {e}")
+
+
+@router.post("/ai/conversation")
+async def create_ai_conversation(model: str = None, system_prompt: str = None):
+    """Crea una nueva conversación de IA"""
+    try:
+        if not settings.AI_ENABLED:
+            raise HTTPException(status_code=400, detail="Servicio de IA deshabilitado")
+
+        model = model or settings.DEFAULT_AI_MODEL
+        conversation_id = await ai_service.create_conversation(model, system_prompt)
+
+        return {
+            "conversation_id": conversation_id,
+            "model": model,
+            "created": True
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creando conversación: {e}")
+
+
+@router.post("/ai/conversation/{conversation_id}/message")
+async def send_ai_message(conversation_id: str, message: str, temperature: float = 0.7, max_tokens: int = 2048):
+    """Envía un mensaje en una conversación de IA"""
+    try:
+        if not settings.AI_ENABLED:
+            raise HTTPException(status_code=400, detail="Servicio de IA deshabilitado")
+
+        response = await ai_service.send_message(
+            conversation_id,
+            message,
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        if response is None:
+            raise HTTPException(status_code=404, detail="Conversación no encontrada")
+
+        return {
+            "response": response,
+            "conversation_id": conversation_id
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error procesando mensaje de IA: {e}")
+
+
+@router.get("/ai/conversations")
+async def list_ai_conversations():
+    """Lista todas las conversaciones de IA"""
+    try:
+        conversations = []
+        for conv in ai_service.conversations.values():
+            conversations.append({
+                "id": conv.id,
+                "model": conv.model,
+                "message_count": len(conv.messages),
+                "created_at": conv.created_at.isoformat(),
+                "updated_at": conv.updated_at.isoformat(),
+                "last_message": conv.messages[-1].content[:100] + "..." if conv.messages else None
+            })
+
+        return {"conversations": conversations}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listando conversaciones: {e}")
+
+
+@router.get("/ai/conversation/{conversation_id}")
+async def get_ai_conversation(conversation_id: str):
+    """Obtiene los detalles de una conversación específica"""
+    try:
+        if conversation_id not in ai_service.conversations:
+            raise HTTPException(status_code=404, detail="Conversación no encontrada")
+
+        conv = ai_service.conversations[conversation_id]
+        messages = []
+        for msg in conv.messages:
+            messages.append({
+                "role": msg.role,
+                "content": msg.content,
+                "timestamp": msg.timestamp.isoformat(),
+                "metadata": msg.metadata
+            })
+
+        return {
+            "id": conv.id,
+            "model": conv.model,
+            "messages": messages,
+            "created_at": conv.created_at.isoformat(),
+            "updated_at": conv.updated_at.isoformat(),
+            "context": conv.context
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error obteniendo conversación: {e}")
+
+
+@router.post("/ai/analyze-system")
+async def analyze_system_with_ai():
+    """Análisis inteligente del sistema usando IA"""
+    try:
+        if not settings.AI_ENABLED:
+            raise HTTPException(status_code=400, detail="Servicio de IA deshabilitado")
+
+        analysis = await ai_service.analyze_system_status()
+
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en análisis de IA: {e}")
+
+
+@router.post("/ai/agent")
+async def create_ai_agent(name: str, description: str, capabilities: list[str], model: str = None):
+    """Crea un nuevo agente de IA"""
+    try:
+        if not settings.AI_ENABLED:
+            raise HTTPException(status_code=400, detail="Servicio de IA deshabilitado")
+
+        model = model or settings.DEFAULT_AI_MODEL
+        success = await ai_service.create_agent(name, description, capabilities, model)
+
+        if not success:
+            raise HTTPException(status_code=400, detail="Agente ya existe")
+
+        return {
+            "name": name,
+            "created": True,
+            "model": model
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creando agente: {e}")
+
+
+@router.get("/ai/agents")
+async def list_ai_agents():
+    """Lista todos los agentes de IA disponibles"""
+    try:
+        agents = []
+        for name, agent in ai_service.agents.items():
+            agents.append({
+                "name": name,
+                "description": agent["description"],
+                "capabilities": agent["capabilities"],
+                "model": agent["model"],
+                "conversations_count": len(agent["conversations"]),
+                "created_at": agent["created_at"]
+            })
+
+        return {"agents": agents}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listando agentes: {e}")
+
+
+@router.post("/ai/agent/{agent_name}/task")
+async def execute_agent_task(agent_name: str, task: str):
+    """Ejecuta una tarea usando un agente específico"""
+    try:
+        if not settings.AI_ENABLED:
+            raise HTTPException(status_code=400, detail="Servicio de IA deshabilitado")
+
+        result = await ai_service.execute_agent_task(agent_name, task)
+
+        if result is None:
+            raise HTTPException(status_code=404, detail="Agente no encontrado")
+
+        return {
+            "agent": agent_name,
+            "task": task,
+            "result": result
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error ejecutando tarea del agente: {e}")
+
+
+@router.delete("/ai/conversation/{conversation_id}")
+async def delete_ai_conversation(conversation_id: str):
+    """Elimina una conversación de IA"""
+    try:
+        if conversation_id not in ai_service.conversations:
+            raise HTTPException(status_code=404, detail="Conversación no encontrada")
+
+        del ai_service.conversations[conversation_id]
+        ai_service._save_conversations()
+
+        return {"deleted": True, "conversation_id": conversation_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error eliminando conversación: {e}")
+
+
+@router.delete("/ai/agent/{agent_name}")
+async def delete_ai_agent(agent_name: str):
+    """Elimina un agente de IA"""
+    try:
+        if agent_name not in ai_service.agents:
+            raise HTTPException(status_code=404, detail="Agente no encontrado")
+
+        del ai_service.agents[agent_name]
+        ai_service._save_agents()
+
+        return {"deleted": True, "agent_name": agent_name}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error eliminando agente: {e}")
