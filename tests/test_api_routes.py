@@ -4,8 +4,8 @@ import sys
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.insert(0, ".")
-from main import app, rate_limit_store
+sys.path.insert(0, "src")
+from backendbot.main import app, rate_limit_store
 
 client = TestClient(app)
 

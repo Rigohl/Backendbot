@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+psutil
+pillow
+psycopg2-binary  # Necesario para Neon/Postgres en Railway/Fly.io
+pydantic-settings
+ruff
+black
+sqlalchemy
+aiosqlite
+
+# Testing
+pytest
+pytest-mock

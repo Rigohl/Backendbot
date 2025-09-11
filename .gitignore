@@ -112,3 +112,7 @@ dmypy.json
 logs/
 memory.json
 tray_settings.json
+temp/
+*.tmp
+*.temp
+job_results.txt

@@ -1,16 +1,24 @@
-import json
 import os
 import subprocess
 import time
-from pathlib import Path
 
 import psutil
 
-from .config import settings
-from .services.notification_service import notify # Import notify from its dedicated service
+try:
+    from .config import settings
+except ImportError:
+    # Fallback for when running from tests
+    from config import settings
 
 import logging
 import logging.config
+
+from sqlalchemy import select
+try:
+    from .database import AsyncSessionLocal, DecisionMemory # Import necessary components
+except ImportError:
+    # Fallback for when running from tests
+    from database import AsyncSessionLocal, DecisionMemory
 
 # Global logger instance
 _logger_initialized = False
@@ -51,28 +59,57 @@ def log_event(msg: str, notify_user: bool = False, level: str = "info") -> None:
         notify("BackendBot", msg)
 
 
-def load_memory() -> dict:
-    """Carga la memoria desde el archivo JSON."""
-    if Path(settings.MEMORY_FILE).exists():
-        try:
-            with open(settings.MEMORY_FILE, encoding="utf-8") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            log_event(
-                f"Error: El archivo de memoria '{settings.MEMORY_FILE}' "
-                "está corrupto o vacío. Se creará uno nuevo."
-            )
-            return {}
-        except OSError as e:
-            log_event(f"Error de E/S al cargar la memoria: {e}")
-            return {}
-    return {}
+async def load_memory() -> dict:
+    """Carga la memoria desde la base de datos."""
+    if AsyncSessionLocal is None:
+        log_event("DB no disponible - No se puede cargar la memoria de decisiones.")
+        return {}
+
+    try:
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(DecisionMemory))
+            decisions = result.scalars().all()
+            memory = {}
+            for decision in decisions:
+                memory[decision.program_name] = {
+                    "suspensiones": decision.suspensions,
+                    "rechazos": decision.rejections,
+                }
+            return memory
+    except Exception as e:
+        log_event(f"Error al cargar la memoria de decisiones desde la DB: {e}", level="error")
+        return {}
 
 
-def save_memory(memory: dict) -> None:
-    """Guarda la memoria en el archivo JSON."""
-    with open(settings.MEMORY_FILE, "w", encoding="utf-8") as f:
-        json.dump(memory, f, indent=2)
+async def save_memory(memory: dict) -> None:
+    """Guarda la memoria en la base de datos."""
+    if AsyncSessionLocal is None:
+        log_event("DB no disponible - No se puede guardar la memoria de decisiones.")
+        return
+
+    try:
+        async with AsyncSessionLocal() as session:
+            async with session.begin(): # Use begin() for transaction
+                for program_name, data in memory.items():
+                    stmt = select(DecisionMemory).where(DecisionMemory.program_name == program_name)
+                    result = await session.execute(stmt)
+                    decision = result.scalars().first()
+
+                    if decision:
+                        # Update existing record
+                        decision.suspensions = data.get("suspensiones", 0)
+                        decision.rejections = data.get("rechazos", 0)
+                    else:
+                        # Create new record
+                        new_decision = DecisionMemory(
+                            program_name=program_name,
+                            suspensions=data.get("suspensiones", 0),
+                            rejections=data.get("rechazos", 0),
+                        )
+                        session.add(new_decision)
+                await session.commit() # Commit the transaction
+    except Exception as e:
+        log_event(f"Error al guardar la memoria de decisiones en la DB: {e}", level="error")
 
 
 def _get_process_info(p: psutil.Process) -> dict | None:
@@ -175,3 +212,37 @@ async def store_watchdog_decision(
             await session.commit()
     except Exception as e:
         log_event(f"Error almacenando decisión del watchdog: {e}", level="error")
+
+
+# Simple in-memory database simulation for compatibility
+class SimpleTable:
+    def __init__(self, name):
+        self.name = name
+        self.data = []
+
+    def find(self, order_by=None, limit=100, offset=0):
+        data = self.data.copy()
+        if order_by and order_by.startswith('-'):
+            # Sort descending by timestamp
+            data.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
+        return data[offset:offset + limit]
+
+    def insert(self, item):
+        self.data.append(item)
+
+class SimpleDB:
+    def __init__(self):
+        self.tables = {}
+
+    def __getitem__(self, table_name):
+        if table_name not in self.tables:
+            self.tables[table_name] = SimpleTable(table_name)
+        return self.tables[table_name]
+
+# Global database instance
+db = SimpleDB()
+
+def notify(message: str, title: str = "BackendBot Notification"):
+    """Simple notification function"""
+    log_event(f"NOTIFICATION: {title} - {message}")
+    print(f"🔔 {title}: {message}")

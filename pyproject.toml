@@ -1,68 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backendbot"
+version = "0.1.0"
+description = "BackendBot - System monitoring and AI agent"
+authors = [
+    {name = "Rigohl", email = "your-email@example.com"},
+]
+dependencies = [
+    "fastapi==0.116.1",
+    "uvicorn[standard]==0.35.0",
+    "psutil==7.0.0",
+    "pydantic==2.11.7",
+    "pydantic-settings==2.10.1",
+    "sqlalchemy==2.0.43",
+    "python-multipart==0.0.6",
+    "python-dotenv==1.1.1",
+    "httpx==0.25.2",
+    "gunicorn==21.2.0",
+    "uvloop==0.17.0",
+    "httptools==0.6.1",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.13.0",
+    "black==25.1.0",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
 [tool.black]
 line-length = 88
 target-version = ['py311']
-
-[tool.ruff]
-line-length = 88 # Aquí va line-length
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # Pyflakes
-    "I",  # Isort
-    "C",  # Complexity
-    "N",  # Naming
-    "D",  # pydocstyle
-    "UP", # pyupgrade
-    "B",  # flake8-bugbear
-    "A",  # flake8-builtins
-    "ANN",# flake8-annotations
-    "ASYNC", # flake8-async
-    "C4", # flake8-comprehensions
-    "DTZ",# flake8-datetimez
-    "ERA",# eradicate
-    "ISC",# flake8-implicit-str-concat
-    "ICN",# flake8-import-conventions
-    "PIE",# flake8-pie
-    "PL", # Pylint
-    "PT", # flake8-pytest-style
-    "RSE",# flake8-raise
-    "RET",# flake8-return
-    "SLF",# flake8-self
-    "SIM",# flake8-simplify
-    "TID",# flake8-tidy-imports
-    "TCH",# flake8-type-checking
-    "PTH",# flake8-use-pathlib
-    "RUF",# Ruff-specific rules
-]
-ignore = [
-    "D100", # Missing docstring in public module
-    "D104", # Missing docstring in public package
-    "D105", # Missing docstring in magic method
-    "D107", # Missing docstring in __init__
-    "D203", # Incompatible con D211
-    "D213", # Incompatible con D212
-]
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    "venv",
-    ".venv",
-    "docs",
-    "scripts",
-    "dashboard",
-    "logs",
-    "data",
-    "tests", # Excluir tests por ahora, podemos añadir reglas específicas después
-]
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"src/backendbot/main.py" = ["D100"]
-"src/backendbot/api_routes.py" = ["D100"]
-"src/backendbot/process_routes.py" = ["D100"]
-"src/backendbot/tray_icon.py" = ["D100"]
-"src/backendbot/watchdog.py" = ["D100"]
-"src/backendbot/utils.py" = ["D100"]
-"src/backendbot/config.py" = ["D100"]

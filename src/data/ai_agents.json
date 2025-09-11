@@ -1,0 +1,30 @@
+{
+  "test_agent": {
+    "name": "test_agent",
+    "description": "Test agent",
+    "capabilities": [
+      "chat",
+      "analyze"
+    ],
+    "model": "llama2:7b",
+    "created_at": "2025-09-11T16:09:33.906938",
+    "system_prompt": "Eres test_agent, un agente especializado en: chat, analyze. Test agent",
+    "conversations": [
+      "conv_20250911_161148"
+    ]
+  },
+  "analyzer": {
+    "name": "analyzer",
+    "description": "Data analyzer",
+    "capabilities": [
+      "analyze",
+      "chat"
+    ],
+    "model": "llama2:7b",
+    "created_at": "2025-09-11T16:09:33.980878",
+    "system_prompt": "Eres analyzer, un agente especializado en: analyze, chat. Data analyzer",
+    "conversations": [
+      "conv_20250911_161148"
+    ]
+  }
+}

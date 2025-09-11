@@ -27,7 +27,7 @@ class TestOllamaClient:
             mock_response.json = AsyncMock(return_value={"version": "0.1.0"})
             mock_get.return_value.__aenter__.return_value = mock_response
 
-            status = await client.check_status()
+            status = await client.check_connection()
             assert status["available"] is True
             assert status["version"] == "0.1.0"
 
@@ -37,7 +37,7 @@ class TestOllamaClient:
         with patch('aiohttp.ClientSession.get') as mock_get:
             mock_get.side_effect = Exception("Connection failed")
 
-            status = await client.check_status()
+            status = await client.check_connection()
             assert status["available"] is False
             assert "error" in status
 
@@ -76,7 +76,7 @@ class TestOllamaClient:
             mock_response.json = AsyncMock(return_value=mock_response_data)
             mock_post.return_value.__aenter__.return_value = mock_response
 
-            response = await client.generate_response(
+            response = await client.generate(
                 model="llama2:7b",
                 prompt="Hello",
                 context=[1, 2, 3]
@@ -91,9 +91,11 @@ class TestAIMessage:
 
     def test_message_creation(self):
         """Test de creación de mensaje"""
+        from datetime import datetime
         message = AIMessage(
             role="user",
             content="Hello AI",
+            timestamp=datetime.now(),
             metadata={"temperature": 0.7}
         )
 
@@ -104,7 +106,8 @@ class TestAIMessage:
 
     def test_message_to_dict(self):
         """Test de conversión a diccionario"""
-        message = AIMessage(role="assistant", content="Hello human")
+        from datetime import datetime
+        message = AIMessage(role="assistant", content="Hello human", timestamp=datetime.now())
         msg_dict = message.to_dict()
 
         assert msg_dict["role"] == "assistant"
@@ -113,14 +116,15 @@ class TestAIMessage:
 
     def test_message_from_dict(self):
         """Test de creación desde diccionario"""
+        from datetime import datetime
         msg_dict = {
             "role": "user",
             "content": "Test message",
-            "timestamp": "2024-01-01T12:00:00",
+            "timestamp": datetime.now(),
             "metadata": {"test": True}
         }
 
-        message = AIMessage.from_dict(msg_dict)
+        message = AIMessage(**msg_dict)
         assert message.role == "user"
         assert message.content == "Test message"
         assert message.metadata["test"] is True
@@ -131,7 +135,14 @@ class TestAIConversation:
 
     def test_conversation_creation(self):
         """Test de creación de conversación"""
-        conversation = AIConversation(model="llama2:7b")
+        from datetime import datetime
+        conversation = AIConversation(
+            id="test_conv",
+            messages=[],
+            model="llama2:7b",
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
 
         assert conversation.id is not None
         assert conversation.model == "llama2:7b"
@@ -140,7 +151,14 @@ class TestAIConversation:
 
     def test_add_message(self):
         """Test de agregar mensaje"""
-        conversation = AIConversation(model="llama2:7b")
+        from datetime import datetime
+        conversation = AIConversation(
+            id="test_conv",
+            messages=[],
+            model="llama2:7b",
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
         message = AIMessage(role="user", content="Hello")
 
         conversation.add_message(message)
@@ -151,7 +169,14 @@ class TestAIConversation:
 
     def test_get_messages_for_api(self):
         """Test de obtener mensajes para API"""
-        conversation = AIConversation(model="llama2:7b")
+        from datetime import datetime
+        conversation = AIConversation(
+            id="test_conv",
+            messages=[],
+            model="llama2:7b",
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
         conversation.add_message(AIMessage(role="user", content="Hello"))
         conversation.add_message(AIMessage(role="assistant", content="Hi there"))
 
@@ -163,7 +188,14 @@ class TestAIConversation:
 
     def test_to_dict_and_from_dict(self):
         """Test de serialización"""
-        conversation = AIConversation(model="llama2:7b")
+        from datetime import datetime
+        conversation = AIConversation(
+            id="test_conv",
+            messages=[],
+            model="llama2:7b",
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
         conversation.add_message(AIMessage(role="user", content="Test"))
 
         conv_dict = conversation.to_dict()
@@ -186,9 +218,11 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_check_ollama_status(self, ai_service):
         """Test de verificación de estado de Ollama"""
-        with patch.object(ai_service.ollama_client, 'check_status', return_value={"available": True}):
-            status = await ai_service.check_ollama_status()
-            assert status["available"] is True
+        with patch.object(ai_service.ollama, 'check_connection', return_value=True) as mock_check:
+            with patch.object(ai_service.ollama, 'list_models', return_value=[{"name": "llama2"}]) as mock_list:
+                status = await ai_service.check_ollama_status()
+                assert status["connected"] is True
+                assert len(status["models"]) == 1
 
     @pytest.mark.asyncio
     async def test_create_conversation(self, ai_service):
@@ -211,7 +245,7 @@ class TestAIService:
             "context": [1, 2, 3]
         }
 
-        with patch.object(ai_service.ollama_client, 'generate_response', return_value=mock_response):
+        with patch.object(ai_service.ollama, 'chat', return_value="Hello! How can I help you?") as mock_chat:
             response = await ai_service.send_message(conversation_id, "Hello")
 
             assert response == "Hello! How can I help you?"
@@ -227,11 +261,8 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_analyze_system_status(self, ai_service):
         """Test de análisis del sistema"""
-        with patch.object(ai_service.ollama_client, 'generate_response') as mock_generate:
-            mock_generate.return_value = {
-                "response": "System analysis complete",
-                "done": True
-            }
+        with patch.object(ai_service.ollama, 'generate') as mock_generate:
+            mock_generate.return_value = "System analysis complete"
 
             analysis = await ai_service.analyze_system_status()
             assert "analysis" in analysis
@@ -265,15 +296,12 @@ class TestAIService:
         """Test de ejecución de tarea de agente"""
         await ai_service.create_agent("test_agent", "Test", ["chat"], "llama2:7b")
 
-        with patch.object(ai_service.ollama_client, 'generate_response') as mock_generate:
-            mock_generate.return_value = {
-                "response": "Task completed",
-                "done": True
-            }
+        with patch.object(ai_service.ollama, 'chat') as mock_chat:
+            mock_chat.return_value = "Task completed"
 
             result = await ai_service.execute_agent_task("test_agent", "Analyze data")
             assert result is not None
-            assert "Task completed" in result
+            assert result == "Task completed"
 
     @pytest.mark.asyncio
     async def test_execute_agent_task_not_found(self, ai_service):
@@ -295,12 +323,8 @@ class TestAIIntegration:
             conv_id = await service.create_conversation("llama2:7b", "You are a helpful assistant")
 
             # Mock respuesta de Ollama
-            with patch.object(service.ollama_client, 'generate_response') as mock_generate:
-                mock_generate.return_value = {
-                    "response": "Hello! I'm here to help.",
-                    "done": True,
-                    "context": [1, 2, 3]
-                }
+            with patch.object(service.ollama, 'chat') as mock_chat:
+                mock_chat.return_value = "Hello! I'm here to help."
 
                 # Enviar mensaje
                 response = await service.send_message(conv_id, "Hello AI")
@@ -324,17 +348,14 @@ class TestAIIntegration:
             )
 
             # Mock respuesta para tarea
-            with patch.object(service.ollama_client, 'generate_response') as mock_generate:
-                mock_generate.return_value = {
-                    "response": "Analysis complete: Data looks good",
-                    "done": True
-                }
+            with patch.object(service.ollama, 'chat') as mock_chat:
+                mock_chat.return_value = "Analysis complete: Data looks good"
 
                 # Ejecutar tarea
                 result = await service.execute_agent_task("analyzer", "Analyze this data: [1,2,3,4,5]")
 
                 assert result is not None
-                assert "Analysis complete" in result
+                assert result == "Analysis complete: Data looks good"
 
                 # Verificar que se guardó la conversación del agente
                 agent = service.agents["analyzer"]

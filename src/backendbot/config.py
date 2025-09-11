@@ -4,6 +4,8 @@ from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+import secrets # Import secrets module for JWT_SECRET_KEY
+
 class Settings(BaseSettings):
     # CPU/RAM thresholds with validation
     CPU_THRESHOLD: int = Field(default=80, ge=1, le=100, description="CPU usage threshold percentage")
@@ -11,6 +13,7 @@ class Settings(BaseSettings):
 
     # Timing
     CHECK_TIME: int = Field(default=60, ge=10, description="Check interval in seconds")
+    DEBUG: bool = Field(default=False, description="Enable debug mode")
 
     # Process lists
     HIBERNABLES: List[str] = Field(default_factory=lambda: ["Discord.exe", "Steam.exe"])
@@ -20,11 +23,11 @@ class Settings(BaseSettings):
     # Mode
     MODO: str = Field(default="diario", pattern="^(diario|videojuego|editor|streaming|multimedia)$")
 
-    # API and security
-    API_KEY: str = Field(default="default-api-key", description="API key for authentication")
-    ADMIN_USERNAME: str = Field(default="admin", description="Admin username for dashboard access")
-    ADMIN_PASSWORD: str = Field(default="backendbot2025!", description="Admin password for dashboard access")
-    JWT_SECRET_KEY: str = Field(default="your-secret-key")
+    # API and security - MADE REQUIRED
+    API_KEY: str = Field(description="API key for authentication") # Removed default
+    ADMIN_USERNAME: str = Field(description="Admin username for dashboard access") # Removed default
+    ADMIN_PASSWORD: str = Field(description="Admin password for dashboard access") # Removed default
+    JWT_SECRET_KEY: str = Field(default_factory=lambda: secrets.token_urlsafe(32), description="JWT secret key") # Generate if not provided
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 

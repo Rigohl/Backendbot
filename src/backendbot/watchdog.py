@@ -3,8 +3,13 @@ import time
 
 import psutil
 
-from .config import settings
-from .utils import load_memory, log_event, notify, store_watchdog_decision
+try:
+    from .config import settings
+    from .utils import load_memory, log_event, notify, store_watchdog_decision
+except ImportError:
+    # Fallback for when running from tests
+    from config import settings
+    from utils import load_memory, log_event, notify, store_watchdog_decision
 
 
 async def _handle_process_monitoring(
@@ -19,9 +24,10 @@ async def _handle_process_monitoring(
         memory: The loaded memory of past decisions for programs.
     """
     try:
-        pid, name = p.info["pid"], p.info["name"]
-        cpu = p.info["cpu_percent"]
-        ram = round(p.info["memory_info"].rss / 1024 / 1024, 2)
+        pid = p.pid
+        name = p.name()
+        cpu = p.cpu_percent()
+        ram = round(p.memory_info().rss / 1024 / 1024, 2)
         acciones = memory.get(name, {"suspensiones": 0, "rechazos": 0})
 
         if cpu > settings.CPU_THRESHOLD or ram > settings.RAM_THRESHOLD:
@@ -44,7 +50,7 @@ async def _handle_process_monitoring(
                     log_event(f"{name} ignorado")
                     await store_watchdog_decision(name, "ignorado", cpu, ram)
                 else:
-                    notify(f"⚠️ {name} alto consumo. Revisa dashboard.", duration=10)
+                    notify(f"⚠️ {name} alto consumo. Revisa dashboard.") # Removed duration
                     await store_watchdog_decision(
                         name, "notificado", cpu, ram
                     )
@@ -53,9 +59,9 @@ async def _handle_process_monitoring(
                 del uso_alto[pid]
 
     except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-        log_event(f"Error monitoreando proceso PID {p.info.get('pid', 'N/A')}: {e}")
+        log_event(f"Error monitoreando proceso PID {p.pid}: {e}")
     except Exception as e:
-        log_event(f"Error inesperado en _handle_process_monitoring para PID {p.info.get('pid', 'N/A')}: {e}")
+        log_event(f"Error inesperado en _handle_process_monitoring para PID {p.pid}: {e}")
 
 
 async def watchdog() -> None:
@@ -69,21 +75,13 @@ async def watchdog() -> None:
     uso_alto: dict[int, float] = {}
     while True:
         try:
-            memory = load_memory()
+            memory = await load_memory() # Await the call
             for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
                 await _handle_process_monitoring(p, uso_alto, memory)
 
             await asyncio.sleep(settings.CHECK_TIME)
 
         except Exception as e:
-            log_event(f"Error en watchdog principal: {e}")
-            await asyncio.sleep(settings.CHECK_TIME)
-        try:
-            memory = load_memory()
-            for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
-                await _handle_process_monitoring(p, uso_alto, memory)  # Awaited
-            await asyncio.sleep(5)  # Awaited
-        except Exception as e:
-            log_event(f"Error en watchdog principal: {e}")
-        except Exception as e:
-            log_event(f"Error en watchdog principal: {e}")
+            log_event(f"Error en watchdog principal: {e}", level="error") # Explicitly set level
+            await asyncio.sleep(settings.CHECK_TIME) # Continue after error
+

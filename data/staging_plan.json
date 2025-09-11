@@ -1,0 +1,72 @@
+{
+  "scheduled": {
+    "task": {
+      "name": "staging_opt",
+      "command": "python staging_runner.py",
+      "schedule": "daily",
+      "next_run": "2025-09-12 16:33:20.166617"
+    },
+    "dry_run": true,
+    "message": "Task prepared. Set dry_run=False to actually create it using a controlled mechanism."
+  },
+  "powershell_cmds": [
+    "Start-Job -ScriptBlock { <# your script here #> } -Name BackendBot_Staging",
+    "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File C:\\path\\to\\script.ps1') -Trigger (New-ScheduledTaskTrigger -Daily -At 3am) -TaskName 'BackendBot_Staging'",
+    "Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile -WindowStyle Hidden -File C:\\path\\to\\start_staging.ps1' -WindowStyle Hidden"
+  ],
+  "ram_preview": {
+    "dry_run": true,
+    "candidates": [
+      {
+        "pid": 1234,
+        "name": "notepad.exe",
+        "memory_mb": 50,
+        "memory_percent": 2.1,
+        "cpu_percent": 1.2
+      },
+      {
+        "pid": 2345,
+        "name": "some_background_worker.exe",
+        "memory_mb": 150,
+        "memory_percent": 6.3,
+        "cpu_percent": 5.8
+      }
+    ],
+    "estimated_freed_mb": 200,
+    "total_candidates": 2,
+    "timestamp": "2025-09-11T16:33:20.166617"
+  },
+  "disk_preview": {
+    "dry_run": true,
+    "preview": [
+      {
+        "path": "C:\\Users\\DELL\\AppData\\Local\\Temp",
+        "exists": true,
+        "files_count": 0,
+        "total_bytes": 0,
+        "sample_files": []
+      },
+      {
+        "path": "C:\\Users\\DELL\\AppData\\Local\\Temp",
+        "exists": true,
+        "files_count": 0,
+        "total_bytes": 0,
+        "sample_files": []
+      },
+      {
+        "path": "C:\\Windows\\Prefetch",
+        "exists": true,
+        "files_count": 0,
+        "total_bytes": 0,
+        "sample_files": []
+      }
+    ],
+    "summary": {
+      "total_directories": 3,
+      "total_files": 0,
+      "total_bytes": 0,
+      "total_mb": 0.0
+    },
+    "timestamp": "2025-09-11T16:33:23.613599"
+  }
+}

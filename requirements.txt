@@ -1,14 +1,20 @@
-fastapi
-uvicorn
-psutil
-pillow
-psycopg2-binary  # Necesario para Neon/Postgres en Railway/Fly.io
-pydantic-settings
-ruff
-black
-sqlalchemy
-aiosqlite
-
-# Testing
-pytest
-pytest-mock
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+psutil==7.0.0
+pydantic==2.11.7
+pydantic-settings==2.10.1
+sqlalchemy==2.0.43
+python-multipart==0.0.6
+python-dotenv==1.1.1
+httpx==0.25.2
+ruff==0.13.0
+black==25.1.0
+gunicorn==21.2.0
+uvloop==0.17.0
+httptools==0.6.1
+# Removed Windows-specific packages for Railway (Linux)
+# win10toast - not needed on Linux
+# pystray - not needed on Linux
+# tk - not needed on Linux
+# psycopg2-binary - add if using PostgreSQL
+# pillow - add if needed for images

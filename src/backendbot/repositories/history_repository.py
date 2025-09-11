@@ -3,8 +3,7 @@ from typing import Any, Dict, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..database import OptimizationEvent
-from ..utils import ProcessHistory, WatchdogDecision
+from ..database import OptimizationEvent, ProcessHistory, WatchdogDecision
 
 
 class HistoryRepository:

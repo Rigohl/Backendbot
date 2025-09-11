@@ -14,6 +14,13 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 import os
 import json
+import psutil # Moved import to top
+
+try:
+    from .config import settings # Moved import to top
+except ImportError:
+    # Fallback for when running from tests
+    from config import settings
 
 # Small contract for functions in this module:
 # - Inputs: dry_run: bool, minimal params.
@@ -66,7 +73,7 @@ def prepare_background_command(script_path: str = "scripts\\start_staging.ps1") 
     Caller should not execute it directly inside production without review.
     """
     abs_path = os.path.abspath(script_path)
-    cmd = f"Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile -WindowStyle Hidden -File \"{abs_path}\"' -WindowStyle Hidden"
+    cmd = f"Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile -WindowStyle Hidden -File \"{abs_path}\" ' -WindowStyle Hidden"
     return cmd
 
 
@@ -76,12 +83,9 @@ def optimize_ram(dry_run: bool = True, max_processes: int = 10) -> Dict[str, Any
     The returned dict contains 'to_terminate' list and estimated freed memory MB.
     """
     try:
-        import psutil
         # Get real process data when not in dry-run
         if not dry_run:
             processes = []
-            from ..config import settings # Import settings
-
             important_processes = [p.lower() for p in settings.PROCESOS_IMPORTANTES]
             total_ram_mb = psutil.virtual_memory().total / (1024 * 1024) # Total RAM in MB
 

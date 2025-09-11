@@ -8,11 +8,13 @@ values when variables are not set.
 
 import json
 import os
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
+sys.path.insert(0, "src")
 from backendbot.config import Settings
 
 # The BASE_DIR from the config module we are testing

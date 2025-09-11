@@ -6,39 +6,65 @@ from typing import Any, Dict
 import psutil
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from .config import settings
-from .process_routes import process_router  # New import
-from .services.ai_service import ai_service  # AI Service import
-from .utils import (
-    db,
-    load_memory,
-    log_event,
-    save_memory,
-)  # Removed store_process_data, store_optimization_event, restore_closed_processes
+try:
+    from .config import settings
+    from .process_routes import process_router  # New import
+    from .services.ai_service import ai_service  # AI Service import
+    from .utils import (
+        load_memory,
+        log_event,
+        save_memory,
+    )  # Removed store_process_data, store_optimization_event, restore_closed_processes
+except ImportError:
+    # Fallback for when running from tests
+    from config import settings
+    from process_routes import process_router
+    from services.ai_service import ai_service
+    from utils import (
+        load_memory,
+        log_event,
+        save_memory,
+    )
 
 # Import staging automation functions
-from .staging_automation import (
-    schedule_optimizations,
-    list_recommended_powershell_commands,
-    prepare_background_command,
-    optimize_ram,
-    perform_disk_cleanup_preview,
-    write_plan_to_file,
-    run_preview_workflow,
-)
+try:
+    from .staging_automation import (
+        schedule_optimizations,
+        list_recommended_powershell_commands,
+        prepare_background_command,
+        optimize_ram,
+        perform_disk_cleanup_preview,
+        write_plan_to_file,
+        run_preview_workflow,
+    )
+except ImportError:
+    # Fallback for when running from tests
+    from staging_automation import (
+        schedule_optimizations,
+        list_recommended_powershell_commands,
+        prepare_background_command,
+        optimize_ram,
+        perform_disk_cleanup_preview,
+        write_plan_to_file,
+        run_preview_workflow,
+    )
 
 router = APIRouter()
 
-
-from .dependencies import get_api_key
-from .routers import history_routes
+try:
+    from .dependencies import get_api_key
+    from .routers import history_routes
+except ImportError:
+    # Fallback for when running from tests
+    from dependencies import get_api_key
+    from routers import history_routes
 
 router.include_router(process_router)  # Include the new router
 router.include_router(history_routes.router) # Include the history router
 
 
 @router.post("/decision/{programa}/{accion}", dependencies=[Depends(get_api_key)])
-def guardar_decision(programa: str, accion: str) -> Dict[str, Any]:
+async def guardar_decision(programa: str, accion: str) -> Dict[str, Any]:
     """Guarda la decisión de suspender o rechazar un programa en la memoria.
 
     Args:
@@ -49,36 +75,36 @@ def guardar_decision(programa: str, accion: str) -> Dict[str, Any]:
         Dict[str, Any]: La información actualizada de las decisiones para el programa.
 
     """
-    memory = load_memory()
+    memory = await load_memory()
     memory.setdefault(programa, {"suspensiones": 0, "rechazos": 0})
     if accion == "suspender":
         memory[programa]["suspensiones"] += 1
     elif accion == "rechazar":
         memory[programa]["rechazos"] += 1
-    save_memory(memory)
+    await save_memory(memory)
     return memory.get(programa)
 
 
 @router.get("/memoria", dependencies=[Depends(get_api_key)])
-def ver_memoria() -> dict[str, Any]:
+async def ver_memoria() -> dict[str, Any]:
     """Retorna el contenido actual de la memoria de decisiones.
 
     Returns:
         Dict[str, Any]: El diccionario que contiene la memoria de decisiones.
 
     """
-    return load_memory()
+    return await load_memory()
 
 
 @router.post("/reset-memoria", dependencies=[Depends(get_api_key)])
-def reset_memoria() -> Dict[str, str]:
+async def reset_memoria() -> Dict[str, str]:
     """Resetea la memoria de decisiones a un estado vacío.
 
     Returns:
         Dict[str, str]: Un diccionario con el estado de la operación.
 
     """
-    save_memory({})
+    await save_memory({})
     log_event("🧹 Memoria de decisiones reseteada", notify_user=True)
     return {"status": "ok", "msg": "Memoria reiniciada"}
 
@@ -198,14 +224,42 @@ def get_logs(limit: int = 100) -> list[dict[str, Any]]:
         list[Dict[str, Any]]: Una lista de diccionarios con la información de los logs.
 
     """
-    try:
-        if not os.path.exists(settings.LOG_FILE):
+    def read_last_n_lines(file_path, n):
+        """Reads the last n lines of a file efficiently."""
+        if not os.path.exists(file_path):
             return []
+        
+        with open(file_path, 'rb') as f: # Open in binary mode for seeking
+            f.seek(0, os.SEEK_END)
+            file_size = f.tell()
+            
+            block_size = 4096 # Read in 4KB blocks
+            lines = []
+            total_lines_read = 0
+            
+            # Start reading from the end of the file
+            for i in range(1, int(file_size / block_size) + 2):
+                offset = max(0, file_size - i * block_size)
+                f.seek(offset)
+                chunk = f.read(min(block_size, file_size - offset)).decode('utf-8', errors='ignore')
+                
+                # Split into lines and add to the beginning of the list
+                new_lines = chunk.splitlines()
+                for line in reversed(new_lines):
+                    if line: # Avoid empty lines
+                        lines.insert(0, line)
+                        total_lines_read += 1
+                        if total_lines_read >= n:
+                            return lines[-n:] # Return the last n lines
+                
+                if offset == 0: # Reached beginning of file
+                    break
+            return lines[-n:]
 
+    try:
+        lines = read_last_n_lines(settings.LOG_FILE, limit)
+        
         logs = []
-        with open(settings.LOG_FILE, encoding="utf-8") as f:
-            lines = f.readlines()[-limit:]  # Obtener las últimas 'limit' líneas
-
         for line in lines:
             line = line.strip()
             if not line:

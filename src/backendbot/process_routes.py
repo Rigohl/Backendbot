@@ -6,14 +6,24 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials # New import
 
-from .config import settings
-from .utils import (
-    _get_process_info,
-    log_event,
-    restore_closed_processes,
-    store_optimization_event,
-)
-from ..ram_optimizer import run_ram_optimization # New import
+try:
+    from .config import settings
+    from .utils import (
+        _get_process_info,
+        log_event,
+        restore_closed_processes,
+        store_optimization_event,
+    )
+except ImportError:
+    # Fallback for when running from tests
+    from config import settings
+    from utils import (
+        _get_process_info,
+        log_event,
+        restore_closed_processes,
+        store_optimization_event,
+    )
+from .ram_optimizer import run_ram_optimization # New import
 
 process_router = APIRouter()
 
