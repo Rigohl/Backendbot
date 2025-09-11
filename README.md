@@ -21,7 +21,7 @@
    ```
 4. Ejecuta el backend:
    - Desde scripts: `.\scripts\start_backend.bat`
-   - O manualmente: `python src\backendbot\backend.py`
+   - O manualmente: `python -m uvicorn src.backendbot.main:app --host 127.0.0.1 --port 8000 --log-level info`
 
 ## 🚀 Uso
 

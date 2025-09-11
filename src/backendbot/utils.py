@@ -1,6 +1,7 @@
 import os, json, time, subprocess
 from win10toast import ToastNotifier
 import dataset
+import psutil # Added psutil
 from .config import settings
 
 ttoaster = ToastNotifier()
@@ -62,3 +63,38 @@ def restore_closed_processes(modo):
                 log_event(f"Proceso restaurado: {proc}")
             except Exception as e:
                 log_event(f"Error al restaurar {proc}: {e}")
+
+def _get_process_info(p):
+    """Helper to get process info and handle common errors."""
+    try:
+        pid, name = p.info['pid'], p.info['name']
+        ram_mb = round(p.info['memory_info'].rss/1024/1024,2)
+        cpu_percent = p.info['cpu_percent'](interval=0.1)
+        store_process_data(pid, name, ram_mb, cpu_percent)
+        return {
+            "pid": pid,
+            "name": name,
+            "ram_mb": ram_mb,
+            "cpu_percent": cpu_percent
+        }
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+        log_event(f"Error al procesar PID {p.info.get('pid', 'N/A')}: {e}")
+        return None
+    except Exception as e:
+        log_event(f"Error inesperado al obtener info de proceso: {e}")
+        return None
+
+def _optimize_processes():
+    """Helper to suspend hibernatable processes."""
+    freed = 0
+    for p in psutil.process_iter(['pid','name','memory_info']):
+        try:
+            if p.info['name'] in settings.HIBERNABLES:
+                psutil.Process(p.info['pid']).suspend()
+                freed += p.info['memory_info'].rss
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+            log_event(f"Error al suspender proceso {p.info.get('name', 'N/A')} (PID {p.info.get('pid', 'N/A')}): {e}")
+        except Exception as e:
+            log_event(f"Error inesperado al optimizar proceso: {e}")
+    return freed
+

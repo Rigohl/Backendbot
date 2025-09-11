@@ -1,1 +1,1 @@
-Start-Process (Join-Path $PSScriptRoot "..\dashboard\index.html")
+Start-Process "http://127.0.0.1:8000"

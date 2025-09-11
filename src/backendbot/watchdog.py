@@ -1,9 +1,18 @@
 import psutil, time, threading
+from typing import Dict, Any
 from .utils import load_memory, notify, log_event, store_watchdog_decision
 from .config import settings
 
-def _handle_process_monitoring(p, uso_alto, memory):
-    """Handles the monitoring and decision-making for a single process."""
+def _handle_process_monitoring(p: psutil.Process, uso_alto: Dict[int, float], memory: Dict[str, Dict[str, int]]) -> None:
+    """ 
+    Handles the monitoring and decision-making for a single process.
+
+    Args:
+        p (psutil.Process): The process object to monitor.
+        uso_alto (Dict[int, float]): A dictionary tracking processes with high resource usage.
+                                     Keys are PIDs, values are timestamps when high usage started.
+        memory (Dict[str, Dict[str, int]]): The loaded memory of past decisions for programs.
+    """
     try:
         pid, name = p.info['pid'], p.info['name']
         cpu = p.info['cpu_percent']
@@ -14,14 +23,14 @@ def _handle_process_monitoring(p, uso_alto, memory):
             if pid not in uso_alto:
                 uso_alto[pid] = time.time()
             elif time.time()-uso_alto[pid] > settings.CHECK_TIME:
-                if acciones["suspensiones"]>=3 and acciones["rechazos"]==0:
+                if acciones["suspensiones"] >= settings.SUSPENSION_THRESHOLD and acciones["rechazos"] == 0:
                     try:
                         psutil.Process(pid).suspend()
                         notify(f"🔄 {name} suspendido automáticamente")
                         store_watchdog_decision(name, "suspendido", cpu, ram)
                     except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                         log_event(f"Error al suspender {name} (PID {pid}): {e}")
-                elif acciones["rechazos"]>=3:
+                elif acciones["rechazos"] >= settings.REJECTION_THRESHOLD:
                     log_event(f"{name} ignorado")
                     store_watchdog_decision(name, "ignorado", cpu, ram)
                 else:
@@ -35,9 +44,16 @@ def _handle_process_monitoring(p, uso_alto, memory):
     except Exception as e:
         log_event(f"Error inesperado en _handle_process_monitoring para PID {p.info.get('pid', 'N/A')}: {e}")
 
-def watchdog():
-    """Main watchdog function to monitor processes."""
-    uso_alto = {}
+def watchdog() -> None:
+    """ 
+    Main watchdog function to continuously monitor processes.
+
+    This function runs in a loop, periodically checking all running processes
+    for high CPU or RAM usage. It uses a memory system to learn from past
+    decisions (suspensions or rejections) and takes automated actions like
+    suspending processes or notifying the user.
+    """
+    uso_alto: Dict[int, float] = {}
     while True:
         try:
             memory = load_memory()
