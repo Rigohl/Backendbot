@@ -24,9 +24,7 @@ def get_api_key(
 ):
     if api_key == settings.API_KEY:
         return api_key
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key"
-    )
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key")
 
 
 @process_router.get("/procesos", dependencies=[Depends(get_api_key)])

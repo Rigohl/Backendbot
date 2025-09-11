@@ -1,11 +1,11 @@
-import asyncio # Added import
+import asyncio  # Added import
 
 from fastapi import FastAPI
 
 from .api_routes import router
 from .config import Settings
-from .utils import log_event, init_db # Added init_db
-from .watchdog import watchdog # Moved import here
+from .utils import init_db, log_event  # Added init_db
+from .watchdog import watchdog  # Moved import here
 
 settings = Settings()
 
@@ -15,10 +15,12 @@ app = FastAPI(
 
 app.include_router(router)
 
+
 @app.on_event("startup")
 async def on_startup():
     await init_db()
-    asyncio.create_task(watchdog()) # Start watchdog as an asyncio task
+    asyncio.create_task(watchdog())  # Start watchdog as an asyncio task
+
 
 # Log inicial para indicar que el backend se ha iniciado
 log_event("🚀 BackendBot iniciado correctamente")

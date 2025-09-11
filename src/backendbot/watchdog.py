@@ -1,3 +1,4 @@
+import asyncio  # Added import
 import time
 from typing import Dict
 
@@ -7,17 +8,7 @@ from .config import settings
 from .utils import load_memory, log_event, notify, store_watchdog_decision
 
 
-import asyncio # Added import
-import time
-from typing import Dict
-
-import psutil
-
-from .config import settings
-from .utils import load_memory, log_event, notify, store_watchdog_decision
-
-
-async def _handle_process_monitoring( # Made async
+async def _handle_process_monitoring(  # Made async
     p: psutil.Process, uso_alto: Dict[int, float], memory: Dict[str, Dict[str, int]]
 ) -> None:
     """Handles the monitoring and decision-making for a single process.
@@ -46,15 +37,19 @@ async def _handle_process_monitoring( # Made async
                     try:
                         psutil.Process(pid).suspend()
                         notify(f"🔄 {name} suspendido automáticamente")
-                        await store_watchdog_decision(name, "suspendido", cpu, ram) # Awaited
+                        await store_watchdog_decision(
+                            name, "suspendido", cpu, ram
+                        )  # Awaited
                     except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                         log_event(f"Error al suspender {name} (PID {pid}): {e}")
                 elif acciones["rechazos"] >= settings.REJECTION_THRESHOLD:
                     log_event(f"{name} ignorado")
-                    await store_watchdog_decision(name, "ignorado", cpu, ram) # Awaited
+                    await store_watchdog_decision(name, "ignorado", cpu, ram)  # Awaited
                 else:
                     notify(f"⚠️ {name} alto consumo. Revisa dashboard.", subtle=True)
-                    await store_watchdog_decision(name, "notificado", cpu, ram) # Awaited
+                    await store_watchdog_decision(
+                        name, "notificado", cpu, ram
+                    )  # Awaited
                 uso_alto.pop(pid, None)
         else:
             uso_alto.pop(pid, None)
@@ -66,7 +61,7 @@ async def _handle_process_monitoring( # Made async
         )
 
 
-async def watchdog() -> None: # Made async
+async def watchdog() -> None:  # Made async
     """Main watchdog function to continuously monitor processes.
 
     This function runs in a loop, periodically checking all running processes
@@ -79,8 +74,8 @@ async def watchdog() -> None: # Made async
         try:
             memory = load_memory()
             for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
-                await _handle_process_monitoring(p, uso_alto, memory) # Awaited
-            await asyncio.sleep(5) # Awaited
+                await _handle_process_monitoring(p, uso_alto, memory)  # Awaited
+            await asyncio.sleep(5)  # Awaited
         except Exception as e:
             log_event(f"Error en watchdog principal: {e}")
         except Exception as e:

@@ -44,6 +44,11 @@ uvicorn main:app --reload
 - `GET /logs` : Obtiene logs recientes del sistema
 - `GET /processes/top` : Lista procesos top por uso de CPU o memoria
 - `GET /config` : Obtiene configuración actual del backend
+- `GET /alerts` : Obtiene alertas activas del sistema
+- `GET /alerts/config` : Obtiene configuración de alertas
+- `PUT /alerts/config` : Actualiza configuración de alertas
+- `GET /metrics/history` : Obtiene historial de métricas del sistema
+- `DELETE /alerts` : Limpia historial de alertas
 - `GET /docs` : Documentación interactiva de la API
 
 ## Autenticación

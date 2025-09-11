@@ -1,0 +1,65 @@
+{
+    "hibernables": [
+        "Discord.exe",
+        "Steam.exe",
+        "RiotClientServices.exe"
+    ],
+    "procesos_a_cerrar": {
+        "videojuego": [
+            "Discord.exe",
+            "Steam.exe",
+            "RiotClientServices.exe",
+            "chrome.exe",
+            "firefox.exe",
+            "msedge.exe",
+            "spotify.exe",
+            "vlc.exe"
+        ],
+        "editor": [
+            "chrome.exe",
+            "firefox.exe",
+            "msedge.exe",
+            "discord.exe",
+            "steam.exe"
+        ],
+        "diario": [
+            "Code.exe",
+            "Code - Insiders.exe",
+            "electron.exe",
+            "github.exe",
+            "copilot.exe",
+            "cmd.exe",
+            "powershell.exe"
+        ],
+        "streaming": [
+            "Code.exe",
+            "Steam.exe",
+            "Guild Wars 2.exe",
+            "DaVinci Resolve.exe",
+            "Visual Studio.exe",
+            "CMake.exe",
+            "Cheat Engine.exe"
+        ],
+        "multimedia": [
+            "Guild Wars 2.exe",
+            "Steam.exe",
+            "Discord.exe",
+            "chrome.exe",
+            "firefox.exe",
+            "msedge.exe",
+            "OBS.exe",
+            "Spotify.exe"
+        ]
+    },
+    "procesos_importantes": [
+        "explorer.exe",
+        "obs.exe",
+        "DaVinci Resolve.exe",
+        "Fairlight.exe",
+        "chrome.exe",
+        "firefox.exe",
+        "msedge.exe",
+        "Discord.exe",
+        "Spotify.exe"
+    ]
+}
