@@ -33,14 +33,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
-import uvicorn
+import os
+import time
+from datetime import datetime, timezone, timedelta
+from typing import Optional, List, Dict, Any
+from collections import defaultdict
+import json
+import shutil
 import secrets
 import logging
-import os
-from datetime import datetime, timezone
-from typing import Optional, List
-from collections import defaultdict
-import time
+import uvicorn
+import subprocess
 
 # Configurar logging
 logging.basicConfig(
@@ -162,11 +165,133 @@ class TopProcess(BaseModel):
     memory_percent: float
     memory_mb: float
 
+class GPUInfo(BaseModel):
+    """Modelo para información de GPU."""
+    id: int
+    name: str
+    memory_total: float
+    memory_used: float
+    memory_free: float
+    memory_util_percent: float
+    gpu_util_percent: float
+    temperature: Optional[float] = None
+
+class HardwareInfo(BaseModel):
+    """Modelo para información detallada de hardware."""
+    cpu_name: str
+    cpu_cores: int
+    cpu_threads: int
+    total_ram_gb: float
+    motherboard: str
+    os_version: str
+    gpus: List[GPUInfo]
+
+class SystemExtendedInfo(BaseModel):
+    """Modelo extendido para información del sistema."""
+    cpu_percent: float
+    memory_total: int
+    memory_available: int
+    memory_percent: float
+    disk_total: int
+    disk_free: int
+    disk_percent: float
+    gpu_info: Optional[List[GPUInfo]] = None
+    hardware_info: Optional[HardwareInfo] = None
+    user: str
+    timestamp: str
+
+class BackupConfig(BaseModel):
+    """Modelo para configuración de backup."""
+    include_logs: bool = True
+    include_metrics: bool = True
+    include_alerts: bool = True
+    max_backups: int = 10
+    backup_interval_hours: int = 24
+
+class TrendAnalysis(BaseModel):
+    """Modelo para análisis de tendencias."""
+    metric: str
+    period_hours: int
+    trend: str  # increasing, decreasing, stable
+    average: float
+    min_value: float
+    max_value: float
+    change_percent: float
+    prediction: Optional[str] = None
+
+class SafeCommand(BaseModel):
+    """Modelo para comando seguro."""
+    command: str
+    timeout_seconds: int = 30
+    allowed_commands: List[str] = ["systeminfo", "tasklist", "netstat", "ping", "tracert"]
+
+class CommandResult(BaseModel):
+    """Modelo para resultado de comando."""
+    command: str
+    output: str
+    exit_code: int
+    execution_time: float
+    timestamp: str
+
 # Variables globales para alertas y métricas
 alert_config = AlertConfig()
 alerts_history = []
 metrics_history = []
 MAX_HISTORY = 100
+
+backup_config = BackupConfig()
+last_backup = None
+
+def check_alerts(cpu_percent: float, memory_percent: float, disk_percent: float) -> List[Alert]:
+    """Verifica si se deben generar alertas basadas en umbrales."""
+    alerts = []
+    now = datetime.now(timezone.utc).isoformat()
+    
+    if alert_config.enabled:
+        if cpu_percent > alert_config.cpu_threshold:
+            alerts.append(Alert(
+                type="cpu",
+                message=f"Uso de CPU alto: {cpu_percent}%",
+                value=cpu_percent,
+                threshold=alert_config.cpu_threshold,
+                timestamp=now
+            ))
+            logger.warning(f"Alerta CPU: {cpu_percent}% > {alert_config.cpu_threshold}%")
+        
+        if memory_percent > alert_config.memory_threshold:
+            alerts.append(Alert(
+                type="memory",
+                message=f"Uso de memoria alto: {memory_percent}%",
+                value=memory_percent,
+                threshold=alert_config.memory_threshold,
+                timestamp=now
+            ))
+            logger.warning(f"Alerta Memoria: {memory_percent}% > {alert_config.memory_threshold}%")
+        
+        if disk_percent > alert_config.disk_threshold:
+            alerts.append(Alert(
+                type="disk",
+                message=f"Uso de disco alto: {disk_percent}%",
+                value=disk_percent,
+                threshold=alert_config.disk_threshold,
+                timestamp=now
+            ))
+            logger.warning(f"Alerta Disco: {disk_percent}% > {alert_config.disk_threshold}%")
+    
+    return alerts
+
+def store_metrics(cpu_percent: float, memory_percent: float, disk_percent: float, active_processes: int):
+    """Almacena métricas en el historial."""
+    if len(metrics_history) >= MAX_HISTORY:
+        metrics_history.pop(0)
+    
+    metrics_history.append(MetricHistory(
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        cpu_percent=cpu_percent,
+        memory_percent=memory_percent,
+        disk_percent=disk_percent,
+        active_processes=active_processes
+    ))
 
 # Variable para uptime
 start_time = time.time()
@@ -315,9 +440,16 @@ def get_health(user: str = Depends(authenticate)):
         cpu_percent = psutil.cpu_percent(interval=0.1)
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
-
+        
+        # Verificar alertas
+        new_alerts = check_alerts(cpu_percent, memory.percent, disk.percent)
+        alerts_history.extend(new_alerts)
+        
+        # Almacenar métricas
+        store_metrics(cpu_percent, memory.percent, disk.percent, active_processes)
+        
         health = HealthResponse(
-            status="healthy" if cpu_percent < 90 and memory.percent < 90 else "warning",
+            status="healthy" if not new_alerts else "warning",
             uptime_seconds=uptime,
             active_processes=active_processes,
             cpu_percent=cpu_percent,
@@ -445,56 +577,491 @@ def get_config(user: str = Depends(authenticate)):
     logger.info(f"Configuración solicitada por usuario: {user}")
     return config
 
-def check_alerts(cpu_percent: float, memory_percent: float, disk_percent: float) -> List[Alert]:
-    """Verifica si se deben generar alertas basadas en umbrales."""
-    alerts = []
-    now = datetime.now(timezone.utc).isoformat()
-    
-    if alert_config.enabled:
-        if cpu_percent > alert_config.cpu_threshold:
-            alerts.append(Alert(
-                type="cpu",
-                message=f"Uso de CPU alto: {cpu_percent}%",
-                value=cpu_percent,
-                threshold=alert_config.cpu_threshold,
-                timestamp=now
-            ))
-            logger.warning(f"Alerta CPU: {cpu_percent}% > {alert_config.cpu_threshold}%")
-        
-        if memory_percent > alert_config.memory_threshold:
-            alerts.append(Alert(
-                type="memory",
-                message=f"Uso de memoria alto: {memory_percent}%",
-                value=memory_percent,
-                threshold=alert_config.memory_threshold,
-                timestamp=now
-            ))
-            logger.warning(f"Alerta Memoria: {memory_percent}% > {alert_config.memory_threshold}%")
-        
-        if disk_percent > alert_config.disk_threshold:
-            alerts.append(Alert(
-                type="disk",
-                message=f"Uso de disco alto: {disk_percent}%",
-                value=disk_percent,
-                threshold=alert_config.disk_threshold,
-                timestamp=now
-            ))
-            logger.warning(f"Alerta Disco: {disk_percent}% > {alert_config.disk_threshold}%")
-    
-    return alerts
+@app.get("/alerts", summary="Obtener alertas activas", response_description="Lista de alertas activas", response_model=List[Alert])
+def get_alerts(user: str = Depends(authenticate), limit: int = 10):
+    """
+    Endpoint para obtener alertas activas.
+    Requiere autenticación básica.
 
-def store_metrics(cpu_percent: float, memory_percent: float, disk_percent: float, active_processes: int):
-    """Almacena métricas en el historial."""
-    if len(metrics_history) >= MAX_HISTORY:
-        metrics_history.pop(0)
+    Args:
+        user (str): Usuario autenticado.
+        limit (int): Número máximo de alertas a retornar.
+
+    Returns:
+        List[Alert]: Lista de alertas.
+    """
+    recent_alerts = alerts_history[-limit:] if alerts_history else []
+    logger.info(f"Alertas solicitadas por usuario: {user}, retornando {len(recent_alerts)} alertas")
+    return recent_alerts
+
+@app.get("/alerts/config", summary="Obtener configuración de alertas", response_description="Configuración actual de alertas", response_model=AlertConfig)
+def get_alert_config(user: str = Depends(authenticate)):
+    """
+    Endpoint para obtener configuración de alertas.
+    Requiere autenticación básica.
+
+    Args:
+        user (str): Usuario autenticado.
+
+    Returns:
+        AlertConfig: Configuración de alertas.
+    """
+    logger.info(f"Configuración de alertas solicitada por usuario: {user}")
+    return alert_config
+
+@app.put("/alerts/config", summary="Actualizar configuración de alertas", response_description="Configuración actualizada")
+def update_alert_config(config: AlertConfig, user: str = Depends(authenticate)):
+    """
+    Endpoint para actualizar configuración de alertas.
+    Requiere autenticación básica.
+
+    Args:
+        config (AlertConfig): Nueva configuración.
+        user (str): Usuario autenticado.
+
+    Returns:
+        dict: Confirmación de actualización.
+    """
+    global alert_config
+    alert_config = config
+    logger.info(f"Configuración de alertas actualizada por usuario: {user}")
+    return {"message": "Configuración de alertas actualizada", "config": config}
+
+@app.get("/metrics/history", summary="Obtener historial de métricas", response_description="Historial de métricas del sistema", response_model=List[MetricHistory])
+def get_metrics_history(user: str = Depends(authenticate), limit: int = 50):
+    """
+    Endpoint para obtener historial de métricas.
+    Requiere autenticación básica.
+
+    Args:
+        user (str): Usuario autenticado.
+        limit (int): Número máximo de métricas a retornar.
+
+    Returns:
+        List[MetricHistory]: Lista de métricas históricas.
+    """
+    recent_metrics = metrics_history[-limit:] if metrics_history else []
+    logger.info(f"Historial de métricas solicitado por usuario: {user}, retornando {len(recent_metrics)} métricas")
+    return recent_metrics
+
+@app.delete("/alerts", summary="Limpiar historial de alertas", response_description="Historial de alertas limpiado")
+def clear_alerts(user: str = Depends(authenticate)):
+    """
+    Endpoint para limpiar historial de alertas.
+    Requiere autenticación básica.
+
+    Args:
+        user (str): Usuario autenticado.
+
+    Returns:
+        dict: Confirmación de limpieza.
+    """
+    global alerts_history
+    cleared_count = len(alerts_history)
+    alerts_history.clear()
+    logger.info(f"Historial de alertas limpiado por usuario: {user}, {cleared_count} alertas eliminadas")
+    return {"message": f"Historial de alertas limpiado, {cleared_count} alertas eliminadas"}
+
+def get_gpu_info() -> List[GPUInfo]:
+    """Obtiene información de GPUs disponibles."""
+    try:
+        import GPUtil
+        gpus = GPUtil.getGPUs()
+        gpu_list = []
+        for i, gpu in enumerate(gpus):
+            gpu_list.append(GPUInfo(
+                id=gpu.id,
+                name=gpu.name,
+                memory_total=gpu.memoryTotal,
+                memory_used=gpu.memoryUsed,
+                memory_free=gpu.memoryFree,
+                memory_util_percent=gpu.memoryUtil * 100,
+                gpu_util_percent=gpu.load * 100,
+                temperature=getattr(gpu, 'temperature', None)
+            ))
+        return gpu_list
+    except ImportError:
+        logger.warning("GPUtil no disponible, omitiendo información de GPU")
+        return []
+    except Exception as e:
+        logger.error(f"Error obteniendo información de GPU: {str(e)}")
+        return []
+
+def get_hardware_info() -> HardwareInfo:
+    """Obtiene información detallada del hardware."""
+    try:
+        import wmi
+        import platform
+        
+        w = wmi.WMI()
+        
+        # CPU info
+        cpu_info = w.Win32_Processor()[0]
+        cpu_name = cpu_info.Name.strip()
+        cpu_cores = cpu_info.NumberOfCores
+        cpu_threads = cpu_info.NumberOfLogicalProcessors
+        
+        # Memory info
+        memory_info = w.Win32_ComputerSystem()[0]
+        total_ram_gb = round(int(memory_info.TotalPhysicalMemory) / (1024**3), 2)
+        
+        # Motherboard
+        motherboard_info = w.Win32_BaseBoard()[0]
+        motherboard = f"{motherboard_info.Manufacturer} {motherboard_info.Product}"
+        
+        # OS
+        os_version = platform.platform()
+        
+        # GPUs
+        gpus = get_gpu_info()
+        
+        return HardwareInfo(
+            cpu_name=cpu_name,
+            cpu_cores=cpu_cores,
+            cpu_threads=cpu_threads,
+            total_ram_gb=total_ram_gb,
+            motherboard=motherboard,
+            os_version=os_version,
+            gpus=gpus
+        )
+    except ImportError:
+        logger.warning("wmi no disponible, información de hardware limitada")
+        return HardwareInfo(
+            cpu_name="Desconocido",
+            cpu_cores=0,
+            cpu_threads=0,
+            total_ram_gb=0,
+            motherboard="Desconocido",
+            os_version=platform.platform(),
+            gpus=[]
+        )
+    except Exception as e:
+        logger.error(f"Error obteniendo información de hardware: {str(e)}")
+        return HardwareInfo(
+            cpu_name="Error",
+            cpu_cores=0,
+            cpu_threads=0,
+            total_ram_gb=0,
+            motherboard="Error",
+            os_version=platform.platform(),
+            gpus=[]
+        )
+
+@app.get("/system/extended", summary="Información extendida del sistema", response_description="Información detallada del sistema con GPU y hardware", response_model=SystemExtendedInfo)
+def get_system_extended_info(user: str = Depends(authenticate)):
+    """
+    Endpoint para obtener información extendida del sistema.
+    Requiere autenticación básica.
+
+    Args:
+        user (str): Usuario autenticado.
+
+    Returns:
+        SystemExtendedInfo: Información extendida del sistema.
+    """
+    try:
+        import psutil
+        
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        gpu_info = get_gpu_info()
+        hardware_info = get_hardware_info()
+
+        system_info = SystemExtendedInfo(
+            cpu_percent=cpu_percent,
+            memory_total=memory.total,
+            memory_available=memory.available,
+            memory_percent=memory.percent,
+            disk_total=disk.total,
+            disk_free=disk.free,
+            disk_percent=disk.percent,
+            gpu_info=gpu_info if gpu_info else None,
+            hardware_info=hardware_info,
+            user=user,
+            timestamp=datetime.now(timezone.utc).isoformat()
+        )
+
+        logger.info(f"Información extendida del sistema solicitada por usuario: {user}")
+        return system_info
+    except ImportError:
+        logger.error("psutil no está instalado")
+        raise HTTPException(status_code=500, detail="psutil no disponible")
+    except Exception as e:
+        logger.error(f"Error obteniendo información extendida del sistema: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+@app.get("/system/performance", summary="Análisis de rendimiento", response_description="Análisis de rendimiento del sistema", response_model=Dict[str, Any])
+def get_performance_analysis(user: str = Depends(authenticate)):
+    """
+    Endpoint para análisis de rendimiento del sistema.
+    Requiere autenticación básica.
+
+    Args:
+        user (str): Usuario autenticado.
+
+    Returns:
+        Dict: Análisis de rendimiento.
+    """
+    try:
+        import psutil
+        
+        # Análisis de CPU
+        cpu_percent = psutil.cpu_percent(interval=1)
+        cpu_analysis = {
+            "status": "good" if cpu_percent < 50 else "warning" if cpu_percent < 80 else "critical",
+            "usage_percent": cpu_percent,
+            "recommendation": "OK" if cpu_percent < 50 else "Monitorear" if cpu_percent < 80 else "Optimizar procesos"
+        }
+        
+        # Análisis de memoria
+        memory = psutil.virtual_memory()
+        memory_analysis = {
+            "status": "good" if memory.percent < 60 else "warning" if memory.percent < 80 else "critical",
+            "usage_percent": memory.percent,
+            "available_gb": round(memory.available / (1024**3), 2),
+            "recommendation": "OK" if memory.percent < 60 else "Liberar memoria" if memory.percent < 80 else "Cerrar procesos innecesarios"
+        }
+        
+        # Análisis de disco
+        disk = psutil.disk_usage('/')
+        disk_analysis = {
+            "status": "good" if disk.percent < 70 else "warning" if disk.percent < 85 else "critical",
+            "usage_percent": disk.percent,
+            "free_gb": round(disk.free / (1024**3), 2),
+            "recommendation": "OK" if disk.percent < 70 else "Liberar espacio" if disk.percent < 85 else "Limpiar disco urgentemente"
+        }
+        
+        # Análisis de procesos
+        processes = psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent'])
+        high_cpu_processes = []
+        high_memory_processes = []
+        
+        for p in processes:
+            try:
+                if p.info['cpu_percent'] and p.info['cpu_percent'] > 10:
+                    high_cpu_processes.append({
+                        "pid": p.info['pid'],
+                        "name": p.info['name'],
+                        "cpu_percent": p.info['cpu_percent']
+                    })
+                if p.info['memory_percent'] and p.info['memory_percent'] > 5:
+                    high_memory_processes.append({
+                        "pid": p.info['pid'],
+                        "name": p.info['name'],
+                        "memory_percent": p.info['memory_percent']
+                    })
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        
+        analysis = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "cpu_analysis": cpu_analysis,
+            "memory_analysis": memory_analysis,
+            "disk_analysis": disk_analysis,
+            "high_cpu_processes": sorted(high_cpu_processes, key=lambda x: x['cpu_percent'], reverse=True)[:5],
+            "high_memory_processes": sorted(high_memory_processes, key=lambda x: x['memory_percent'], reverse=True)[:5],
+            "overall_status": "good" if all([
+                cpu_analysis['status'] == 'good',
+                memory_analysis['status'] == 'good', 
+                disk_analysis['status'] == 'good'
+            ]) else "warning" if any([
+                cpu_analysis['status'] == 'warning',
+                memory_analysis['status'] == 'warning',
+                disk_analysis['status'] == 'warning'
+            ]) else "critical"
+        }
+        
+        logger.info(f"Análisis de rendimiento solicitado por usuario: {user}")
+        return analysis
+    except ImportError:
+        logger.error("psutil no está instalado")
+        raise HTTPException(status_code=500, detail="psutil no disponible")
+    except Exception as e:
+        logger.error(f"Error en análisis de rendimiento: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+def create_backup() -> str:
+    """Crea un backup de configuraciones y datos."""
+    global last_backup
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = f"backups/backup_{timestamp}"
     
-    metrics_history.append(MetricHistory(
-        timestamp=datetime.now(timezone.utc).isoformat(),
-        cpu_percent=cpu_percent,
-        memory_percent=memory_percent,
-        disk_percent=disk_percent,
-        active_processes=active_processes
+    try:
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        if backup_config.include_logs:
+            # Backup de logs
+            if os.path.exists('backend.log'):
+                shutil.copy2('backend.log', f"{backup_dir}/backend.log")
+        
+        if backup_config.include_metrics:
+            # Backup de métricas históricas
+            with open(f"{backup_dir}/metrics_history.json", 'w') as f:
+                json.dump([m.dict() for m in metrics_history], f, indent=2)
+        
+        if backup_config.include_alerts:
+            # Backup de alertas
+            with open(f"{backup_dir}/alerts_history.json", 'w') as f:
+                json.dump([a.dict() for a in alerts_history], f, indent=2)
+        
+        # Backup de configuración
+        config_data = {
+            "alert_config": alert_config.dict(),
+            "backup_config": backup_config.dict(),
+            "rate_limits": {
+                "requests": RATE_LIMIT_REQUESTS,
+                "window": RATE_LIMIT_WINDOW
+            }
+        }
+        with open(f"{backup_dir}/config.json", 'w') as f:
+            json.dump(config_data, f, indent=2)
+        
+        last_backup = datetime.now(timezone.utc).isoformat()
+        logger.info(f"Backup creado exitosamente en: {backup_dir}")
+        return backup_dir
+        
+    except Exception as e:
+        logger.error(f"Error creando backup: {str(e)}")
+        raise
+
+def analyze_trends(hours: int = 24) -> List[TrendAnalysis]:
+    """Analiza tendencias en las métricas históricas."""
+    if len(metrics_history) < 2:
+        return []
+    
+    cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+    recent_metrics = [m for m in metrics_history if datetime.fromisoformat(m.timestamp) > cutoff_time]
+    
+    if len(recent_metrics) < 2:
+        return []
+    
+    trends = []
+    
+    # Análisis de CPU
+    cpu_values = [m.cpu_percent for m in recent_metrics]
+    cpu_trend = analyze_metric_trend(cpu_values)
+    trends.append(TrendAnalysis(
+        metric="cpu_percent",
+        period_hours=hours,
+        trend=cpu_trend["trend"],
+        average=sum(cpu_values) / len(cpu_values),
+        min_value=min(cpu_values),
+        max_value=max(cpu_values),
+        change_percent=cpu_trend["change_percent"],
+        prediction=cpu_trend["prediction"]
     ))
+    
+    # Análisis de memoria
+    memory_values = [m.memory_percent for m in recent_metrics]
+    memory_trend = analyze_metric_trend(memory_values)
+    trends.append(TrendAnalysis(
+        metric="memory_percent",
+        period_hours=hours,
+        trend=memory_trend["trend"],
+        average=sum(memory_values) / len(memory_values),
+        min_value=min(memory_values),
+        max_value=max(memory_values),
+        change_percent=memory_trend["change_percent"],
+        prediction=memory_trend["prediction"]
+    ))
+    
+    # Análisis de disco
+    disk_values = [m.disk_percent for m in recent_metrics]
+    disk_trend = analyze_metric_trend(disk_values)
+    trends.append(TrendAnalysis(
+        metric="disk_percent",
+        period_hours=hours,
+        trend=disk_trend["trend"],
+        average=sum(disk_values) / len(disk_values),
+        min_value=min(disk_values),
+        max_value=max(disk_values),
+        change_percent=disk_trend["change_percent"],
+        prediction=disk_trend["prediction"]
+    ))
+    
+    return trends
+
+def analyze_metric_trend(values: List[float]) -> Dict[str, Any]:
+    """Analiza la tendencia de una métrica."""
+    if len(values) < 2:
+        return {"trend": "stable", "change_percent": 0, "prediction": "Datos insuficientes"}
+    
+    first_half = values[:len(values)//2]
+    second_half = values[len(values)//2:]
+    
+    avg_first = sum(first_half) / len(first_half)
+    avg_second = sum(second_half) / len(second_half)
+    
+    change_percent = ((avg_second - avg_first) / avg_first) * 100 if avg_first > 0 else 0
+    
+    if abs(change_percent) < 5:
+        trend = "stable"
+        prediction = "Se mantendrá estable"
+    elif change_percent > 5:
+        trend = "increasing"
+        prediction = "Tendencia al alza, considere optimización"
+    else:
+        trend = "decreasing"
+        prediction = "Mejorando, continúe monitoreando"
+    
+    return {
+        "trend": trend,
+        "change_percent": round(change_percent, 2),
+        "prediction": prediction
+    }
+
+def execute_safe_command(command: SafeCommand) -> CommandResult:
+    """Ejecuta un comando seguro del sistema."""
+    import subprocess
+    
+    # Validar comando
+    cmd_parts = command.command.split()
+    base_cmd = cmd_parts[0].lower()
+    
+    if base_cmd not in [allowed.lower() for allowed in command.allowed_commands]:
+        raise ValueError(f"Comando no permitido: {base_cmd}")
+    
+    start_time = time.time()
+    
+    try:
+        result = subprocess.run(
+            cmd_parts,
+            capture_output=True,
+            text=True,
+            timeout=command.timeout_seconds,
+            shell=False
+        )
+        
+        execution_time = time.time() - start_time
+        
+        return CommandResult(
+            command=command.command,
+            output=result.stdout + result.stderr,
+            exit_code=result.returncode,
+            execution_time=round(execution_time, 2),
+            timestamp=datetime.now(timezone.utc).isoformat()
+        )
+        
+    except subprocess.TimeoutExpired:
+        execution_time = time.time() - start_time
+        return CommandResult(
+            command=command.command,
+            output=f"Comando timeout después de {command.timeout_seconds} segundos",
+            exit_code=-1,
+            execution_time=round(execution_time, 2),
+            timestamp=datetime.now(timezone.utc).isoformat()
+        )
+    except Exception as e:
+        execution_time = time.time() - start_time
+        return CommandResult(
+            command=command.command,
+            output=f"Error ejecutando comando: {str(e)}",
+            exit_code=-1,
+            execution_time=round(execution_time, 2),
+            timestamp=datetime.now(timezone.utc).isoformat()
+        )
 
 if __name__ == "__main__":
     host = os.getenv('HOST', '0.0.0.0')

@@ -7,6 +7,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     CPU_THRESHOLD: int = 80
     RAM_THRESHOLD: int = 4000  # en MB
+    RAM_WARNING_THRESHOLD_PERCENT: int = 70 # New: Warning threshold for RAM usage percentage
+    RAM_CRITICAL_THRESHOLD_PERCENT: int = 90 # New: Critical threshold for RAM usage percentage
     CHECK_TIME: int = 60  # en segundos
     HIBERNABLES: List[str] = ["Discord.exe", "Steam.exe", "RiotClientServices.exe"]
     MODO: str = "diario"
@@ -97,6 +99,10 @@ class Settings(BaseSettings):
         "data",
         "backend_data.db",
     )
+
+    # Watchdog thresholds
+    SUSPENSION_THRESHOLD: int = 3  # Número de suspensiones antes de ignorar
+    REJECTION_THRESHOLD: int = 3  # Número de rechazos antes de ignorar
 
     model_config = SettingsConfigDict(env_file="config/.env", env_file_encoding="utf-8")
 

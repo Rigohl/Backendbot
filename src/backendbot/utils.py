@@ -70,13 +70,29 @@ async def async_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-def notify(msg, subtle=True):
+# Función de notificación multiplataforma
+def notify(title: str, message: str, duration: int = 5):
+    """
+    Muestra una notificación al usuario.
+    Compatible con Windows, Linux y macOS.
+    """
     try:
-        toaster.show_toast(
-            "BackendBot", msg, duration=4 if subtle else 8, threaded=True
-        )
+        if os.name == 'nt':  # Windows
+            from win10toast import ToastNotifier
+            toaster = ToastNotifier()
+            toaster.show_toast(title, message, duration=duration)
+        elif os.name == 'posix':  # Linux/macOS
+            # Usar notify-send en Linux
+            subprocess.run(['notify-send', title, message], check=False)
+        else:
+            # Fallback: imprimir en consola
+            print(f"NOTIFICATION: {title} - {message}")
+    except ImportError:
+        # Fallback si no hay librerías disponibles
+        print(f"NOTIFICATION: {title} - {message}")
     except Exception as e:
-        log_event(f"Error en notificación: {e}")
+        print(f"Error mostrando notificación: {e}")
+        print(f"NOTIFICATION: {title} - {message}")
 
 
 def log_event(msg, notify_user=False):
@@ -112,25 +128,41 @@ def save_memory(memory):
 
 
 async def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: float):
-    async with AsyncSessionLocal() as session:
-        new_entry = ProcessHistory(
-            timestamp=time.time(),
-            pid=pid,
-            name=name,
-            ram_mb=ram_mb,
-            cpu_percent=cpu_percent,
-        )
-        session.add(new_entry)
-        await session.commit()
+    """Almacena datos de proceso en la base de datos si está disponible."""
+    if AsyncSessionLocal is None:
+        log_event(f"DB no disponible - Proceso: {name} (PID: {pid}) - RAM: {ram_mb:.2f}MB - CPU: {cpu_percent:.2f}%")
+        return
+
+    try:
+        async with AsyncSessionLocal() as session:
+            new_entry = ProcessHistory(
+                timestamp=time.time(),
+                pid=pid,
+                name=name,
+                ram_mb=ram_mb,
+                cpu_percent=cpu_percent,
+            )
+            session.add(new_entry)
+            await session.commit()
+    except Exception as e:
+        log_event(f"Error almacenando datos de proceso: {e}")
 
 
 async def store_optimization_event(freed_ram_mb: float):
-    async with AsyncSessionLocal() as session:
-        new_entry = OptimizationEvent(
-            timestamp=time.time(), freed_ram_mb=freed_ram_mb
-        )
-        session.add(new_entry)
-        await session.commit()
+    """Almacena evento de optimización en la base de datos si está disponible."""
+    if AsyncSessionLocal is None:
+        log_event(f"DB no disponible - Optimización: {freed_ram_mb:.2f}MB liberados")
+        return
+
+    try:
+        async with AsyncSessionLocal() as session:
+            new_entry = OptimizationEvent(
+                timestamp=time.time(), freed_ram_mb=freed_ram_mb
+            )
+            session.add(new_entry)
+            await session.commit()
+    except Exception as e:
+        log_event(f"Error almacenando evento de optimización: {e}")
 
 
 async def store_watchdog_decision(
@@ -161,36 +193,3 @@ def restore_closed_processes(modo):
                 log_event(f"Proceso restaurado: {proc}")
             except Exception as e:
                 log_event(f"Error al restaurar {proc}: {e}")
-
-
-def _get_process_info(p):
-    """Helper to get process info and handle common errors."""
-    try:
-        pid, name = p.info["pid"], p.info["name"]
-        ram_mb = round(p.info["memory_info"].rss / 1024 / 1024, 2)
-        cpu_percent = p.info["cpu_percent"](interval=0.1)
-        store_process_data(pid, name, ram_mb, cpu_percent)
-        return {"pid": pid, "name": name, "ram_mb": ram_mb, "cpu_percent": cpu_percent}
-    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-        log_event(f"Error al procesar PID {p.info.get('pid', 'N/A')}: {e}")
-        return None
-    except Exception as e:
-        log_event(f"Error inesperado al obtener info de proceso: {e}")
-        return None
-
-
-def _optimize_processes():
-    """Helper to suspend hibernatable processes."""
-    freed = 0
-    for p in psutil.process_iter(["pid", "name", "memory_info"]):
-        try:
-            if p.info["name"] in settings.HIBERNABLES:
-                psutil.Process(p.info["pid"]).suspend()
-                freed += p.info["memory_info"].rss
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-            log_event(
-                f"Error al suspender proceso {p.info.get('name', 'N/A')} (PID {p.info.get('pid', 'N/A')}): {e}"
-            )
-        except Exception as e:
-            log_event(f"Error inesperado al optimizar proceso: {e}")
-    return freed
