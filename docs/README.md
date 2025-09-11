@@ -1,6 +1,39 @@
+
 # 🖥️ BackendBot – Supervisor Autónomo de Procesos
 
 **BackendBot** es un sistema local y cloud-ready que mantiene tu backend siempre en ejecución, optimiza recursos y te da control desde la bandeja del sistema o dashboard web. Soporta almacenamiento local (SQLite) y remoto (Neon/Postgres).
+
+---
+
+## 🖼️ Ejemplo de Dashboard
+![Dashboard ejemplo](../dashboard/dashboard_ejemplo.png)
+
+El dashboard muestra:
+- Estado del backend (RAM, CPU, uptime, modo actual)
+- Gráficos de uso de RAM y CPU en tiempo real
+- Lista de procesos y acciones rápidas
+- Historial de optimizaciones y eventos recientes
+- Selector de modo y cambio instantáneo
+
+## 🕹️ Modos de Operación
+Cada modo (Diario, Editor, Videojuego, Streaming, Multimedia, Focus) ajusta la política de suspensión y priorización de procesos. Puedes cambiar el modo desde la bandeja, dashboard o API (`/set-modo/{modo}`).
+
+## ⚙️ Personalización
+- Edita `config.py` para definir procesos importantes, umbrales y modos personalizados.
+- Puedes agregar/quitar procesos hibernables y ajustar los límites de RAM/CPU.
+
+## ❓ FAQ y Mejores Prácticas
+- **¿Qué pasa si Neon falla?** Se usa SQLite local automáticamente.
+- **¿Cómo restauro procesos importantes?** Usa el botón en la bandeja o el endpoint `/restore-important`.
+- **¿Cómo optimizo RAM?** Usa el botón del dashboard o `/optimize`.
+- **¿Cómo agrego un modo nuevo?** Edita la lista en `config.py` y reinicia el backend.
+
+## 🏆 Recomendaciones
+- Mantén actualizados los umbrales según tu uso.
+- Revisa el historial para identificar procesos problemáticos.
+- Usa el dashboard para monitoreo en tiempo real y acciones rápidas.
+
+---
 
 ## 📋 Características
 

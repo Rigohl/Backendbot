@@ -153,7 +153,7 @@ def get_process_history(limit: int = 100, offset: int = 0) -> list[Dict[str, Any
 
 
 @router.get("/history/optimizations", dependencies=[Depends(get_api_key)])
-def get_optimization_history(limit: int = 100, offset: int = 0) -> list[Dict[str, Any]]:
+def get_optimization_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     """Retorna el historial de eventos de optimización de RAM.
 
     Args:
@@ -169,7 +169,7 @@ def get_optimization_history(limit: int = 100, offset: int = 0) -> list[Dict[str
 
 
 @router.get("/history/decisions", dependencies=[Depends(get_api_key)])
-def get_decision_history(limit: int = 100, offset: int = 0) -> list[Dict[str, Any]]:
+def get_decision_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     """Retorna el historial de decisiones del watchdog.
 
     Args:

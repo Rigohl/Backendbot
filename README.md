@@ -58,6 +58,11 @@ BackendBot es un sistema inteligente para monitoreo y optimización de procesos 
 ## Documentación
 - Consulta `docs/README.md` para detalles avanzados, configuración, y hoja de ruta.
 
+## Dashboard Web
+- Visualiza el estado del backend, RAM, CPU, modo actual y procesos.
+- Gráficos en tiempo real y acciones rápidas (optimizar, resetear memoria, cambiar modo).
+- Consulta la documentación avanzada en `docs/README.md` para ejemplos visuales y personalización.
+
 
 **BackendBot está listo para uso local y cloud, con integración Neon/Postgres y despliegue sencillo en Railway/Fly.io.**
 

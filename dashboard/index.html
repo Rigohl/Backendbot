@@ -9,11 +9,20 @@
 <body class="p-4">
 <h1 class="text-2xl font-bold mb-4">📊 BackendBot Dashboard</h1>
 <div id="self" class="card"></div>
+<div class="card mb-2">
+  <span id="modoActual" class="font-bold"></span>
+  <select id="modoSelect" class="bg-gray-800 text-white p-1 rounded ml-2"></select>
+  <button onclick="cambiarModo()" class="bg-blue-600 hover:bg-blue-700 p-1 rounded ml-2">Cambiar modo</button>
+</div>
+<canvas id="graficoRAM" height="60"></canvas>
+<canvas id="graficoCPU" height="60"></canvas>
 <button onclick="resetMemoria()" class="mb-4 bg-yellow-600 hover:bg-yellow-700 p-2 rounded">🔄 Reset Memoria</button>
 <button onclick="optimizar()" class="mb-4 bg-green-600 hover:bg-green-700 p-2 rounded">🧹 Optimizar RAM</button>
 <div id="procesos" class="card"></div>
+<div id="historial" class="card"></div>
 <script>
-async function optimizar(){await fetch('http://127.0.0.1:8000/optimize',{method:'POST'});cargarDatos();cargarSelf();}
+let ramData=[],cpuData=[],labels=[];
+async function optimizar(){await fetch('http://127.0.0.1:8000/optimize',{method:'POST'});cargarDatos();cargarSelf();cargarHistorial();}
 async function resetMemoria(){await fetch('http://127.0.0.1:8000/reset-memoria',{method:'POST'});alert('Memoria reseteada');}
 async function cerrar(pid){await fetch(`http://127.0.0.1:8000/apagar/${pid}`,{method:'POST'});cargarDatos();}
 async function cargarDatos(){
@@ -33,10 +42,44 @@ async function cargarSelf(){
        <p>RAM: ${s.ram_mb} MB  |  Privados: ${s.privados_mb || 'N/A'} MB</p>
        <p>CPU: ${s.cpu_percent}%  |  Hilos: ${s.num_threads}</p>
        <p>Uptime: ${s.uptime_sec} s</p>`;
+    // Actualizar gráficos
+    ramData.push(s.ram_mb);cpuData.push(s.cpu_percent);labels.push(new Date().toLocaleTimeString());
+    if(ramData.length>20){ramData.shift();cpuData.shift();labels.shift();}
+    if(window.ramChart){ramChart.data.labels=labels;ramChart.data.datasets[0].data=ramData;ramChart.update();}
+    if(window.cpuChart){cpuChart.data.labels=labels;cpuChart.data.datasets[0].data=cpuData;cpuChart.update();}
+    document.getElementById('modoActual').innerText = `Modo actual: ${s.modo || 'N/A'}`;
   }catch(e){document.getElementById('self').innerHTML="<p>No disponible</p>";}
 }
-setInterval(()=>{cargarDatos();cargarSelf();},5000);
-cargarDatos();cargarSelf();
+async function cargarModos(){
+  try{
+    const r=await fetch('http://127.0.0.1:8000/modos');const modos=await r.json();
+    let sel=document.getElementById('modoSelect');sel.innerHTML='';
+    modos.forEach(m=>{let opt=document.createElement('option');opt.value=m;opt.text=m;sel.appendChild(opt);});
+  }catch(e){}
+}
+async function cambiarModo(){
+  let modo=document.getElementById('modoSelect').value;
+  await fetch(`http://127.0.0.1:8000/set-modo/${modo}`,{method:'POST'});
+  cargarSelf();
+}
+async function cargarHistorial(){
+  try{
+    const r=await fetch('http://127.0.0.1:8000/historial');const h=await r.json();
+    let html='<h2 class="text-xl mb-2">Historial de optimizaciones</h2><ul>';
+    h.slice(-10).reverse().forEach(ev=>{html+=`<li>${ev.fecha}: ${ev.accion} (${ev.detalle})</li>`;});
+    html+='</ul>';document.getElementById('historial').innerHTML=html;
+  }catch(e){document.getElementById('historial').innerHTML='<p>No disponible</p>';}
+}
+setInterval(()=>{cargarDatos();cargarSelf();cargarHistorial();},5000);
+cargarDatos();cargarSelf();cargarModos();cargarHistorial();
+// Chart.js para gráficos
+let script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/chart.js';document.head.appendChild(script);
+script.onload=function(){
+  window.ramChart=new Chart(document.getElementById('graficoRAM').getContext('2d'),{
+    type:'line',data:{labels:[],datasets:[{label:'RAM (MB)',data:[],borderColor:'#facc15',backgroundColor:'rgba(250,204,21,0.2)'}]},options:{scales:{y:{beginAtZero:true}}}});
+  window.cpuChart=new Chart(document.getElementById('graficoCPU').getContext('2d'),{
+    type:'line',data:{labels:[],datasets:[{label:'CPU (%)',data:[],borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.2)'}]},options:{scales:{y:{beginAtZero:true,max:100}}}});
+};
 </script>
 </body>
 </html>
