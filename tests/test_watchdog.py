@@ -1,14 +1,21 @@
+import os
+import sys
 import pytest
 from unittest.mock import patch, MagicMock
 import time
-from src.backendbot.refactored_modules.watchdog import watchdog, _handle_process_monitoring
-from src.backendbot.refactored_modules.config import Settings
+import psutil
+
+# Agregar src al path para importar módulos
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from backendbot.watchdog import watchdog, _handle_process_monitoring
+from backendbot.config import Settings
 
 # Mock settings for watchdog
-@patch('src.backendbot.refactored_modules.watchdog.settings', Settings())
-@patch('src.backendbot.refactored_modules.watchdog.log_event')
-@patch('src.backendbot.refactored_modules.watchdog.notify')
-@patch('src.backendbot.refactored_modules.watchdog.store_watchdog_decision')
+@patch('backendbot.refactored_modules.watchdog.settings', Settings())
+@patch('backendbot.refactored_modules.watchdog.log_event')
+@patch('backendbot.refactored_modules.watchdog.notify')
+@patch('backendbot.refactored_modules.watchdog.store_watchdog_decision')
 def test_handle_process_monitoring_high_usage_notify(mock_store_decision, mock_notify, mock_log_event):
     mock_process = MagicMock()
     mock_process.info = {
@@ -34,10 +41,10 @@ def test_handle_process_monitoring_high_usage_notify(mock_store_decision, mock_n
         mock_store_decision.assert_called_once_with("test_process", "notificado", 90.0, 5000.0)
         assert 123 not in uso_alto # Should be removed after action
 
-@patch('src.backendbot.refactored_modules.watchdog.settings', Settings())
-@patch('src.backendbot.refactored_modules.watchdog.log_event')
-@patch('src.backendbot.refactored_modules.watchdog.notify')
-@patch('src.backendbot.refactored_modules.watchdog.store_watchdog_decision')
+@patch('backendbot.refactored_modules.watchdog.settings', Settings())
+@patch('backendbot.refactored_modules.watchdog.log_event')
+@patch('backendbot.refactored_modules.watchdog.notify')
+@patch('backendbot.refactored_modules.watchdog.store_watchdog_decision')
 def test_handle_process_monitoring_suspend(mock_store_decision, mock_notify, mock_log_event):
     mock_process = MagicMock()
     mock_process.info = {
@@ -60,10 +67,10 @@ def test_handle_process_monitoring_suspend(mock_store_decision, mock_notify, moc
         mock_store_decision.assert_called_once_with("test_process", "suspendido", 90.0, 5000.0)
         assert 123 not in uso_alto
 
-@patch('src.backendbot.refactored_modules.watchdog.settings', Settings())
-@patch('src.backendbot.refactored_modules.watchdog.log_event')
-@patch('src.backendbot.refactored_modules.watchdog.notify')
-@patch('src.backendbot.refactored_modules.watchdog.store_watchdog_decision')
+@patch('backendbot.refactored_modules.watchdog.settings', Settings())
+@patch('backendbot.refactored_modules.watchdog.log_event')
+@patch('backendbot.refactored_modules.watchdog.notify')
+@patch('backendbot.refactored_modules.watchdog.store_watchdog_decision')
 def test_handle_process_monitoring_ignored(mock_store_decision, mock_notify, mock_log_event):
     mock_process = MagicMock()
     mock_process.info = {
@@ -85,11 +92,11 @@ def test_handle_process_monitoring_ignored(mock_store_decision, mock_notify, moc
         mock_store_decision.assert_called_once_with("test_process", "ignorado", 90.0, 5000.0)
         assert 123 not in uso_alto
 
-@patch('src.backendbot.refactored_modules.watchdog.settings', Settings())
-@patch('src.backendbot.refactored_modules.watchdog.log_event')
-@patch('src.backendbot.refactored_modules.watchdog.notify')
-@patch('src.backendbot.refactored_modules.watchdog.store_watchdog_decision')
-@patch('src.backendbot.refactored_modules.watchdog.load_memory', return_value={})
+@patch('backendbot.refactored_modules.watchdog.settings', Settings())
+@patch('backendbot.refactored_modules.watchdog.log_event')
+@patch('backendbot.refactored_modules.watchdog.notify')
+@patch('backendbot.refactored_modules.watchdog.store_watchdog_decision')
+@patch('backendbot.refactored_modules.watchdog.load_memory', return_value={})
 @patch('psutil.process_iter')
 def test_watchdog_main_loop(mock_process_iter, mock_load_memory, mock_store_decision, mock_notify, mock_log_event):
     # Simulate one iteration of the watchdog loop
@@ -107,11 +114,11 @@ def test_watchdog_main_loop(mock_process_iter, mock_load_memory, mock_store_deci
     assert mock_process_iter.call_count == 1
     # The specific assertions for _handle_process_monitoring are covered by its own tests
 
-@patch('src.backendbot.refactored_modules.watchdog.settings', Settings())
-@patch('src.backendbot.refactored_modules.watchdog.log_event')
-@patch('src.backendbot.refactored_modules.watchdog.notify')
-@patch('src.backendbot.refactored_modules.watchdog.store_watchdog_decision')
-@patch('src.backendbot.refactored_modules.watchdog.load_memory', return_value={})
+@patch('backendbot.refactored_modules.watchdog.settings', Settings())
+@patch('backendbot.refactored_modules.watchdog.log_event')
+@patch('backendbot.refactored_modules.watchdog.notify')
+@patch('backendbot.refactored_modules.watchdog.store_watchdog_decision')
+@patch('backendbot.refactored_modules.watchdog.load_memory', return_value={})
 @patch('psutil.process_iter', side_effect=Exception("ProcessIterError"))
 def test_watchdog_main_loop_error_handling(mock_process_iter, mock_load_memory, mock_store_decision, mock_notify, mock_log_event):
     with patch('time.sleep', side_effect=Exception("StopLoop")):
@@ -119,3 +126,11 @@ def test_watchdog_main_loop_error_handling(mock_process_iter, mock_load_memory, 
             watchdog()
 
     mock_log_event.assert_called_once_with("Error en watchdog principal: ProcessIterError")
+
+# Ejemplo de test básico para Settings
+
+def test_watchdog_settings():
+    s = Settings()
+    assert isinstance(s.HIBERNABLES, list)
+    assert isinstance(s.PROCESOS_A_CERRAR, dict)
+    assert isinstance(s.PROCESOS_IMPORTANTES, list)

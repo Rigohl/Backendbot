@@ -2,58 +2,72 @@ import json
 import os
 import subprocess
 import time
+from typing import AsyncGenerator, Optional
 
 import psutil
-from sqlalchemy import (
-    Column,
-    Float,
-    Integer,
-    MetaData,
-    String,
-    Table,
-    create_engine,
-)
-from sqlalchemy.orm import sessionmaker
-from win10toast import ToastNotifier
+from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 
 from .config import settings
 
-toaster = ToastNotifier()
-
 # --- DB setup ---
-engine = create_engine(settings.DATABASE_URL)
-Session = sessionmaker(bind=engine)
-session = Session()
-metadata = MetaData()
+# Adjust DATABASE_URL for aiosqlite if it's a sqlite path
+DATABASE_URL = settings.DATABASE_URL
+if DATABASE_URL.startswith("sqlite:///"):
+    DATABASE_URL = DATABASE_URL.replace("sqlite:///", "sqlite+aiosqlite:///")
 
-process_history = Table(
-    "process_history",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("timestamp", Float),
-    Column("pid", Integer),
-    Column("name", String),
-    Column("ram_mb", Float),
-    Column("cpu_percent", Float),
-)
-optimization_events = Table(
-    "optimization_events",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("timestamp", Float),
-    Column("freed_ram_mb", Float),
-)
-watchdog_decisions = Table(
-    "watchdog_decisions",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("timestamp", Float),
-    Column("program_name", String),
-    Column("action", String),
-    Column("cpu_usage", Float),
-    Column("ram_usage", Float),
-)
-metadata.create_all(engine)
+# Crear engine solo si hay una URL de base de datos válida
+async_engine = None
+AsyncSessionLocal = None
+
+if DATABASE_URL and DATABASE_URL != "sqlite:///":
+    try:
+        async_engine = create_async_engine(DATABASE_URL, echo=True)
+        AsyncSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=async_engine)
+    except Exception as e:
+        print(f"Error configurando base de datos: {e}")
+        async_engine = None
+
+Base = declarative_base()
+
+# Add a to_dict method to the Base class for easy serialization
+def to_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+Base.to_dict = to_dict
+
+class ProcessHistory(Base):
+    __tablename__ = "process_history"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    pid: Mapped[int]
+    name: Mapped[str]
+    ram_mb: Mapped[float]
+    cpu_percent: Mapped[float]
+
+class OptimizationEvent(Base):
+    __tablename__ = "optimization_events"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    freed_ram_mb: Mapped[float]
+
+class WatchdogDecision(Base):
+    __tablename__ = "watchdog_decisions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    timestamp: Mapped[float]
+    program_name: Mapped[str]
+    action: Mapped[str]
+    cpu_usage: Mapped[float | None]
+    ram_usage: Mapped[float | None]
+
+async def init_db():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+async def async_get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
+        yield session
 
 
 def notify(msg, subtle=True):
@@ -97,35 +111,41 @@ def save_memory(memory):
 # --- Funciones para almacenar datos históricos ---
 
 
-def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: float):
-    ins = process_history.insert().values(
-        timestamp=time.time(),
-        pid=pid,
-        name=name,
-        ram_mb=ram_mb,
-        cpu_percent=cpu_percent,
-    )
-    engine.execute(ins)
+async def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: float):
+    async with AsyncSessionLocal() as session:
+        new_entry = ProcessHistory(
+            timestamp=time.time(),
+            pid=pid,
+            name=name,
+            ram_mb=ram_mb,
+            cpu_percent=cpu_percent,
+        )
+        session.add(new_entry)
+        await session.commit()
 
 
-def store_optimization_event(freed_ram_mb: float):
-    ins = optimization_events.insert().values(
-        timestamp=time.time(), freed_ram_mb=freed_ram_mb
-    )
-    engine.execute(ins)
+async def store_optimization_event(freed_ram_mb: float):
+    async with AsyncSessionLocal() as session:
+        new_entry = OptimizationEvent(
+            timestamp=time.time(), freed_ram_mb=freed_ram_mb
+        )
+        session.add(new_entry)
+        await session.commit()
 
 
-def store_watchdog_decision(
+async def store_watchdog_decision(
     program_name: str, action: str, cpu_usage: float = None, ram_usage: float = None
 ):
-    ins = watchdog_decisions.insert().values(
-        timestamp=time.time(),
-        program_name=program_name,
-        action=action,
-        cpu_usage=cpu_usage,
-        ram_usage=ram_usage,
-    )
-    engine.execute(ins)
+    async with AsyncSessionLocal() as session:
+        new_entry = WatchdogDecision(
+            timestamp=time.time(),
+            program_name=program_name,
+            action=action,
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+        )
+        session.add(new_entry)
+        await session.commit()
 
 
 def restore_closed_processes(modo):

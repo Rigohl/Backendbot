@@ -148,3 +148,9 @@ def set_modo(modo: str):
 def restore_important():
     restore_closed_processes(settings.MODO)
     return {"status": "ok"}
+
+
+@process_router.get("/modos", dependencies=[Depends(get_api_key)])
+def get_modos():
+    """Retorna la lista de modos disponibles."""
+    return list(settings.PROCESOS_A_CERRAR.keys())

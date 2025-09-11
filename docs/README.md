@@ -1,4 +1,3 @@
-
 # 🖥️ BackendBot – Supervisor Autónomo de Procesos
 
 **BackendBot** es un sistema local y cloud-ready que mantiene tu backend siempre en ejecución, optimiza recursos y te da control desde la bandeja del sistema o dashboard web. Soporta almacenamiento local (SQLite) y remoto (Neon/Postgres).
@@ -115,6 +114,74 @@ Cada modo (Diario, Editor, Videojuego, Streaming, Multimedia, Focus) ajusta la p
 - Asegúrate de que `psycopg2-binary` esté instalado (ver `requirements.txt`).
 - Si falla la conexión Neon, el sistema usará SQLite local automáticamente.
 - Railway, Fly.io, Neon/Postgres, Render.com, Docker.
+
+---
+
+## 📊 Dashboard Web
+
+El dashboard es una interfaz web moderna construida con HTML5, Tailwind CSS y Chart.js para monitoreo en tiempo real.
+
+### Características del Frontend
+- **Estado del Backend**: Muestra PID, RAM, CPU, uptime y modo actual.
+- **Gráficos en Tiempo Real**: RAM y CPU con Chart.js, actualizados cada 5 segundos.
+- **Lista de Procesos**: Tabla con PID, nombre, RAM y botón para cerrar procesos.
+- **Historial de Optimizaciones**: Lista de eventos de liberación de RAM.
+- **Selector de Modo**: Cambia entre modos predefinidos (diario, editor, etc.).
+- **Acciones Rápidas**: Optimizar RAM, resetear memoria.
+- **Logs en Tiempo Real**: Muestra las últimas entradas del log del backend.
+- **Configuración**: Permite cambiar URL del backend y API Key.
+
+### APIs Utilizadas
+- `GET /self`: Estado del backend.
+- `GET /procesos`: Lista de procesos activos.
+- `POST /apagar/{pid}`: Cerrar un proceso.
+- `POST /optimize`: Optimizar RAM.
+- `POST /reset-memoria`: Resetear memoria de decisiones.
+- `GET /modos`: Lista de modos disponibles.
+- `POST /set-modo/{modo}`: Cambiar modo.
+- `GET /history/optimizations`: Historial de optimizaciones.
+- `GET /logs`: Últimas entradas del log.
+
+### Configuración
+- **URL del Backend**: Por defecto `http://127.0.0.1:8000`.
+- **API Key**: Por defecto `your-super-secret-api-key` (cambiar en `config.py`).
+
+### Mejoras Recientes
+- Autenticación con API Key en lugar de Basic Auth.
+- Manejo de errores mejorado en todas las requests.
+- Actualización de endpoints para coincidir con el backend.
+- Interfaz responsiva y moderna.
+
+### Tests del Frontend
+Para probar el frontend, abrir `dashboard/index.html` en un navegador y verificar:
+- Conexión al backend.
+- Carga de datos sin errores.
+- Funcionalidad de botones.
+- Actualización en tiempo real.
+
+Para tests automatizados, se recomienda integrar Jest o similar para funciones JS.
+
+Ejemplo de instalación:
+```bash
+npm init -y
+npm install --save-dev jest
+```
+
+Crear `tests/dashboard_tests.js`:
+```javascript
+const { apiRequest } = require('../dashboard/index.html'); // Nota: Requiere extraer JS a archivo separado
+
+test('apiRequest adds API key header', () => {
+  // Mock fetch
+  global.fetch = jest.fn();
+  apiRequest('/test');
+  expect(fetch).toHaveBeenCalledWith('http://127.0.0.1:8000/test', {
+    headers: { 'X-API-Key': 'your-super-secret-api-key', 'Content-Type': 'application/json' }
+  });
+});
+```
+
+Ejecutar con `npx jest`.
 
 ---
 
