@@ -8,3 +8,7 @@ ruff
 black
 sqlalchemy
 aiosqlite
+
+# Testing
+pytest
+pytest-mock

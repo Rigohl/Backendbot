@@ -15,36 +15,25 @@ from .utils import (
     save_memory,
 )  # Removed store_process_data, store_optimization_event, restore_closed_processes
 
+# Import staging automation functions
+from .staging_automation import (
+    schedule_optimizations,
+    list_recommended_powershell_commands,
+    prepare_background_command,
+    optimize_ram,
+    perform_disk_cleanup_preview,
+    write_plan_to_file,
+    run_preview_workflow,
+)
+
 router = APIRouter()
 
 
-# Dependency to check API Key
-def get_api_key(
-    api_key: str = Depends(
-        HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-        )
-    )
-) -> str:
-    """Dependency to validate the API Key provided in the request header.
-
-    Args:
-        api_key (str): The API key from the request header.
-
-    Returns:
-        str: The API key if valid.
-
-    Raises:
-        HTTPException: If the API key is invalid.
-
-    """
-    if api_key == settings.API_KEY:
-        return api_key
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key")
-
+from .dependencies import get_api_key
+from .routers import history_routes
 
 router.include_router(process_router)  # Include the new router
+router.include_router(history_routes.router) # Include the history router
 
 
 @router.post("/decision/{programa}/{accion}", dependencies=[Depends(get_api_key)])
@@ -133,55 +122,7 @@ def self_metrics() -> dict[str, Any]:
         ) from e
 
 
-# --- Endpoints para datos históricos ---
 
-
-@router.get("/history/processes", dependencies=[Depends(get_api_key)])
-def get_process_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
-    """Retorna el historial de procesos registrados.
-
-    Args:
-        limit (int): El número máximo de registros a retornar.
-        offset (int): El número de registros a omitir desde el inicio.
-
-    Returns:
-        list[Dict[str, Any]]: Una lista de diccionarios con la información de los procesos.
-
-    """
-    table = db["process_history"]
-    return list(table.find(order_by="-timestamp", limit=limit, offset=offset))
-
-
-@router.get("/history/optimizations", dependencies=[Depends(get_api_key)])
-def get_optimization_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
-    """Retorna el historial de eventos de optimización de RAM.
-
-    Args:
-        limit (int): El número máximo de registros a retornar.
-        offset (int): El número de registros a omitir desde el inicio.
-
-    Returns:
-        list[Dict[str, Any]]: Una lista de diccionarios con la información de los eventos de optimización.
-
-    """
-    table = db["optimization_events"]
-    return list(table.find(order_by="-timestamp", limit=limit, offset=offset))
-
-
-@router.get("/history/decisions", dependencies=[Depends(get_api_key)])
-def get_decision_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
-    """Retorna el historial de decisiones del watchdog.
-
-    Args:
-        limit (int): El número máximo de registros a retornar.
-        offset (int): El número de registros a omitir desde el inicio.
-
-    Returns:
-        list[Dict[str, Any]]: Una lista de diccionarios con la información de las decisiones del watchdog.
-
-    """
-    table = db["watchdog_decisions"]
-    return list(table.find(order_by="-timestamp", limit=limit, offset=offset))
 
 
 @router.get("/get-modo", dependencies=[Depends(get_api_key)])
@@ -267,3 +208,91 @@ def get_logs(limit: int = 100) -> list[dict[str, Any]]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener logs: {e}",
         ) from e
+
+
+# Integrated staging automation endpoints
+@router.post("/schedule-optimizations", dependencies=[Depends(get_api_key)])
+def api_schedule_optimizations(name: str = "backendbot_opt", command: str = "python main.py", schedule: str = "daily", dry_run: bool = True):
+    """Schedule optimization tasks. Defaults to dry-run mode for safety."""
+    try:
+        plan = schedule_optimizations(name=name, command=command, schedule=schedule, dry_run=dry_run)
+        log_event(f"Optimization scheduling plan created: {name}", notify_user=True)
+        return plan
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error scheduling optimizations: {e}")
+
+
+@router.get("/powershell-commands", dependencies=[Depends(get_api_key)])
+def api_get_powershell_commands():
+    """Get recommended PowerShell commands for automation."""
+    try:
+        cmds = list_recommended_powershell_commands()
+        return {"commands": cmds}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting PowerShell commands: {e}")
+
+
+@router.post("/background-command", dependencies=[Depends(get_api_key)])
+def api_prepare_background_command(script_path: str = "scripts/start_staging.ps1"):
+    """Prepare a PowerShell command to run scripts in background."""
+    try:
+        cmd = prepare_background_command(script_path=script_path)
+        return {"command": cmd, "note": "Execute this command in PowerShell to run in background"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error preparing background command: {e}")
+
+
+@router.post("/optimize-ram", dependencies=[Depends(get_api_key)])
+def api_optimize_ram(dry_run: bool = True, max_processes: int = 10):
+    """Optimize RAM usage by identifying and optionally terminating processes."""
+    try:
+        plan = optimize_ram(dry_run=dry_run, max_processes=max_processes)
+        if not dry_run:
+            log_event(f"RAM optimization executed: {plan.get('estimated_freed_mb', 0)} MB estimated", notify_user=True)
+        return plan
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error optimizing RAM: {e}")
+
+
+@router.post("/disk-cleanup-preview", dependencies=[Depends(get_api_key)])
+def api_disk_cleanup_preview(directories: list = None, dry_run: bool = True):
+    """Preview disk cleanup operations."""
+    try:
+        if directories is None:
+            directories = [os.environ.get("TEMP", r"C:\\Windows\\Temp")]
+        plan = perform_disk_cleanup_preview(directories=directories, dry_run=dry_run)
+        return plan
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error previewing disk cleanup: {e}")
+
+
+@router.post("/run-preview-workflow", dependencies=[Depends(get_api_key)])
+def api_run_preview_workflow(out_path: str = "data/optimization_plan.json"):
+    """Run complete preview workflow and save plan to file."""
+    try:
+        plan = run_preview_workflow(out_path=out_path)
+        log_event("Preview workflow completed and saved", notify_user=True)
+        return plan
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error running preview workflow: {e}")
+
+
+@router.get("/automation-status", dependencies=[Depends(get_api_key)])
+def get_automation_status():
+    """Get current automation status and available features."""
+    try:
+        return {
+            "staging_automation_available": True,
+            "features": [
+                "schedule_optimizations",
+                "powershell_commands",
+                "background_execution",
+                "ram_optimization",
+                "disk_cleanup",
+                "preview_workflow"
+            ],
+            "safety_mode": "dry_run_default",
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting automation status: {e}")

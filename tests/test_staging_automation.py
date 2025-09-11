@@ -1,18 +1,18 @@
-import json
 import os
 import sys
+import json
 
 # Ensure src is importable (consistent with other tests)
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from backendbot.staging_automation import (
+    schedule_optimizations,
     list_recommended_powershell_commands,
+    prepare_background_command,
     optimize_ram,
     perform_disk_cleanup_preview,
-    prepare_background_command,
-    run_preview_workflow,
-    schedule_optimizations,
     write_plan_to_file,
+    run_preview_workflow,
 )
 
 
@@ -54,7 +54,7 @@ def test_write_plan_to_file(tmp_path):
     out = tmp_path / "plan.json"
     path = write_plan_to_file(plan, str(out))
     assert os.path.exists(path)
-    with open(path, encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     assert data["a"] == 1
 
