@@ -100,7 +100,7 @@ _app_start = time.time()
 
 
 @router.get("/self", dependencies=[Depends(get_api_key)])
-def self_metrics() -> Dict[str, Any]:
+def self_metrics() -> dict[str, Any]:
     """Retorna métricas de autodiagnóstico del proceso del backend.
 
     Returns:
@@ -137,7 +137,7 @@ def self_metrics() -> Dict[str, Any]:
 
 
 @router.get("/history/processes", dependencies=[Depends(get_api_key)])
-def get_process_history(limit: int = 100, offset: int = 0) -> list[Dict[str, Any]]:
+def get_process_history(limit: int = 100, offset: int = 0) -> list[dict[str, Any]]:
     """Retorna el historial de procesos registrados.
 
     Args:
