@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BackendBot Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#0f172a;color:white;font-family:sans-serif}.card{background:#1e293b;border-radius:1rem;padding:1rem;margin:1rem 0}</style>
+</head>
+<body class="p-4">
+<h1 class="text-2xl font-bold mb-4">📊 BackendBot Dashboard</h1>
+<div id="self" class="card"></div>
+<button onclick="resetMemoria()" class="mb-4 bg-yellow-600 hover:bg-yellow-700 p-2 rounded">🔄 Reset Memoria</button>
+<button onclick="optimizar()" class="mb-4 bg-green-600 hover:bg-green-700 p-2 rounded">🧹 Optimizar RAM</button>
+<div id="procesos" class="card"></div>
+<script>
+async function optimizar(){await fetch('http://127.0.0.1:8000/optimize',{method:'POST'});cargarDatos();cargarSelf();}
+async function resetMemoria(){await fetch('http://127.0.0.1:8000/reset-memoria',{method:'POST'});alert('Memoria reseteada');}
+async function cerrar(pid){await fetch(`http://127.0.0.1:8000/apagar/${pid}`,{method:'POST'});cargarDatos();}
+async function cargarDatos(){
+  try{
+    const res=await fetch('http://127.0.0.1:8000/procesos');const data=await res.json();
+    let html="<h2 class='text-xl mb-2'>Procesos</h2><table class='table-auto w-full text-sm'><thead><tr><th>PID</th><th>Nombre</th><th>RAM</th><th>Acciones</th></tr></thead><tbody>";
+    data.sort((a,b)=>b.ram_mb-a.ram_mb).slice(0,12).forEach(p=>{html+=`<tr><td>${p.pid}</td><td>${p.name}</td><td>${p.ram_mb} MB</td><td><button onclick="cerrar(${p.pid})" style="background:#dc2626;padding:.2rem .5rem;border-radius:.3rem">Cerrar</button></td></tr>`;});
+    html+="</tbody></table>";document.getElementById('procesos').innerHTML=html;
+  }catch(e){document.getElementById('procesos').innerHTML="<p>Error al cargar procesos</p>";}
+}
+async function cargarSelf(){
+  try{
+    const r=await fetch('http://127.0.0.1:8000/self'); const s=await r.json();
+    document.getElementById('self').innerHTML = `
+      <h2 class='text-xl mb-2'>Backend</h2>
+       <p>PID: ${s.pid}</p>
+       <p>RAM: ${s.ram_mb} MB  |  Privados: ${s.privados_mb || 'N/A'} MB</p>
+       <p>CPU: ${s.cpu_percent}%  |  Hilos: ${s.num_threads}</p>
+       <p>Uptime: ${s.uptime_sec} s</p>`;
+  }catch(e){document.getElementById('self').innerHTML="<p>No disponible</p>";}
+}
+setInterval(()=>{cargarDatos();cargarSelf();},5000);
+cargarDatos();cargarSelf();
+</script>
+</body>
+</html>
