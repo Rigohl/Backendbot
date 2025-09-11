@@ -22,6 +22,8 @@ class Settings(BaseSettings):
 
     # API and security
     API_KEY: str = Field(default="default-api-key", description="API key for authentication")
+    ADMIN_USERNAME: str = Field(default="admin", description="Admin username for dashboard access")
+    ADMIN_PASSWORD: str = Field(default="backendbot2025!", description="Admin password for dashboard access")
     JWT_SECRET_KEY: str = Field(default="your-secret-key")
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

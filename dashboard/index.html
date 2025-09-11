@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,23 +9,84 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; font-family: "Inter", sans-serif; }
-        .card { background: rgba(30, 41, 59, 0.8); border-radius: 1rem; padding: 1.5rem; margin: 1rem 0; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .btn { transition: all 0.3s ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .loading { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .auth-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-        .auth-modal.show { display: flex; align-items: center; justify-content: center; }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            font-family: "Inter", sans-serif;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .auth-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
+
 <body>
     <!-- Modal de Autenticación -->
     <div id="authModal" class="auth-modal show">
         <div class="card" style="max-width: 400px;">
             <h3 class="text-xl font-bold mb-4">Autenticación Requerida</h3>
-            <input id="apiKeyInput" type="password" placeholder="Ingresa API Key" class="w-full p-2 bg-gray-700 rounded mb-4">
-            <input id="backendUrlInput" type="text" placeholder="URL del Backend" class="w-full p-2 bg-gray-700 rounded mb-4" value="http://127.0.0.1:8000">
+
+            <!-- Campos de usuario y contraseña (ocultos por defecto) -->
+            <div id="usernameSection" style="display: none;" class="mb-4">
+                <input id="usernameInput" type="text" placeholder="Usuario" class="w-full p-2 bg-gray-700 rounded mb-2">
+            </div>
+            <div id="passwordSection" style="display: none;" class="mb-4">
+                <input id="passwordInput" type="password" placeholder="Contraseña"
+                    class="w-full p-2 bg-gray-700 rounded mb-2">
+            </div>
+
+            <input id="apiKeyInput" type="password" placeholder="Ingresa API Key"
+                class="w-full p-2 bg-gray-700 rounded mb-4">
+            <input id="backendUrlInput" type="text" placeholder="URL del Backend"
+                class="w-full p-2 bg-gray-700 rounded mb-4" value="http://127.0.0.1:8000">
             <div class="flex justify-end space-x-2">
                 <button id="authBtn" class="btn bg-green-600 px-4 py-2 rounded">Autenticar</button>
             </div>
@@ -62,11 +124,14 @@
 
         <!-- Navegación -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="pro_dashboard.html" class="btn bg-blue-600 text-white py-4 px-6 rounded-lg text-center">Dashboard Pro</a>
-            <a href="http://localhost:8000/docs" class="btn bg-gray-600 text-white py-4 px-6 rounded-lg text-center">API Docs</a>
+            <a href="pro_dashboard.html" class="btn bg-blue-600 text-white py-4 px-6 rounded-lg text-center">Dashboard
+                Pro</a>
+            <a href="http://localhost:8000/docs" class="btn bg-gray-600 text-white py-4 px-6 rounded-lg text-center">API
+                Docs</a>
         </div>
     </div>
 
     <script src="dashboard.js"></script>
 </body>
+
 </html>

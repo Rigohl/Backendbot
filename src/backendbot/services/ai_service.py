@@ -365,5 +365,4 @@ class AIService:
         return result
 
 # Instancia global del servicio de IA
-ai_service = AIService()</content>
-<parameter name="filePath">c:\Users\DELL\Desktop\BackendBot\src\backendbot\services\ai_service.py
+ai_service = AIService()

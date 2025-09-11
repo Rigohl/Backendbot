@@ -1,0 +1,8 @@
+# Configuración del Monitor
+{
+    "max_restarts": 10,
+    "restart_window": 3600,
+    "check_interval": 30,
+    "log_level": "INFO",
+    "auto_restart": true
+}

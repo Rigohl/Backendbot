@@ -1,40 +1,21 @@
 // dashboard.js - Funcionalidad para BackendBot Dashboard
 import { loadMetrics, baseUrl, apiKey, headers } from '../src/frontend/components/metrics.js';
 
-let isDarkMode = localStorage.getItem('theme') === 'dark';
+/**
+ * Dashboard principal de BackendBot
+ * Importa módulos frontend y los inicializa siguiendo buenas prácticas.
+ * @module dashboard
+ */
+import { setupThemeToggle } from '../src/frontend/components/theme.js'; // Tema oscuro/claro
+import { setupAuthModal } from '../src/frontend/components/auth.js'; // Modal de autenticación
+import { setupConfigModal } from '../src/frontend/components/config.js'; // Modal de configuración avanzada
 
-document.getElementById('themeToggle').addEventListener('click', () => {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    document.getElementById('themeToggle').innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-});
+// Inicialización de componentes frontend
+setupThemeToggle(); // Tema oscuro/claro
+setupAuthModal(loadMetrics); // Modal de autenticación
+setupConfigModal(); // Modal de configuración avanzada
 
-document.getElementById('authBtn').addEventListener('click', async () => {
-    const key = document.getElementById('apiKeyInput').value;
-    const url = document.getElementById('backendUrlInput').value;
-    if (key) {
-        localStorage.setItem('apiKey', key);
-        localStorage.setItem('backendUrl', url);
-        document.getElementById('authModal').classList.remove('show');
-        document.getElementById('mainContent').style.display = 'block';
-        loadMetrics();
-    }
-});
-
-document.getElementById('configBtn').addEventListener('click', () => {
-    alert('Configuración avanzada próximamente');
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.classList.toggle('dark', isDarkMode);
-    if (apiKey && apiKey !== 'your-super-secret-api-key') {
-        document.getElementById('authModal').classList.remove('show');
-        document.getElementById('mainContent').style.display = 'block';
-        loadMetrics();
-    }
-    setInterval(loadMetrics, 5000);
-});
+// ...existing code...
 
 // Funciones avanzadas migradas desde dashboard-ultra.js
 export function updateRamMetric(usage, total) {
@@ -90,7 +71,9 @@ export async function loadUltraMetrics() {
         const res = await fetch(`${url}/metrics/ultra`, {
             headers: { 'X-API-Key': key }
         });
-        if (!res.ok) throw new Error('Error al obtener métricas ultra');
+        if (!res.ok) {
+            throw new Error('Error al obtener métricas ultra');
+        }
         const data = await res.json();
         updateRamMetric(data.ram.used, data.ram.total);
         updateCpuMetric(data.cpu.usage, data.cpu.cores);

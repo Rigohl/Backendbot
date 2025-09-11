@@ -14,11 +14,11 @@ export async function loadUltraMetrics() {
         if (res.ok) {
             const data = await res.json();
             if (document.getElementById('systemPid')) { document.getElementById('systemPid').textContent = data.pid; }
-            if (document.getElementById('systemUptime')) { document.getElementById('systemUptime').textContent = `${Math.floor(data.uptime_sec/60)}m ${Math.round(data.uptime_sec%60)}s`; }
+            if (document.getElementById('systemUptime')) { document.getElementById('systemUptime').textContent = `${Math.floor(data.uptime_sec / 60)}m ${Math.round(data.uptime_sec % 60)}s`; }
             if (document.getElementById('systemThreads')) { document.getElementById('systemThreads').textContent = data.num_threads; }
             if (document.getElementById('ramUsage')) { document.getElementById('ramUsage').textContent = `${data.ram_mb} MB`; }
             if (document.getElementById('ramTotal')) { document.getElementById('ramTotal').textContent = data.ram_total_mb; }
-            if (document.getElementById('ramProgress')) { document.getElementById('ramProgress').style.width = `${Math.round((data.ram_mb/data.ram_total_mb)*100)}%`; }
+            if (document.getElementById('ramProgress')) { document.getElementById('ramProgress').style.width = `${Math.round((data.ram_mb / data.ram_total_mb) * 100)}%`; }
             if (document.getElementById('cpuUsage')) { document.getElementById('cpuUsage').textContent = `${data.cpu_percent} %`; }
             if (document.getElementById('cpuCores')) { document.getElementById('cpuCores').textContent = data.cpu_cores; }
             if (document.getElementById('cpuProgress')) { document.getElementById('cpuProgress').style.width = `${data.cpu_percent}%`; }

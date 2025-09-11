@@ -137,6 +137,56 @@ def get_modo() -> dict[str, str]:
     return {"modo": settings.MODO}
 
 
+@router.get("/get-api-key")
+def get_api_key_from_env() -> dict[str, str]:
+    """Retorna la API_KEY desde el archivo .env si existe.
+
+    Returns:
+        Dict[str, str]: Un diccionario con la clave "api_key" y el valor de la API_KEY.
+
+    """
+    result = {"api_key": None, "username": None, "password": None}
+
+    if settings.API_KEY and settings.API_KEY != "default-api-key":
+        result["api_key"] = settings.API_KEY
+
+    if hasattr(settings, 'ADMIN_USERNAME') and settings.ADMIN_USERNAME != "admin":
+        result["username"] = settings.ADMIN_USERNAME
+
+    if hasattr(settings, 'ADMIN_PASSWORD') and settings.ADMIN_PASSWORD != "backendbot2025!":
+        result["password"] = settings.ADMIN_PASSWORD
+
+    return result
+
+
+@router.post("/auth/login")
+def login(credentials: dict[str, str]) -> dict[str, str]:
+    """Autentica usuario y contraseña y retorna API_KEY si es válido.
+
+    Args:
+        credentials: Diccionario con username y password
+
+    Returns:
+        Dict[str, str]: API_KEY si las credenciales son válidas
+
+    Raises:
+        HTTPException: Si las credenciales son inválidas
+    """
+    username = credentials.get("username")
+    password = credentials.get("password")
+
+    if (hasattr(settings, 'ADMIN_USERNAME') and
+        hasattr(settings, 'ADMIN_PASSWORD') and
+        username == settings.ADMIN_USERNAME and
+        password == settings.ADMIN_PASSWORD):
+        return {"api_key": settings.API_KEY}
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales inválidas"
+    )
+
+
 @router.get("/logs", dependencies=[Depends(get_api_key)])
 def get_logs(limit: int = 100) -> list[dict[str, Any]]:
     """Retorna los logs más recientes del backend.
