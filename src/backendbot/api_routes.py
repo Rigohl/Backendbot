@@ -57,8 +57,8 @@ try:
     from .routers import history_routes
 except ImportError:
     # Fallback for when running from tests
-    from dependencies import get_api_key, get_current_active_user
-    from routers import history_routes
+    from .dependencies import get_api_key, get_current_active_user
+    from .routers import history_routes
 
 router.include_router(process_router)  # Include the new router
 router.include_router(history_routes.router) # Include the history router

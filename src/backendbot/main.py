@@ -13,6 +13,8 @@ from .staging_automation import run_preview_workflow
 from .railway_integration import railway, init_railway
 from .cache import cache
 from .webhooks import webhooks
+from .rate_limit import rate_limit_store
+from .services.activity_monitor import activity_monitor
 
 settings = Settings()
 
@@ -30,7 +32,7 @@ async def rate_limit_middleware(request: Request, call_next):
     if not client_ip or client_ip == "testserver":
         client_ip = "test_client"
 
-    if not cache.set_rate_limit(
+    if not rate_limit_store.set_rate_limit(
         identifier=client_ip,
         window_seconds=settings.RATE_LIMIT_WINDOW,
         max_requests=settings.RATE_LIMIT_REQUESTS
@@ -108,6 +110,31 @@ async def railway_webhook(request: Request):
 
     return await webhooks.handle_webhook(request)
 
+@app.get("/activity/status")
+async def get_activity_status():
+    """Obtener estado del monitoreo de actividad."""
+    return activity_monitor.get_status()
+
+@app.post("/activity/start")
+async def start_activity_monitoring():
+    """Iniciar monitoreo de actividad."""
+    activity_monitor.start_monitoring()
+    return {"message": "Activity monitoring started"}
+
+@app.post("/activity/stop")
+async def stop_activity_monitoring():
+    """Detener monitoreo de actividad."""
+    activity_monitor.stop_monitoring()
+    return {"message": "Activity monitoring stopped"}
+
+@app.post("/activity/respond")
+async def respond_to_activity_warning():
+    """Responder a la advertencia de inactividad."""
+    if not activity_monitor.is_active:
+        activity_monitor._resume_activity()
+        return {"message": "Activity resumed"}
+    return {"message": "No inactivity warning active"}
+
 @app.on_event("startup")
 async def on_startup():
     await init_db()
@@ -119,6 +146,12 @@ async def on_startup():
         log_event("Railway integration failed to initialize")
 
     asyncio.create_task(watchdog())  # Start watchdog as an asyncio task
+
+    # Iniciar monitoreo de actividad si está habilitado
+    if settings.ACTIVITY_MONITORING_ENABLED:
+        activity_monitor.start_monitoring()
+        log_event("Activity monitoring started")
+
     # Run staging preview on startup (dry-run)
     plan = run_preview_workflow()
     log_event(f"Staging preview executed: {len(plan)} components")

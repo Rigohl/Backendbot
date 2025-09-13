@@ -1,137 +1,250 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BackendBot Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>BackendBot Dashboard - Monitoreo del Sistema</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            font-family: "Inter", sans-serif;
-        }
-
-        .card {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn {
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .loading {
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .auth-modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-    <!-- Modal de Autenticación -->
-    <div id="authModal" class="auth-modal show">
-        <div class="card" style="max-width: 400px;">
-            <h3 class="text-xl font-bold mb-4">Autenticación Requerida</h3>
-
-            <!-- Campos de usuario y contraseña (ocultos por defecto) -->
-            <div id="usernameSection" style="display: none;" class="mb-4">
-                <input id="usernameInput" type="text" placeholder="Usuario" class="w-full p-2 bg-gray-700 rounded mb-2">
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> BackendBot Dashboard</h1>
+                <div class="header-controls">
+                    <div class="connection-status" id="connectionStatus">
+                        <i class="fas fa-circle"></i>
+                        <span>Conectando...</span>
+                    </div>
+                    <button class="btn btn-secondary" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualizar
+                    </button>
+                    <button class="btn btn-primary" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                        Configuración
+                    </button>
+                </div>
             </div>
-            <div id="passwordSection" style="display: none;" class="mb-4">
-                <input id="passwordInput" type="password" placeholder="Contraseña"
-                    class="w-full p-2 bg-gray-700 rounded mb-2">
-            </div>
+        </header>
 
-            <input id="apiKeyInput" type="password" placeholder="Ingresa API Key"
-                class="w-full p-2 bg-gray-700 rounded mb-4">
-            <input id="backendUrlInput" type="text" placeholder="URL del Backend"
-                class="w-full p-2 bg-gray-700 rounded mb-4" value="http://127.0.0.1:8000">
-            <div class="flex justify-end space-x-2">
-                <button id="authBtn" class="btn bg-green-600 px-4 py-2 rounded">Autenticar</button>
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- System Metrics Cards -->
+            <section class="metrics-grid">
+                <div class="metric-card ram-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>Memoria RAM</h3>
+                        <div class="metric-value" id="ramUsage">--</div>
+                        <div class="metric-progress">
+                            <div class="progress-bar" id="ramProgress"></div>
+                        </div>
+                        <div class="metric-details">
+                            <span id="ramTotal">--</span> / <span id="ramAvailable">--</span> GB
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card cpu-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>Uso de CPU</h3>
+                        <div class="metric-value" id="cpuUsage">--</div>
+                        <div class="metric-progress">
+                            <div class="progress-bar" id="cpuProgress"></div>
+                        </div>
+                        <div class="metric-details">
+                            Núcleos: <span id="cpuCores">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card disk-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>Disco</h3>
+                        <div class="metric-value" id="diskUsage">--</div>
+                        <div class="metric-progress">
+                            <div class="progress-bar" id="diskProgress"></div>
+                        </div>
+                        <div class="metric-details">
+                            <span id="diskTotal">--</span> / <span id="diskFree">--</span> GB
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card network-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h3>Red</h3>
+                        <div class="metric-value" id="networkUsage">--</div>
+                        <div class="metric-details">
+                            ↓ <span id="networkDown">--</span> ↑ <span id="networkUp">--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-sliders-h"></i> Panel de Control</h2>
+                </div>
+                <div class="control-buttons">
+                    <button class="btn btn-success" id="optimizeBtn">
+                        <i class="fas fa-bolt"></i>
+                        Optimizar Memoria
+                    </button>
+                    <button class="btn btn-warning" id="clearCacheBtn">
+                        <i class="fas fa-trash-alt"></i>
+                        Limpiar Cache
+                    </button>
+                    <button class="btn btn-info" id="restartBtn">
+                        <i class="fas fa-redo"></i>
+                        Reiniciar Servicios
+                    </button>
+                    <button class="btn btn-danger" id="shutdownBtn">
+                        <i class="fas fa-power-off"></i>
+                        Apagar Sistema
+                    </button>
+                </div>
+            </section>
+
+            <!-- Process Monitor -->
+            <section class="process-monitor">
+                <div class="panel-header">
+                    <h2><i class="fas fa-tasks"></i> Monitoreo de Procesos</h2>
+                    <div class="process-controls">
+                        <input type="text" id="processSearch" placeholder="Buscar proceso..." class="search-input">
+                        <select id="sortBy" class="sort-select">
+                            <option value="cpu">Ordenar por CPU</option>
+                            <option value="memory">Ordenar por Memoria</option>
+                            <option value="name">Ordenar por Nombre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="process-table-container">
+                    <table class="process-table" id="processTable">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Nombre</th>
+                                <th>CPU %</th>
+                                <th>Memoria MB</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processTableBody">
+                            <tr>
+                                <td colspan="6" class="loading-row">
+                                    <i class="fas fa-spinner fa-spin"></i> Cargando procesos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- System Logs -->
+            <section class="logs-section">
+                <div class="panel-header">
+                    <h2><i class="fas fa-terminal"></i> Logs del Sistema</h2>
+                    <div class="log-controls">
+                        <select id="logLevel" class="log-select">
+                            <option value="all">Todos</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Advertencias</option>
+                            <option value="error">Errores</option>
+                        </select>
+                        <button class="btn btn-secondary" id="clearLogsBtn">
+                            <i class="fas fa-trash"></i>
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry loading">
+                        <i class="fas fa-spinner fa-spin"></i> Cargando logs...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="panel-header">
+                    <h2><i class="fas fa-chart-bar"></i> Gráficos de Rendimiento</h2>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Uso de CPU (últimos 10 minutos)</h3>
+                        <canvas id="cpuChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Uso de Memoria (últimos 10 minutos)</h3>
+                        <canvas id="memoryChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-cog"></i> Configuración</h3>
+                    <button class="modal-close" id="settingsClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <h4>Actualización Automática</h4>
+                        <label class="setting-item">
+                            <input type="checkbox" id="autoRefresh" checked>
+                            <span>Actualizar automáticamente cada 5 segundos</span>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <h4>Notificaciones</h4>
+                        <label class="setting-item">
+                            <input type="checkbox" id="notifications" checked>
+                            <span>Mostrar notificaciones del sistema</span>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <h4>API Configuration</h4>
+                        <label class="setting-item">
+                            <span>URL del Backend:</span>
+                            <input type="text" id="backendUrl" value="http://127.0.0.1:8000" class="setting-input">
+                        </label>
+                        <label class="setting-item">
+                            <span>API Key:</span>
+                            <input type="password" id="apiKey" placeholder="Ingresa tu API Key" class="setting-input">
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="settingsCancel">Cancelar</button>
+                    <button class="btn btn-primary" id="settingsSave">Guardar</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="container mx-auto p-4" id="mainContent" style="display: none;">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl font-bold">📊 BackendBot Dashboard</h1>
-            <div class="flex space-x-2">
-                <button id="themeToggle" class="btn bg-gray-600 px-4 py-2 rounded"><i class="fas fa-moon"></i></button>
-                <button id="configBtn" class="btn bg-blue-600 px-4 py-2 rounded">Config</button>
-            </div>
-        </div>
-
-        <!-- Métricas Básicas -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="card text-center">
-                <h3 class="text-lg font-semibold">RAM</h3>
-                <p id="ramMetric" class="text-2xl font-bold text-green-400">Cargando...</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="text-lg font-semibold">CPU</h3>
-                <p id="cpuMetric" class="text-2xl font-bold text-blue-400">Cargando...</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="text-lg font-semibold">Procesos</h3>
-                <p id="processesMetric" class="text-2xl font-bold text-purple-400">Cargando...</p>
-            </div>
-            <div class="card text-center">
-                <h3 class="text-lg font-semibold">Uptime</h3>
-                <p id="uptimeMetric" class="text-2xl font-bold text-yellow-400">Cargando...</p>
-            </div>
-        </div>
-
-        <!-- Navegación -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a href="pro_dashboard.html" class="btn bg-blue-600 text-white py-4 px-6 rounded-lg text-center">Dashboard
-                Pro</a>
-            <a href="http://localhost:8000/docs" class="btn bg-gray-600 text-white py-4 px-6 rounded-lg text-center">API
-                Docs</a>
-        </div>
+        <!-- Notifications -->
+        <div class="notifications" id="notifications"></div>
     </div>
 
     <script src="dashboard.js"></script>
 </body>
-
 </html>

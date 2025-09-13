@@ -17,9 +17,9 @@ class RedisCache:
             self.redis = redis.from_url(redis_url, decode_responses=True)
             # Test connection
             self.redis.ping()
-            logger.info("✅ Redis conectado exitosamente")
+            logger.info("Redis connected successfully")
         except Exception as e:
-            logger.warning(f"❌ Error conectando a Redis: {e}")
+            logger.warning(f"Error connecting to Redis: {e}")
             self.redis = None
 
     def is_available(self) -> bool:

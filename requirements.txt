@@ -25,3 +25,7 @@ python-jose==3.3.0
 # tk - not needed on Linux
 # psycopg2-binary - add if using PostgreSQL
 # pillow - add if needed for images
+
+# --- Local Agent Dependencies ---
+# For monitoring keyboard and mouse on the user's PC
+pynput==1.7.6

@@ -8,7 +8,17 @@ ruff
 black
 sqlalchemy
 aiosqlite
+apscheduler  # Para tareas programadas
+python-jose[cryptography]  # Para JWT tokens
+python-multipart  # Para manejo de formularios
+jinja2  # Para templates
+requests  # Para HTTP requests
 
 # Testing
 pytest
 pytest-mock
+pytest-asyncio
+
+# Additional utilities
+schedule
+colorama

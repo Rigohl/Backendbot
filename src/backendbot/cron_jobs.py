@@ -267,8 +267,8 @@ class RailwayCronJobs:
             logger.error(f"Error en ventana de mantenimiento: {e}")
 
     def setup_default_jobs(self):
-        """Configurar jobs por defecto"""
-        # Jobs diarios
+        """Configurar jobs por defecto para un balance entre rendimiento y costo."""
+        # Jobs diarios (tareas de mantenimiento importantes)
         self.add_cron_job(
             'cleanup_logs',
             self.cleanup_old_logs,
@@ -281,35 +281,34 @@ class RailwayCronJobs:
             '0 3 * * *'  # Todos los días a las 3 AM
         )
 
-        # Jobs cada 6 horas
+        # Jobs cada 6 horas (optimizaciones y estadísticas)
         self.add_cron_job(
             'optimize_performance',
             self.optimize_performance,
             '0 */6 * * *'  # Cada 6 horas
         )
 
-        # Jobs cada hora
         self.add_cron_job(
             'update_cache_stats',
             self.update_cache_stats,
-            '0 * * * *'  # Cada hora
+            '0 */6 * * *'  # Cada 6 horas (reducido de cada hora)
         )
 
-        # Jobs cada 5 minutos
+        # Job de monitoreo (frecuencia reducida para ahorrar costos)
         self.add_interval_job(
             'health_check',
             self.health_check,
-            300  # 5 minutos
+            900  # Cada 15 minutos (reducido de 5 minutos)
         )
 
-        # Jobs semanales
+        # Job semanal
         self.add_cron_job(
             'maintenance_window',
             self.maintenance_window,
             '0 4 * * 0'  # Domingos a las 4 AM
         )
 
-        logger.info("✅ Jobs por defecto configurados")
+        logger.info("✅ Jobs por defecto configurados con enfoque en ahorro de costos.")
 
     def get_job_history(self, limit: int = 50) -> List[Dict[str, Any]]:
         """Obtener historial de ejecuciones de jobs"""

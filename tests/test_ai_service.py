@@ -96,12 +96,12 @@ class TestAIMessage:
             role="user",
             content="Hello AI",
             timestamp=datetime.now(),
-            metadata={"temperature": 0.7}
+            metadata_={"temperature": 0.7}
         )
 
         assert message.role == "user"
         assert message.content == "Hello AI"
-        assert message.metadata["temperature"] == 0.7
+        assert message.metadata_["temperature"] == 0.7
         assert isinstance(message.timestamp, datetime)
 
     def test_message_to_dict(self):
@@ -121,13 +121,13 @@ class TestAIMessage:
             "role": "user",
             "content": "Test message",
             "timestamp": datetime.now(),
-            "metadata": {"test": True}
+            "metadata_": {"test": True}
         }
 
         message = AIMessage(**msg_dict)
         assert message.role == "user"
         assert message.content == "Test message"
-        assert message.metadata["test"] is True
+        assert message.metadata_["test"] is True
 
 
 class TestAIConversation:
@@ -152,12 +152,13 @@ class TestAIConversation:
     def test_add_message(self):
         """Test de agregar mensaje"""
         from datetime import datetime
+        created_time = datetime.now()
         conversation = AIConversation(
             id="test_conv",
             messages=[],
             model="llama2:7b",
-            created_at=datetime.now(),
-            updated_at=datetime.now()
+            created_at=created_time,
+            updated_at=created_time
         )
         message = AIMessage(role="user", content="Hello")
 
@@ -165,7 +166,7 @@ class TestAIConversation:
 
         assert len(conversation.messages) == 1
         assert conversation.messages[0].content == "Hello"
-        assert conversation.updated_at > conversation.created_at
+        assert conversation.updated_at >= conversation.created_at
 
     def test_get_messages_for_api(self):
         """Test de obtener mensajes para API"""

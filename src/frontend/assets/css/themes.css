@@ -1,0 +1,175 @@
+/* BackendBot Frontend - Theme Styles */
+
+/* Ultra Mode Theme */
+[data-ultra="true"] {
+    --primary-color: #ff6b35;
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #2a2a2a;
+    --bg-card: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --border-color: #333333;
+    --shadow: 0 4px 8px rgba(255, 107, 53, 0.1);
+    --shadow-lg: 0 8px 24px rgba(255, 107, 53, 0.2);
+}
+
+[data-ultra="true"] .app-title {
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+[data-ultra="true"] .card {
+    border: 1px solid var(--border-color);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 107, 53, 0.05) 100%);
+}
+
+[data-ultra="true"] .header-btn.active {
+    background-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+}
+
+[data-ultra="true"] .metric-value {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
+}
+
+/* High Contrast Theme */
+[data-theme="high-contrast"] {
+    --bg-primary: #000000;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #000000;
+    --text-muted: #333333;
+    --border-color: #000000;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+/* Color Blind Friendly Theme */
+[data-theme="colorblind"] {
+    --primary-color: #0072b2;
+    --success-color: #009e73;
+    --warning-color: #f0e442;
+    --error-color: #d55e00;
+    --info-color: #56b4e9;
+}
+
+/* Minimal Theme */
+[data-theme="minimal"] {
+    --border-radius: 0;
+    --shadow: none;
+    --shadow-lg: none;
+}
+
+[data-theme="minimal"] .card {
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+}
+
+[data-theme="minimal"] .card:hover {
+    transform: none;
+}
+
+/* Compact Theme */
+[data-theme="compact"] {
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 12px;
+    --spacing-xl: 16px;
+    --font-size-sm: 0.75rem;
+    --font-size-md: 0.875rem;
+    --font-size-lg: 1rem;
+    --font-size-xl: 1.25rem;
+}
+
+/* Large Text Theme */
+[data-theme="large-text"] {
+    --font-size-sm: 1rem;
+    --font-size-md: 1.125rem;
+    --font-size-lg: 1.375rem;
+    --font-size-xl: 1.75rem;
+}
+
+/* System Theme Detection */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --bg-tertiary: #404040;
+        --bg-card: #2d2d2d;
+        --bg-overlay: rgba(0, 0, 0, 0.7);
+
+        --text-primary: #ffffff;
+        --text-secondary: #cccccc;
+        --text-muted: #888888;
+        --text-inverse: #1a1a1a;
+
+        --border-color: #404040;
+        --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus Styles for Accessibility */
+.btn:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible,
+.header-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High Contrast Focus */
+@media (prefers-contrast: high) {
+
+    .btn:focus-visible,
+    .form-input:focus-visible,
+    .form-select:focus-visible,
+    .header-btn:focus-visible {
+        outline: 3px solid var(--text-primary);
+        outline-offset: 3px;
+    }
+}
+
+/* Print Styles */
+@media print {
+
+    .app-header,
+    .app-footer,
+    .header-btn,
+    .card-action-btn,
+    .footer-btn {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+        break-inside: avoid;
+    }
+
+    .dashboard-grid {
+        display: block;
+    }
+
+    .card {
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+    }
+}

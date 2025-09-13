@@ -12,7 +12,7 @@ from sqlalchemy.orm import selectinload # For eager loading relationships
 
 from ..config import settings
 from ..utils import log_event
-from ..database import AIConversation as DBConversation, AIMessage as DBMessage
+from ..database import AIConversation as DBConversation, AIMessage as DBMessage, AsyncSessionLocal
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
@@ -54,9 +54,15 @@ class AIConversation:
     context: Optional[Dict[str, Any]] = None
     messages: List[AIMessage] = field(default_factory=list)
 
-    def add_message(self, role: str, content: str, metadata: Optional[Dict[str, Any]] = None):
+    def add_message(self, role_or_message, content=None, metadata=None):
         """Agrega un mensaje a la conversación"""
-        message = AIMessage(role=role, content=content, metadata_=metadata)
+        if isinstance(role_or_message, AIMessage):
+            # Si se pasa un objeto AIMessage
+            message = role_or_message
+        else:
+            # Si se pasan parámetros individuales
+            message = AIMessage(role=role_or_message, content=content, metadata_=metadata)
+        
         self.messages.append(message)
         self.updated_at = datetime.now()
 
@@ -311,83 +317,52 @@ class AIService:
             "timestamp": datetime.now().isoformat()
         }
 
-    async def create_agent(self, name: str, description: str, capabilities: List[str], model: str = "llama2") -> bool:
-        """Crea un nuevo agente de IA"""
-        async with AsyncSessionLocal() as session:
-            stmt = select(AIAgent).where(AIAgent.name == name)
-            result = await session.execute(stmt)
-            existing_agent = result.scalars().first()
-
-            if existing_agent:
-                return False
-
-            new_agent = AIAgent(
-                name=name,
-                description=description,
-                capabilities=capabilities, # Stored as JSON
-                model=model,
-                created_at=datetime.now(),
-                system_prompt=f"Eres {name}, un agente especializado en: {', '.join(capabilities)}. {description}",
-            )
-            session.add(new_agent)
-            await session.commit()
-            await session.refresh(new_agent)
-            return True
-
     async def execute_agent_task(self, agent_name: str, task: str) -> Optional[str]:
         """Ejecuta una tarea usando un agente específico"""
-        async with AsyncSessionLocal() as session:
-            stmt = select(AIAgent).where(AIAgent.name == agent_name)
-            result = await session.execute(stmt)
-            agent = result.scalars().first()
-
-            if not agent:
+        try:
+            if agent_name not in self.agents:
                 return None
 
-            # Create temporary conversation for the agent
-            conversation_id = await self.create_conversation(agent.model, agent.system_prompt)
+            agent = self.agents[agent_name]
+            conversation_id = agent.get("conversation_id")
 
-            # Execute task
-            result = await self.send_message(conversation_id, task)
+            if not conversation_id:
+                # Crear nueva conversación para el agente
+                conversation_id = await self.create_conversation("llama2:7b")
+                agent["conversation_id"] = conversation_id
+                await self._save_agents()
 
-            # Link conversation to agent (if not already linked)
-            # This part needs careful consideration if agent.conversations is a relationship
-            # For now, assuming it's a simple list of IDs in the agent model
-            # If agent.conversations is a JSON field, update it
-            if conversation_id not in agent.capabilities: # Assuming capabilities is where conversation IDs are stored for now
-                agent.capabilities.append(conversation_id) # This is a temporary hack, needs proper relationship
-                await session.commit()
-
-            return result
+            # Ejecutar la tarea
+            return await self.send_message(conversation_id, f"Como {agent['role']}, {task}")
+        except Exception as e:
+            log_event(f"Error ejecutando tarea del agente {agent_name}: {e}")
+            return None
 
     async def list_ai_conversations(self):
         """Lista todas las conversaciones de IA"""
-        async with AsyncSessionLocal() as session:
-            stmt = select(AIConversation).options(selectinload(AIConversation.messages))
-            result = await session.execute(stmt)
-            conversations = result.scalars().all()
-
-            return {"conversations": [
-                {
-                    "id": conv.id,
-                    "model": conv.model,
-                    "message_count": len(conv.messages),
-                    "created_at": conv.created_at.isoformat(),
-                    "updated_at": conv.updated_at.isoformat(),
-                    "last_message": conv.messages[-1].content[:100] + "..." if conv.messages else None
-                } for conv in conversations
-            ]}
+        try:
+            conversations_list = []
+            for conv_id, conversation in self.conversations.items():
+                conversations_list.append({
+                    "id": conversation.id,
+                    "model": conversation.model,
+                    "message_count": len(conversation.messages),
+                    "created_at": conversation.created_at.isoformat(),
+                    "updated_at": conversation.updated_at.isoformat(),
+                    "last_message": conversation.messages[-1].content[:100] + "..." if conversation.messages else None
+                })
+            return {"conversations": conversations_list}
+        except Exception as e:
+            log_event(f"Error listando conversaciones: {e}")
+            return {"conversations": []}
 
     async def get_ai_conversation(self, conversation_id: str):
         """Obtiene los detalles de una conversación específica"""
-        async with AsyncSessionLocal() as session:
-            stmt = select(AIConversation).options(selectinload(AIConversation.messages)).where(AIConversation.id == conversation_id)
-            result = await session.execute(stmt)
-            conversation = result.scalars().first()
-
-            if not conversation:
+        try:
+            if conversation_id not in self.conversations:
                 raise HTTPException(status_code=404, detail="Conversación no encontrada")
 
+            conversation = self.conversations[conversation_id]
             messages_data = [
                 {
                     "role": msg.role,
@@ -405,44 +380,58 @@ class AIService:
                 "updated_at": conversation.updated_at.isoformat(),
                 "context": conversation.context
             }
+        except HTTPException:
+            raise
+        except Exception as e:
+            log_event(f"Error obteniendo conversación {conversation_id}: {e}")
+            raise HTTPException(status_code=500, detail="Error interno del servidor")
 
     async def list_ai_agents(self):
         """Lista todos los agentes de IA disponibles"""
-        async with AsyncSessionLocal() as session:
-            stmt = select(AIAgent)
-            result = await session.execute(stmt)
-            agents = result.scalars().all()
-
-            return {"agents": [
-                {
-                    "name": agent.name,
-                    "description": agent.description,
-                    "capabilities": agent.capabilities,
-                    "model": agent.model,
-                    "created_at": agent.created_at.isoformat(),
-                    "system_prompt": agent.system_prompt # Include system_prompt for agent details
-                } for agent in agents
-            ]}
+        try:
+            agents_list = []
+            for name, agent_data in self.agents.items():
+                agents_list.append({
+                    "name": name,
+                    "role": agent_data.get("role", ""),
+                    "capabilities": agent_data.get("capabilities", []),
+                    "created_at": agent_data.get("created_at", ""),
+                    "conversation_id": agent_data.get("conversation_id")
+                })
+            return {"agents": agents_list}
+        except Exception as e:
+            log_event(f"Error listando agentes: {e}")
+            return {"agents": []}
 
     async def delete_ai_conversation(self, conversation_id: str):
         """Elimina una conversación de IA"""
-        async with AsyncSessionLocal() as session:
-            stmt = delete(AIConversation).where(AIConversation.id == conversation_id)
-            result = await session.execute(stmt)
-            if result.rowcount == 0:
+        try:
+            if conversation_id not in self.conversations:
                 raise HTTPException(status_code=404, detail="Conversación no encontrada")
-            await session.commit()
+            
+            del self.conversations[conversation_id]
+            await self._save_conversations()
             return {"deleted": True, "conversation_id": conversation_id}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log_event(f"Error eliminando conversación {conversation_id}: {e}")
+            raise HTTPException(status_code=500, detail="Error interno del servidor")
 
     async def delete_ai_agent(self, agent_name: str):
         """Elimina un agente de IA"""
-        async with AsyncSessionLocal() as session:
-            stmt = delete(AIAgent).where(AIAgent.name == agent_name)
-            result = await session.execute(stmt)
-            if result.rowcount == 0:
+        try:
+            if agent_name not in self.agents:
                 raise HTTPException(status_code=404, detail="Agente no encontrado")
-            await session.commit()
+            
+            del self.agents[agent_name]
+            await self._save_agents()
             return {"deleted": True, "agent_name": agent_name}
+        except HTTPException:
+            raise
+        except Exception as e:
+            log_event(f"Error eliminando agente {agent_name}: {e}")
+            raise HTTPException(status_code=500, detail="Error interno del servidor")
 
     def _load_conversations(self):
         """Carga las conversaciones desde el archivo JSON"""

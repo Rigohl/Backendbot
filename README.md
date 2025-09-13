@@ -251,7 +251,7 @@ curl http://localhost:8000/railway/status
 
 ## 🚀 Deployment en Railway
 
-### Deploy Automático
+### Opción 1: Deploy Automático (Recomendado)
 ```bash
 # Login en Railway
 railway login
@@ -259,20 +259,80 @@ railway login
 # Conectar proyecto
 railway link
 
-# Deploy
+# Deploy automático
 railway up
 ```
 
-### Variables de Entorno en Railway
-1. Ve a tu proyecto en Railway Dashboard
-2. Configuración → Variables
-3. Agrega las variables necesarias
+### Opción 2: Deploy con GitHub
+1. **Conecta tu repositorio** en Railway Dashboard
+2. **Configura las variables** de entorno
+3. **Deploy automático** en cada push
 
-### Monitoreo en Railway
-- **Logs**: `railway logs`
-- **Métricas**: Dashboard de Railway
-- **Health**: Endpoints de health check
-- **Alerts**: Configuración de alertas
+### Opción 3: Deploy Manual
+```bash
+# Build y deploy
+railway deploy
+
+# O usando Railway CLI
+railway up --detach
+```
+
+### Variables de Entorno en Railway
+Ve a tu proyecto en Railway Dashboard → Variables y configura:
+
+```bash
+# Base de datos (automática de Railway)
+DATABASE_URL=postgresql://...
+
+# Redis (opcional, automática de Railway)
+REDIS_URL=redis://...
+
+# Configuración de la aplicación
+ENVIRONMENT=production
+LOG_LEVEL=INFO
+
+# Webhooks (opcional)
+RAILWAY_WEBHOOK_SECRET=tu_secret_seguro
+
+# Variables automáticas de Railway (no configurar manualmente)
+# RAILWAY_PROJECT_ID
+# RAILWAY_ENVIRONMENT_ID
+# RAILWAY_SERVICE_ID
+# RAILWAY_REPLICA_ID
+```
+
+### Health Checks y Monitoreo
+Railway automáticamente:
+- ✅ **Health checks** cada 30 segundos
+- ✅ **Restart automático** si falla
+- ✅ **Monitoreo de recursos** en tiempo real
+- ✅ **Logs centralizados** en Railway Dashboard
+
+### Verificación del Deploy
+```bash
+# Ver logs del deploy
+railway logs
+
+# Ver estado del servicio
+railway status
+
+# Ver métricas
+railway metrics
+
+# Health check manual
+curl https://tu-proyecto.railway.app/health
+```
+
+### Configuración de Dominio Personalizado
+1. Ve a Settings → Domains en Railway
+2. Agrega tu dominio personalizado
+3. Configura DNS según las instrucciones
+
+### Backup y Recuperación
+Railway proporciona:
+- **Backup automático** diario de PostgreSQL
+- **Point-in-time recovery** disponible
+- **Backup on-demand** desde el dashboard
 
 ## 🤝 Contribución
 
