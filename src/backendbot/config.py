@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     MODO: str = Field(default="diario", pattern="^(diario|videojuego|editor|streaming|multimedia)$")
 
     # API and security - MADE REQUIRED
-    API_KEY: str = Field(default="backendbot_default_key_2024", description="API key for authentication")
-    ADMIN_USERNAME: str = Field(default="admin", description="Admin username for dashboard access")
-    ADMIN_PASSWORD: str = Field(default="admin123", description="Admin password for dashboard access")
+    API_KEY: str = Field(description="API key for authentication") # Removed default
+    ADMIN_USERNAME: str = Field(description="Admin username for dashboard access") # Removed default
+    ADMIN_PASSWORD: str = Field(description="Admin password for dashboard access") # Removed default
     JWT_SECRET_KEY: str = Field(default_factory=lambda: secrets.token_urlsafe(32), description="JWT secret key") # Generate if not provided
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -56,15 +56,27 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = Field(default=None, description="OpenAI API Key")
     LOG_LEVEL: str = Field(default="INFO", description="Nivel de logging")
 
-    # Activity monitoring configuration
-    ACTIVITY_MONITORING_ENABLED: bool = Field(default=True, description="Habilitar monitoreo de actividad del usuario")
-    INACTIVITY_WARNING_TIME: int = Field(default=300, ge=60, description="Tiempo de inactividad antes de mostrar advertencia (segundos)")
-    INACTIVITY_SHUTDOWN_TIME: int = Field(default=480, ge=60, description="Tiempo total de inactividad antes de apagar backend (segundos)")
-    ACTIVITY_CHECK_INTERVAL: int = Field(default=1, ge=1, description="Intervalo para verificar actividad (segundos)")
-    BACKEND_AUTO_START: bool = Field(default=True, description="Iniciar backend automáticamente al detectar actividad")
-    BACKEND_AUTO_STOP: bool = Field(default=True, description="Apagar backend automáticamente por inactividad")
-    SUSPENSION_THRESHOLD: int = Field(default=3, ge=1, description="Umbral de suspensiones antes de tomar acción")
-    REJECTION_THRESHOLD: int = Field(default=3, ge=1, description="Umbral de rechazos antes de tomar acción")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"  # Ignore extra fields from environment
+    )
+
+    # Rate limiting
+    RATE_LIMIT_REQUESTS: int = Field(default=100, ge=1)
+    RATE_LIMIT_WINDOW: int = Field(default=60, ge=1)  # seconds
+
+    # Watchdog thresholds
+    SUSPENSION_THRESHOLD: int = Field(default=3, ge=1, description="Número de suspensiones antes de ignorar")
+    REJECTION_THRESHOLD: int = Field(default=3, ge=1, description="Número de rechazos antes de ignorar")
+
+    # AI Configuration
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434", description="URL base para Ollama API")
+    DEFAULT_AI_MODEL: str = Field(default="llama2", description="Modelo de IA por defecto")
+    AI_ENABLED: bool = Field(default=True, description="Habilitar funcionalidades de IA")
+    AI_ANALYSIS_INTERVAL: int = Field(default=300, ge=60, description="Intervalo para análisis de IA (segundos)")
+    AI_MAX_CONVERSATIONS: int = Field(default=100, description="Máximo número de conversaciones a mantener")
+    AI_AUTO_ANALYZE: bool = Field(default=True, description="Análisis automático del sistema con IA")
 
     # Logging configuration
     LOGGING_CONFIG: dict = Field(default_factory=lambda: {
@@ -118,10 +130,6 @@ class Settings(BaseSettings):
             "level": "INFO",
         },
     })
-
-    # Rate limiting configuration
-    RATE_LIMIT_WINDOW: int = Field(default=60, ge=1, description="Ventana de tiempo para rate limiting en segundos")
-    RATE_LIMIT_REQUESTS: int = Field(default=100, ge=1, description="Número máximo de requests por ventana de tiempo")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 

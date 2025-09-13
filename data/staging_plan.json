@@ -4,7 +4,7 @@
       "name": "staging_opt",
       "command": "python staging_runner.py",
       "schedule": "daily",
-      "next_run": "2025-09-12 16:33:20.166617"
+      "next_run": "2025-09-14 02:16:19.432245"
     },
     "dry_run": true,
     "message": "Task prepared. Set dry_run=False to actually create it using a controlled mechanism."
@@ -34,7 +34,7 @@
     ],
     "estimated_freed_mb": 200,
     "total_candidates": 2,
-    "timestamp": "2025-09-11T16:33:20.166617"
+    "timestamp": "2025-09-13T02:16:19.432245"
   },
   "disk_preview": {
     "dry_run": true,
@@ -67,6 +67,6 @@
       "total_bytes": 0,
       "total_mb": 0.0
     },
-    "timestamp": "2025-09-11T16:33:23.613599"
+    "timestamp": "2025-09-13T02:16:19.457464"
   }
 }

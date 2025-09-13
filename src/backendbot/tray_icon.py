@@ -4,7 +4,7 @@ import webbrowser
 
 import requests
 from PIL import Image, ImageDraw
-from pystray import Icon, Menu, MenuItem, SubMenu
+from pystray import Icon, Menu, MenuItem
 
 from .utils import log_event  # Import log_event and notify from utils
 
@@ -15,7 +15,7 @@ BACKEND = os.path.join(FOLDER, "src", "backendbot", "backend.py")
 def create_image():
     img = Image.new("RGBA", (64, 64), (255, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    draw.ellipse((16, 16, 48, 48), fill=(255, 0, 0))
+    draw.ellipse((16, 16, 48, 48), fill=(59, 130, 246))  # Azul BackendBot
     return img
 
 
@@ -61,24 +61,12 @@ def set_modo(icon, item, modo):
 def update_menu(icon):
     current_mode = get_current_mode()
     icon.menu = Menu(
-        SubMenu(
-            "Modos",
-            [
-                MenuItem(
-                    "Diario" + (" ✅" if current_mode == "diario" else ""),
-                    lambda icon, item: set_modo(icon, item, "diario"),
-                ),
-                MenuItem(
-                    "Editor" + (" ✅" if current_mode == "editor" else ""),
-                    lambda icon, item: set_modo(icon, item, "editor"),
-                ),
-                MenuItem(
-                    "Videojuego" + (" ✅" if current_mode == "videojuego" else ""),
-                    lambda icon, item: set_modo(icon, item, "videojuego"),
-                ),
-            ],
-        ),
-        MenuItem("Abrir Dashboard", lambda icon, item: open_dashboard()),
+        MenuItem("Modos", Menu(
+            MenuItem("Diario" + (" ✅" if current_mode == "diario" else ""), lambda icon, item: set_modo(icon, item, "diario")),
+            MenuItem("Editor" + (" ✅" if current_mode == "editor" else ""), lambda icon, item: set_modo(icon, item, "editor")),
+            MenuItem("Videojuego" + (" ✅" if current_mode == "videojuego" else ""), lambda icon, item: set_modo(icon, item, "videojuego")),
+        )),
+        MenuItem("Abrir Dashboard", open_dashboard),
         MenuItem("Reiniciar Backend", restart_backend),
         MenuItem("Salir", quit_tray),
     )

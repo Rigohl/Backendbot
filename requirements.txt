@@ -29,3 +29,7 @@ python-jose==3.3.0
 # --- Local Agent Dependencies ---
 # For monitoring keyboard and mouse on the user's PC
 pynput==1.7.6
+
+# --- Windows Tray Icon Dependencies ---
+pystray==0.19.5
+pillow==10.2.0

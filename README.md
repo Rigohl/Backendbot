@@ -24,6 +24,7 @@
 - ✅ **Optimización de Memoria** - Liberación inteligente de RAM
 - ✅ **API RESTful Completa** - Endpoints documentados con OpenAPI/Swagger
 - ✅ **Dashboard Web** - Interfaz moderna con gráficos en tiempo real
+- ✅ **Tray Icon (Windows)** - Icono en bandeja de sistema para acceso rápido
 - ✅ **Automatización** - Scripts de PowerShell y Batch para Windows
 
 ## 🚀 Inicio Rápido
@@ -31,9 +32,15 @@
 ### Opción 1: Inicio Automático (Windows)
 1. **Haz doble click** en `Start-BackendBot.bat`
 2. **Abre el dashboard** con `Open-Dashboard.bat`
-3. ¡Listo! El sistema está corriendo en `http://localhost:8000`
+3. **Acceso rápido** desde el icono en la bandeja de sistema (esquina inferior derecha)
+4. ¡Listo! El sistema está corriendo en `http://localhost:8000`
 
-### Opción 2: Railway Cloud (Recomendado)
+### Opción 2: Solo Tray Icon (Windows)
+1. **Haz doble click** en `Start-Tray.bat`
+2. El icono aparecerá en la bandeja de sistema
+3. Click derecho para menú completo, click izquierdo para abrir dashboard
+
+### Opción 3: Railway Cloud (Recomendado)
 ```bash
 # Desplegar en Railway (automático)
 railway deploy

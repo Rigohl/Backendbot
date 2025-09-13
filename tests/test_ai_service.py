@@ -219,8 +219,11 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_check_ollama_status(self, ai_service):
         """Test de verificación de estado de Ollama"""
-        with patch.object(ai_service.ollama, 'check_connection', return_value=True) as mock_check:
-            with patch.object(ai_service.ollama, 'list_models', return_value=[{"name": "llama2"}]) as mock_list:
+        mock_check = AsyncMock(return_value={"available": True, "version": "0.1.0"})
+        mock_list = AsyncMock(return_value=[{"name": "llama2"}])
+        
+        with patch.object(ai_service.ollama, 'check_connection', mock_check):
+            with patch.object(ai_service.ollama, 'list_models', mock_list):
                 status = await ai_service.check_ollama_status()
                 assert status["connected"] is True
                 assert len(status["models"]) == 1

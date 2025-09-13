@@ -1,10 +1,13 @@
 import base64
-import sys
+sys.path.insert(0, "src")
 
+import sys
+import os
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.insert(0, "src")
+# Agregar src/backendbot al path para imports correctos
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 from backendbot.main import app, rate_limit_store
 
 client = TestClient(app)
