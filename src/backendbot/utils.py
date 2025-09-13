@@ -26,13 +26,17 @@ def get_logger():
     global _logger_initialized, _logger
     if not _logger_initialized:
         try:
+            # Ensure console handler uses utf-8 encoding
+            if "handlers" in settings.LOGGING_CONFIG and "console" in settings.LOGGING_CONFIG["handlers"]:
+                settings.LOGGING_CONFIG["handlers"]["console"]["encoding"] = "utf-8"
+            
             logging.config.dictConfig(settings.LOGGING_CONFIG)
             _logger = logging.getLogger("backendbot")
             _logger_initialized = True
         except Exception as e:
             print(f"ERROR: Failed to configure logger: {e}")
             # Fallback to a basic logger if config fails
-            logging.basicConfig(level=logging.INFO)
+            logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             _logger = logging.getLogger("backendbot_fallback")
             _logger_initialized = True
     return _logger
@@ -185,4 +189,4 @@ async def store_watchdog_decision(program_name: str, action: str, cpu_usage: flo
             session.add(new_entry)
             await session.commit()
     except Exception as e:
-        log_event(f"Error almacenando decisión del watchdog: {e}", level="error")
+        log_event(f"Error almacenando decisión del watchdog: {e}")
