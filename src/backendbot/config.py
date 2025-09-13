@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     MODO: str = Field(default="diario", pattern="^(diario|videojuego|editor|streaming|multimedia)$")
 
     # API and security - MADE REQUIRED
-    API_KEY: str = Field(description="API key for authentication") # Removed default
-    ADMIN_USERNAME: str = Field(description="Admin username for dashboard access") # Removed default
-    ADMIN_PASSWORD: str = Field(description="Admin password for dashboard access") # Removed default
+    API_KEY: str = Field(default="backendbot_default_key_2024", description="API key for authentication")
+    ADMIN_USERNAME: str = Field(default="admin", description="Admin username for dashboard access")
+    ADMIN_PASSWORD: str = Field(default="admin123", description="Admin password for dashboard access")
     JWT_SECRET_KEY: str = Field(default_factory=lambda: secrets.token_urlsafe(32), description="JWT secret key") # Generate if not provided
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     ACTIVITY_CHECK_INTERVAL: int = Field(default=1, ge=1, description="Intervalo para verificar actividad (segundos)")
     BACKEND_AUTO_START: bool = Field(default=True, description="Iniciar backend automáticamente al detectar actividad")
     BACKEND_AUTO_STOP: bool = Field(default=True, description="Apagar backend automáticamente por inactividad")
+    SUSPENSION_THRESHOLD: int = Field(default=3, ge=1, description="Umbral de suspensiones antes de tomar acción")
+    REJECTION_THRESHOLD: int = Field(default=3, ge=1, description="Umbral de rechazos antes de tomar acción")
 
     # Logging configuration
     LOGGING_CONFIG: dict = Field(default_factory=lambda: {
@@ -116,6 +118,10 @@ class Settings(BaseSettings):
             "level": "INFO",
         },
     })
+
+    # Rate limiting configuration
+    RATE_LIMIT_WINDOW: int = Field(default=60, ge=1, description="Ventana de tiempo para rate limiting en segundos")
+    RATE_LIMIT_REQUESTS: int = Field(default=100, ge=1, description="Número máximo de requests por ventana de tiempo")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 

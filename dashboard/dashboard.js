@@ -207,8 +207,8 @@ class BackendBotDashboard {
 
         document.getElementById('diskUsage').textContent = `${diskPercent.toFixed(1)}%`;
         document.getElementById('diskProgress').style.width = `${diskPercent}%`;
-        document.getElementById('diskTotal').textContent = `${(diskTotal / (1024**3)).toFixed(1)}`;
-        document.getElementById('diskFree').textContent = `${((diskTotal - diskUsage) / (1024**3)).toFixed(1)}`;
+        document.getElementById('diskTotal').textContent = `${(diskTotal / (1024 ** 3)).toFixed(1)}`;
+        document.getElementById('diskFree').textContent = `${((diskTotal - diskUsage) / (1024 ** 3)).toFixed(1)}`;
 
         // Network
         document.getElementById('networkUsage').textContent = '--';

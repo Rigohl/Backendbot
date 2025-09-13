@@ -43,10 +43,12 @@ if (-not $backendRunning) {
         Write-Host "Stopping backend..." -ForegroundColor Yellow
         Stop-BackendProcess
         Write-Host "Backend stopped" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "Failed to start backend" -ForegroundColor Red
     }
-} else {
+}
+else {
     Write-Host "`nTest 4: Backend Start/Stop - SKIPPED (Backend already running)" -ForegroundColor Yellow
 }
 
@@ -59,19 +61,20 @@ if ($QuickTest) {
     $activityDetected = $false
 
     while ((Get-Date) - $startTime).TotalSeconds -lt 10) {
-        $currentIdle = Get-IdleTimeMinutes
-        if ($currentIdle -lt 0.1) {
-            $activityDetected = $true
-            break
-        }
-        Start-Sleep -Seconds 1
+    $currentIdle = Get-IdleTimeMinutes
+    if ($currentIdle -lt 0.1) {
+        $activityDetected = $true
+        break
     }
+    Start-Sleep -Seconds 1
+}
 
-    if ($activityDetected) {
-        Write-Host "Activity detected successfully!" -ForegroundColor Green
-    } else {
-        Write-Host "No activity detected within timeout" -ForegroundColor Red
-    }
+if ($activityDetected) {
+    Write-Host "Activity detected successfully!" -ForegroundColor Green
+}
+else {
+    Write-Host "No activity detected within timeout" -ForegroundColor Red
+}
 }
 
 # Test 6: Configuration validation
@@ -86,7 +89,8 @@ $allFilesExist = $true
 foreach ($file in $requiredFiles) {
     if (Test-Path $file) {
         Write-Host "✓ $file exists" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "✗ $file missing" -ForegroundColor Red
         $allFilesExist = $false
     }
@@ -94,7 +98,8 @@ foreach ($file in $requiredFiles) {
 
 if ($allFilesExist) {
     Write-Host "All required files present" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "Some required files are missing" -ForegroundColor Red
 }
 
@@ -124,7 +129,8 @@ if ($FullTest) {
         Write-Host "Monitoring simulation completed" -ForegroundColor Green
         Write-Host "Total activity detections: $activityCount" -ForegroundColor Green
 
-    } catch {
+    }
+    catch {
         Write-Host "`nMonitoring simulation interrupted" -ForegroundColor Yellow
     }
 }

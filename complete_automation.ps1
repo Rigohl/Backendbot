@@ -31,8 +31,8 @@ function Write-Log {
     # Write to console with color
     switch ($Level) {
         "ERROR" { Write-Host $LogMessage -ForegroundColor Red }
-        "WARN"  { Write-Host $LogMessage -ForegroundColor Yellow }
-        "INFO"  { Write-Host $LogMessage -ForegroundColor Green }
+        "WARN" { Write-Host $LogMessage -ForegroundColor Yellow }
+        "INFO" { Write-Host $LogMessage -ForegroundColor Green }
         "DEBUG" { Write-Host $LogMessage -ForegroundColor Gray }
         default { Write-Host $LogMessage }
     }
@@ -40,7 +40,8 @@ function Write-Log {
     # Write to file
     try {
         Add-Content -Path $LogFile -Value $LogMessage -ErrorAction SilentlyContinue
-    } catch {
+    }
+    catch {
         Write-Host "Error writing to log file: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
@@ -62,11 +63,13 @@ function Test-SystemRequirements {
             $result = Invoke-Expression $req.Command
             if ($result) {
                 Write-Log "✓ $($req.Name): OK" "INFO"
-            } else {
+            }
+            else {
                 Write-Log "✗ $($req.Name): Failed" "ERROR"
                 if ($req.Required) { $allMet = $false }
             }
-        } catch {
+        }
+        catch {
             Write-Log "✗ $($req.Name): Error - $($_.Exception.Message)" "ERROR"
             if ($req.Required) { $allMet = $false }
         }
@@ -99,7 +102,8 @@ function Start-CompleteSystem {
 
         Write-Log "Activity monitor started in background (Job ID: $($monitorJob.Id))"
         return $monitorJob
-    } else {
+    }
+    else {
         Write-Log "Starting activity monitor in foreground..."
         & $activityMonitorPath -Monitor -InactivityThresholdMinutes $InactivityThresholdMinutes -ResponseTimeoutMinutes $ResponseTimeoutMinutes
     }
@@ -175,7 +179,8 @@ function Show-SystemStatus {
     $monitorJob = Get-Job -Name "ActivityMonitor" -ErrorAction SilentlyContinue
     if ($monitorJob) {
         Write-Log "Activity Monitor: Running (Job ID: $($monitorJob.Id), State: $($monitorJob.State))"
-    } else {
+    }
+    else {
         Write-Log "Activity Monitor: Not running"
     }
 
@@ -195,7 +200,8 @@ function Show-SystemStatus {
         foreach ($log in $recentLogs) {
             Write-Log "  $log"
         }
-    } catch {
+    }
+    catch {
         Write-Log "  No recent logs available"
     }
 
@@ -211,40 +217,50 @@ try {
         $result = Start-CompleteSystem
         if ($result) {
             Write-Log "Complete system started successfully"
-        } else {
+        }
+        else {
             Write-Log "Failed to start complete system" "ERROR"
             exit 1
         }
-    } elseif ($Stop) {
+    }
+    elseif ($Stop) {
         Write-Log "Command: Stop Complete System"
         if (Stop-CompleteSystem) {
             Write-Log "Complete system stopped successfully"
-        } else {
+        }
+        else {
             Write-Log "Failed to stop complete system" "ERROR"
             exit 1
         }
-    } elseif ($Monitor) {
+    }
+    elseif ($Monitor) {
         Write-Log "Command: Start Monitoring Only"
         & $activityMonitorPath -Monitor -InactivityThresholdMinutes $InactivityThresholdMinutes -ResponseTimeoutMinutes $ResponseTimeoutMinutes
-    } elseif ($Test) {
+    }
+    elseif ($Test) {
         Write-Log "Command: Run System Tests"
         Invoke-SystemTests
-    } elseif ($Deploy) {
+    }
+    elseif ($Deploy) {
         Write-Log "Command: Deploy System"
         Write-Log "Deployment functionality not yet implemented" "WARN"
-    } elseif ($Optimize) {
+    }
+    elseif ($Optimize) {
         Write-Log "Command: Optimize System"
         Optimize-System
-    } else {
+    }
+    else {
         Write-Log "Command: Show Status"
         Show-SystemStatus
     }
 
-} catch {
+}
+catch {
     Write-Log "Error executing command: $($_.Exception.Message)" "ERROR"
     Write-Log "Stack trace: $($_.ScriptStackTrace)" "DEBUG"
     exit 1
-} finally {
+}
+finally {
     Write-Log "Command execution completed"
 }
 

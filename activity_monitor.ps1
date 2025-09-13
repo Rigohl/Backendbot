@@ -57,8 +57,8 @@ function Write-Log {
     # Write to console with color
     switch ($Level) {
         "ERROR" { Write-Host $LogMessage -ForegroundColor Red }
-        "WARN"  { Write-Host $LogMessage -ForegroundColor Yellow }
-        "INFO"  { Write-Host $LogMessage -ForegroundColor Green }
+        "WARN" { Write-Host $LogMessage -ForegroundColor Yellow }
+        "INFO" { Write-Host $LogMessage -ForegroundColor Green }
         "DEBUG" { Write-Host $LogMessage -ForegroundColor Gray }
         default { Write-Host $LogMessage }
     }
@@ -66,7 +66,8 @@ function Write-Log {
     # Write to file
     try {
         Add-Content -Path $LogFile -Value $LogMessage -ErrorAction SilentlyContinue
-    } catch {
+    }
+    catch {
         Write-Host "Error writing to log file: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
@@ -134,7 +135,8 @@ function Start-BackendProcess {
         if (Test-BackendRunning) {
             Write-Log "BackendBot started successfully"
             return $backendJob
-        } else {
+        }
+        else {
             Write-Log "Failed to start BackendBot" "ERROR"
             return $null
         }
@@ -191,37 +193,37 @@ function Show-InactivityNotification {
         # Wait for user response or timeout
         $startTime = Get-Date
         while ((Get-Date) - $startTime).TotalSeconds -lt 60) {
-            # Check for user activity
-            if (Get-IdleTimeMinutes -lt 1) {
-                $notification.Dispose()
-                Write-Log "User responded via activity"
-                return $true
-            }
-            Start-Sleep -Seconds 1
+        # Check for user activity
+        if (Get-IdleTimeMinutes -lt 1) {
+            $notification.Dispose()
+            Write-Log "User responded via activity"
+            return $true
         }
+        Start-Sleep -Seconds 1
+    }
 
-        $notification.Dispose()
-        return $false
+    $notification.Dispose()
+    return $false
+}
+catch {
+    Write-Log "Windows notification failed, using popup: $($_.Exception.Message)" "WARN"
+
+    # Fallback to popup
+    try {
+        $wshell = New-Object -ComObject Wscript.Shell
+        $result = $wshell.Popup(
+            "El backend se detendrá en $TimeoutMinutes minutos debido a inactividad.`n`n¿Desea mantenerlo activo?",
+            60,
+            "BackendBot - Inactividad Detectada",
+            4 + 32
+        )
+        return $result -eq 6
     }
     catch {
-        Write-Log "Windows notification failed, using popup: $($_.Exception.Message)" "WARN"
-
-        # Fallback to popup
-        try {
-            $wshell = New-Object -ComObject Wscript.Shell
-            $result = $wshell.Popup(
-                "El backend se detendrá en $TimeoutMinutes minutos debido a inactividad.`n`n¿Desea mantenerlo activo?",
-                60,
-                "BackendBot - Inactividad Detectada",
-                4 + 32
-            )
-            return $result -eq 6
-        }
-        catch {
-            Write-Log "Popup notification failed: $($_.Exception.Message)" "ERROR"
-            return $false
-        }
+        Write-Log "Popup notification failed: $($_.Exception.Message)" "ERROR"
+        return $false
     }
+}
 }
 
 # Function to start backend (legacy - replaced by Start-BackendProcess)
