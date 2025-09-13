@@ -4,6 +4,7 @@ import asyncio
 import aiohttp
 from typing import Dict, List, Optional, Any
 from datetime import datetime
+from dataclasses import dataclass, field
 import logging
 
 from sqlalchemy import select, delete
@@ -11,70 +12,81 @@ from sqlalchemy.orm import selectinload # For eager loading relationships
 
 from ..config import settings
 from ..utils import log_event
-from ..database import AsyncSessionLocal, AIConversation, AIMessage, AIAgent # New imports
+from ..database import AIConversation as DBConversation, AIMessage as DBMessage
+from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
+class AIMessage:
+    """Mensaje de IA para manejo en memoria"""
+    role: str
+    content: str
+    timestamp: datetime = field(default_factory=datetime.now)
+    metadata_: Optional[Dict[str, Any]] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "role": self.role,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat(),
+            "metadata": self.metadata_
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'AIMessage':
+        return cls(
+            role=data["role"],
+            content=data["content"],
+            timestamp=datetime.fromisoformat(data["timestamp"]),
+            metadata_=data.get("metadata")
+        )
+
+
+@dataclass
 class AIConversation:
-    """Clase para manejar conversaciones de IA"""
+    """Conversación de IA para manejo en memoria"""
     id: str
     model: str
-    created_at: datetime
-    updated_at: datetime
-    messages: List[AIMessage] = field(default_factory=list)
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
     context: Optional[Dict[str, Any]] = None
+    messages: List[AIMessage] = field(default_factory=list)
 
-    def add_message(self, message: AIMessage) -> None:
+    def add_message(self, role: str, content: str, metadata: Optional[Dict[str, Any]] = None):
         """Agrega un mensaje a la conversación"""
+        message = AIMessage(role=role, content=content, metadata_=metadata)
         self.messages.append(message)
         self.updated_at = datetime.now()
 
     def get_messages_for_api(self) -> List[Dict[str, Any]]:
         """Obtiene los mensajes en formato para API"""
-        return [
-            {
-                "role": msg.role,
-                "content": msg.content,
-                "timestamp": msg.timestamp.isoformat(),
-                "metadata": msg.metadata
-            }
-            for msg in self.messages
-        ]
+        return [msg.to_dict() for msg in self.messages]
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convierte la conversación a diccionario"""
         return {
             "id": self.id,
             "model": self.model,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "messages": self.get_messages_for_api(),
-            "context": self.context
+            "context": self.context,
+            "messages": [msg.to_dict() for msg in self.messages]
         }
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'AIConversation':
-        """Crea una conversación desde un diccionario"""
-        messages = [
-            AIMessage(
-                role=msg["role"],
-                content=msg["content"],
-                timestamp=datetime.fromisoformat(msg["timestamp"]),
-                metadata=msg.get("metadata")
-            )
-            for msg in data.get("messages", [])
-        ]
-
         return cls(
             id=data["id"],
             model=data["model"],
             created_at=datetime.fromisoformat(data["created_at"]),
             updated_at=datetime.fromisoformat(data["updated_at"]),
-            messages=messages,
-            context=data.get("context")
+            context=data.get("context"),
+            messages=[AIMessage.from_dict(msg) for msg in data.get("messages", [])]
         )
+
+
+# AIConversation is imported from database module
 
 
 class OllamaClient:
@@ -579,8 +591,6 @@ AI_AGENT_CAPABILITIES = [
     "resource_prediction",
     "security_analysis"
 ]
-
-    ]
 
 # Instancia global del servicio de IA
 ai_service = AIService()

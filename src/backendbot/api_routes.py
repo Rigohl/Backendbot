@@ -1,10 +1,11 @@
 import os
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict
 
 import psutil
 from fastapi import APIRouter, Depends, HTTPException, status
+from jose import jwt
 
 try:
     from .config import settings
@@ -52,18 +53,18 @@ except ImportError:
 router = APIRouter()
 
 try:
-    from .dependencies import get_api_key
+    from .dependencies import get_api_key, get_current_active_user
     from .routers import history_routes
 except ImportError:
     # Fallback for when running from tests
-    from dependencies import get_api_key
+    from dependencies import get_api_key, get_current_active_user
     from routers import history_routes
 
 router.include_router(process_router)  # Include the new router
 router.include_router(history_routes.router) # Include the history router
 
 
-@router.post("/decision/{programa}/{accion}", dependencies=[Depends(get_api_key)])
+@router.post("/decision/{programa}/{accion}", dependencies=[Depends(get_current_active_user)])
 async def guardar_decision(programa: str, accion: str) -> Dict[str, Any]:
     """Guarda la decisión de suspender o rechazar un programa en la memoria.
 
@@ -85,7 +86,7 @@ async def guardar_decision(programa: str, accion: str) -> Dict[str, Any]:
     return memory.get(programa)
 
 
-@router.get("/memoria", dependencies=[Depends(get_api_key)])
+@router.get("/memoria", dependencies=[Depends(get_current_active_user)])
 async def ver_memoria() -> dict[str, Any]:
     """Retorna el contenido actual de la memoria de decisiones.
 
@@ -113,7 +114,7 @@ async def reset_memoria() -> Dict[str, str]:
 _app_start = time.time()
 
 
-@router.get("/self", dependencies=[Depends(get_api_key)])
+@router.get("/self", dependencies=[Depends(get_current_active_user)])
 def self_metrics() -> dict[str, Any]:
     """Retorna métricas de autodiagnóstico del proceso del backend.
 
@@ -163,37 +164,18 @@ def get_modo() -> dict[str, str]:
     return {"modo": settings.MODO}
 
 
-@router.get("/get-api-key")
-def get_api_key_from_env() -> dict[str, str]:
-    """Retorna la API_KEY desde el archivo .env si existe.
 
-    Returns:
-        Dict[str, str]: Un diccionario con la clave "api_key" y el valor de la API_KEY.
-
-    """
-    result = {"api_key": None, "username": None, "password": None}
-
-    if settings.API_KEY and settings.API_KEY != "default-api-key":
-        result["api_key"] = settings.API_KEY
-
-    if hasattr(settings, 'ADMIN_USERNAME') and settings.ADMIN_USERNAME != "admin":
-        result["username"] = settings.ADMIN_USERNAME
-
-    if hasattr(settings, 'ADMIN_PASSWORD') and settings.ADMIN_PASSWORD != "backendbot2025!":
-        result["password"] = settings.ADMIN_PASSWORD
-
-    return result
 
 
 @router.post("/auth/login")
-def login(credentials: dict[str, str]) -> dict[str, str]:
-    """Autentica usuario y contraseña y retorna API_KEY si es válido.
+async def login(credentials: dict[str, str]) -> dict[str, str]:
+    """Autentica usuario y contraseña y retorna un token JWT si es válido.
 
     Args:
         credentials: Diccionario con username y password
 
     Returns:
-        Dict[str, str]: API_KEY si las credenciales son válidas
+        Dict[str, str]: Un token JWT si las credenciales son válidas
 
     Raises:
         HTTPException: Si las credenciales son inválidas
@@ -205,7 +187,13 @@ def login(credentials: dict[str, str]) -> dict[str, str]:
         hasattr(settings, 'ADMIN_PASSWORD') and
         username == settings.ADMIN_USERNAME and
         password == settings.ADMIN_PASSWORD):
-        return {"api_key": settings.API_KEY}
+
+        access_token_expires = timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + access_token_expires
+        to_encode = {"sub": username, "exp": expire}
+        encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+        return {"access_token": encoded_jwt, "token_type": "bearer"}
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -213,7 +201,7 @@ def login(credentials: dict[str, str]) -> dict[str, str]:
     )
 
 
-@router.get("/logs", dependencies=[Depends(get_api_key)])
+@router.get("/logs", dependencies=[Depends(get_current_active_user)])
 def get_logs(limit: int = 100) -> list[dict[str, Any]]:
     """Retorna los logs más recientes del backend.
 

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BackendBot Dashboard</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./assets/css/main.css">
+    <link rel="stylesheet" href="./assets/css/components.css">
+    <link rel="stylesheet" href="./assets/css/themes.css">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="app-title">
+                    <i class="fas fa-robot"></i>
+                    BackendBot
+                </h1>
+                <div class="status-indicator">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span class="status-text" id="status-text">Connecting...</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="header-btn" id="theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="config-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="header-btn" id="ultra-btn" title="Ultra Mode">
+                    <i class="fas fa-rocket"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- System Status Card -->
+                <div class="card system-status-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-server"></i> System Status</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="status-metrics">
+                            <div class="metric">
+                                <span class="metric-label">CPU Usage</span>
+                                <span class="metric-value" id="cpu-usage">--%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Memory Usage</span>
+                                <span class="metric-value" id="memory-usage">--%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Disk Usage</span>
+                                <span class="metric-value" id="disk-usage">--%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAM Monitor Card -->
+                <div class="card ram-monitor-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-memory"></i> RAM Monitor</h3>
+                        <button class="card-action-btn" id="ram-optimize-btn">
+                            <i class="fas fa-bolt"></i> Optimize
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="ram-chart-container">
+                            <canvas id="ram-chart" width="300" height="150"></canvas>
+                        </div>
+                        <div class="ram-details">
+                            <div class="ram-info">
+                                <span>Total: <strong id="ram-total">-- GB</strong></span>
+                                <span>Used: <strong id="ram-used">-- GB</strong></span>
+                                <span>Free: <strong id="ram-free">-- GB</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Monitor Card -->
+                <div class="card process-monitor-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tasks"></i> Process Monitor</h3>
+                        <button class="card-action-btn" id="process-refresh-btn">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="process-list" id="process-list">
+                            <div class="process-item loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading processes...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Card -->
+                <div class="card history-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Activity History</h3>
+                        <button class="card-action-btn" id="history-clear-btn">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="history-list" id="history-list">
+                            <div class="history-item loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Loading history...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-info">
+                <span>BackendBot v1.0.0</span>
+                <span id="uptime">Uptime: --:--:--</span>
+            </div>
+            <div class="footer-actions">
+                <button class="footer-btn" id="restart-btn">
+                    <i class="fas fa-redo"></i> Restart
+                </button>
+                <button class="footer-btn" id="shutdown-btn">
+                    <i class="fas fa-power-off"></i> Shutdown
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modals-container"></div>
+
+    <!-- Notifications Container -->
+    <div id="notifications-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-robot fa-spin"></i>
+            <p>Initializing BackendBot...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

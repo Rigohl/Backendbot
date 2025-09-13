@@ -1,3 +1,4 @@
+import time # Added import
 from typing import Any, Dict, List
 
 from sqlalchemy import select
@@ -50,3 +51,39 @@ class HistoryRepository:
             .limit(limit)
         )
         return [row.to_dict() for row in result.scalars().all()]
+
+    async def store_process_data(self, pid: int, name: str, ram_mb: float, cpu_percent: float) -> None:
+        """Stores process data in the database."""
+        new_entry = ProcessHistory(
+            timestamp=time.time(),
+            pid=pid,
+            name=name,
+            ram_mb=ram_mb,
+            cpu_percent=cpu_percent,
+        )
+        self.session.add(new_entry)
+        await self.session.commit()
+
+    async def store_optimization_event(self, freed_ram_mb: float) -> None:
+        """Stores optimization event in the database."""
+        new_entry = OptimizationEvent(
+            timestamp=time.time(),
+            freed_ram_mb=freed_ram_mb
+        )
+        self.session.add(new_entry)
+        await self.session.commit()
+
+    async def store_watchdog_decision(
+        self, program_name: str, action: str, cpu_usage: float | None = None, ram_usage: float | None = None
+    ) -> None:
+        """Stores watchdog decision in the database."""
+        new_entry = WatchdogDecision(
+            timestamp=time.time(),
+            program_name=program_name,
+            action=action,
+            cpu_usage=cpu_usage,
+            ram_usage=ram_usage,
+        )
+        self.session.add(new_entry)
+        await self.session.commit()
+

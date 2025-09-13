@@ -1,6 +1,5 @@
-import asyncio  # Added import
+import asyncio
 import time
-from collections import defaultdict
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -8,9 +7,12 @@ from .api_routes import router
 from .config import Settings
 from .database import init_db
 from .utils import log_event
-from .watchdog import watchdog  # Moved import here
+from .watchdog import watchdog
 from .routers import tasks_routes
-from .staging_automation import run_preview_workflow  # Added staging import
+from .staging_automation import run_preview_workflow
+from .railway_integration import railway, init_railway
+from .cache import cache
+from .webhooks import webhooks
 
 settings = Settings()
 
@@ -21,46 +23,101 @@ app = FastAPI(
 app.include_router(router)
 app.include_router(tasks_routes.router, prefix="/celery", tags=["celery"])
 
-# Rate limiting simple
-rate_limit_store = defaultdict(list)
-
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    """Middleware para rate limiting."""
-    # Para pruebas, usar una IP fija
+    """Middleware para rate limiting usando Redis."""
     client_ip = getattr(request.client, 'host', None) if request.client else "test_client"
-    if not client_ip or client_ip == "testserver":  # En pruebas FastAPI usa "testserver"
+    if not client_ip or client_ip == "testserver":
         client_ip = "test_client"
-    
-    now = time.time()
-    
-    # Limpiar requests antiguos (fuera de la ventana)
-    rate_limit_store[client_ip] = [
-        req_time for req_time in rate_limit_store[client_ip]
-        if now - req_time < settings.RATE_LIMIT_WINDOW
-    ]
-    
-    # Verificar límite
-    if len(rate_limit_store[client_ip]) >= settings.RATE_LIMIT_REQUESTS:
+
+    if not cache.set_rate_limit(
+        identifier=client_ip,
+        window_seconds=settings.RATE_LIMIT_WINDOW,
+        max_requests=settings.RATE_LIMIT_REQUESTS
+    ):
         return JSONResponse(
             status_code=429,
             content={"detail": "Rate limit exceeded"}
         )
-    
-    # Agregar timestamp actual
-    rate_limit_store[client_ip].append(now)
-    
-    # Continuar con la solicitud
     return await call_next(request)
 
 @app.get("/")
 async def root():
     """Endpoint raíz para verificar que el backend está funcionando."""
-    return {"message": "BackendBot is running", "status": "ok"}
+    railway_info = railway.get_railway_info() if railway.initialized else None
+    return {
+        "message": "BackendBot is running",
+        "status": "ok",
+        "railway_enabled": railway.is_railway_environment(),
+        "railway_info": railway_info
+    }
+
+@app.get("/health")
+async def health_check():
+    """Endpoint de health check avanzado con métricas de Railway."""
+    if railway.initialized:
+        return await railway.get_system_status()
+    else:
+        return {
+            "status": "ok",
+            "message": "BackendBot is running (Railway integration not initialized)",
+            "timestamp": time.time()
+        }
+
+@app.post("/optimize")
+async def optimize_system():
+    """Endpoint para ejecutar optimización del sistema."""
+    if not railway.initialized:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Railway integration not available"}
+        )
+
+    return await railway.optimize_system()
+
+@app.get("/railway/status")
+async def railway_status():
+    """Obtener estado detallado de Railway."""
+    if not railway.initialized:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Railway integration not available"}
+        )
+
+    return await railway.get_system_status()
+
+@app.get("/railway/cache/stats")
+async def cache_stats():
+    """Obtener estadísticas del cache Redis."""
+    if not railway.initialized:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Railway integration not available"}
+        )
+
+    return cache.get_cache_stats()
+
+@app.post("/railway/webhook")
+async def railway_webhook(request: Request):
+    """Endpoint para webhooks de Railway."""
+    if not railway.initialized:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Railway integration not available"}
+        )
+
+    return await webhooks.handle_webhook(request)
 
 @app.on_event("startup")
 async def on_startup():
     await init_db()
+
+    # Inicializar integración de Railway
+    if await init_railway():
+        log_event("Railway integration initialized successfully")
+    else:
+        log_event("Railway integration failed to initialize")
+
     asyncio.create_task(watchdog())  # Start watchdog as an asyncio task
     # Run staging preview on startup (dry-run)
     plan = run_preview_workflow()

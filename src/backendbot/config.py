@@ -45,9 +45,22 @@ class Settings(BaseSettings):
         default_factory=lambda: os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "memory.json")
     )
 
-    # Optional dependencies flags
+    # Optional dependencies flags (computed at runtime)
     GPU_AVAILABLE: bool = Field(default=False)
     WMI_AVAILABLE: bool = Field(default=False)
+
+    # Railway/Deployment configuration
+    PORT: Optional[int] = Field(default=8000, description="Puerto del servidor")
+    HOST: str = Field(default="0.0.0.0", description="Host del servidor")
+    RAILWAY_ENVIRONMENT: str = Field(default="development", description="Entorno de Railway")
+    OPENAI_API_KEY: Optional[str] = Field(default=None, description="OpenAI API Key")
+    LOG_LEVEL: str = Field(default="INFO", description="Nivel de logging")
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"  # Ignore extra fields from environment
+    )
 
     # Rate limiting
     RATE_LIMIT_REQUESTS: int = Field(default=100, ge=1)
@@ -134,19 +147,27 @@ class Settings(BaseSettings):
         return v
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        # Check optional dependencies
+        # Check optional dependencies before calling super().__init__
+        gpu_available = False
+        wmi_available = False
+        
         try:
             import GPUtil
-            self.GPU_AVAILABLE = True
+            gpu_available = True
         except ImportError:
-            self.GPU_AVAILABLE = False
+            gpu_available = False
 
         try:
             import wmi
-            self.WMI_AVAILABLE = True
+            wmi_available = True
         except ImportError:
-            self.WMI_AVAILABLE = False
+            wmi_available = False
+            
+        # Add the computed values to kwargs
+        kwargs['GPU_AVAILABLE'] = gpu_available
+        kwargs['WMI_AVAILABLE'] = wmi_available
+        
+        super().__init__(**kwargs)
 
 
 # Global settings instance

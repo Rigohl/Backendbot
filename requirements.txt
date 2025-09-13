@@ -12,6 +12,13 @@ black==25.1.0
 gunicorn==21.2.0
 uvloop==0.17.0
 httptools==0.6.1
+# Railway Advanced Features Dependencies
+redis==5.0.1
+asyncpg==0.29.0
+apscheduler==3.10.4
+aiohttp==3.9.1
+PyJWT==2.8.0
+python-jose==3.3.0
 # Removed Windows-specific packages for Railway (Linux)
 # win10toast - not needed on Linux
 # pystray - not needed on Linux
