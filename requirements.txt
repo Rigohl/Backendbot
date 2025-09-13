@@ -1,5 +1,5 @@
 fastapi==0.116.1
-uvicorn[standard]==0.35.0
+uvicorn==0.35.0
 psutil==7.0.0
 pydantic==2.11.7
 pydantic-settings==2.10.1
@@ -10,7 +10,7 @@ httpx==0.25.2
 ruff==0.13.0
 black==25.1.0
 gunicorn==21.2.0
-uvloop==0.17.0
+
 httptools==0.6.1
 # Railway Advanced Features Dependencies
 redis==5.0.1
@@ -33,3 +33,5 @@ pynput==1.7.6
 # --- Windows Tray Icon Dependencies ---
 pystray==0.19.5
 pillow==10.2.0
+plyer==2.1.0
+requests==2.32.3

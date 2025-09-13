@@ -1,33 +1,29 @@
 import os
 import subprocess
 import time
-
-import psutil
-
-try:
-    from .config import settings
-except ImportError:
-    # Fallback for when running from tests
-    from config import settings
-
 import logging
 import logging.config
 
+import psutil
+from plyer import notification
 from sqlalchemy import select
+
 try:
-    from .database import AsyncSessionLocal, DecisionMemory # Import necessary components
+    from .config import settings
+    from .database import AsyncSessionLocal, DecisionMemory, ProcessHistory, OptimizationEvent, WatchdogDecision
 except ImportError:
     # Fallback for when running from tests
-    from database import AsyncSessionLocal, DecisionMemory
+    from config import settings
+    from database import AsyncSessionLocal, DecisionMemory, ProcessHistory, OptimizationEvent, WatchdogDecision
+
 
 # Global logger instance
 _logger_initialized = False
 _logger = None
 
-def log_event(msg: str, notify_user: bool = False, level: str = "info") -> None:
-    """Registra un evento usando el módulo de logging estándar."""
+def get_logger():
+    """Initializes and returns the logger instance."""
     global _logger_initialized, _logger
-
     if not _logger_initialized:
         try:
             logging.config.dictConfig(settings.LOGGING_CONFIG)
@@ -35,28 +31,41 @@ def log_event(msg: str, notify_user: bool = False, level: str = "info") -> None:
             _logger_initialized = True
         except Exception as e:
             print(f"ERROR: Failed to configure logger: {e}")
-            # Fallback to print if logging setup fails
-            print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}")
-            if notify_user:
-                notify("BackendBot", msg)
-            return
+            # Fallback to a basic logger if config fails
+            logging.basicConfig(level=logging.INFO)
+            _logger = logging.getLogger("backendbot_fallback")
+            _logger_initialized = True
+    return _logger
 
-    if _logger_initialized:
-        if level.lower() == "debug":
-            _logger.debug(msg)
-        elif level.lower() == "info":
-            _logger.info(msg)
-        elif level.lower() == "warning":
-            _logger.warning(msg)
-        elif level.lower() == "error":
-            _logger.error(msg)
-        elif level.lower() == "critical":
-            _logger.critical(msg)
-        else:
-            _logger.info(msg) # Default to info
+def notify(title: str, message: str):
+    """Shows a desktop notification using plyer."""
+    logger = get_logger()
+    try:
+        notification.notify(
+            title=title,
+            message=message,
+            app_name="BackendBot",
+            timeout=10  # Notification will disappear after 10 seconds
+        )
+        logger.info(f"NOTIFICATION SENT: {title} - {message}")
+    except Exception as e:
+        logger.error(f"Failed to send desktop notification: {e}")
+
+def log_event(msg: str, notify_user: bool = False, level: str = "info") -> None:
+    """Registra un evento y opcionalmente notifica al usuario."""
+    logger = get_logger()
+    log_map = {
+        "debug": logger.debug,
+        "info": logger.info,
+        "warning": logger.warning,
+        "error": logger.error,
+        "critical": logger.critical
+    }
+    log_func = log_map.get(level.lower(), logger.info)
+    log_func(msg)
 
     if notify_user:
-        notify("BackendBot", msg)
+        notify(title="BackendBot", message=msg)
 
 
 async def load_memory() -> dict:
@@ -89,25 +98,23 @@ async def save_memory(memory: dict) -> None:
 
     try:
         async with AsyncSessionLocal() as session:
-            async with session.begin(): # Use begin() for transaction
+            async with session.begin():
                 for program_name, data in memory.items():
                     stmt = select(DecisionMemory).where(DecisionMemory.program_name == program_name)
                     result = await session.execute(stmt)
                     decision = result.scalars().first()
 
                     if decision:
-                        # Update existing record
                         decision.suspensions = data.get("suspensiones", 0)
                         decision.rejections = data.get("rechazos", 0)
                     else:
-                        # Create new record
                         new_decision = DecisionMemory(
                             program_name=program_name,
                             suspensions=data.get("suspensiones", 0),
                             rejections=data.get("rechazos", 0),
                         )
                         session.add(new_decision)
-                await session.commit() # Commit the transaction
+                await session.commit()
     except Exception as e:
         log_event(f"Error al guardar la memoria de decisiones en la DB: {e}", level="error")
 
@@ -125,7 +132,6 @@ def _get_process_info(p: psutil.Process) -> dict | None:
         return None
 
 def restore_closed_processes(modo: str) -> None:
-
     """Restaura procesos importantes que no están corriendo."""
     for proc in settings.PROCESOS_IMPORTANTES:
         running = any(
@@ -140,30 +146,14 @@ def restore_closed_processes(modo: str) -> None:
                 log_event(f"Error al restaurar {proc}: {e}")
 
 
-# --- Funciones para almacenar datos históricos ---
-# These functions will be moved to a repository/service layer later
-
-
 async def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: float) -> None:
     """Almacena datos de proceso en la base de datos si está disponible."""
-    from .database import AsyncSessionLocal, log_event, ProcessHistory # Import here to avoid circular dependency
-
     if AsyncSessionLocal is None:
-        log_event(
-            f"DB no disponible - Proceso: {name} (PID: {pid}) - "
-            f"RAM: {ram_mb:.2f}MB - CPU: {cpu_percent:.2f}%"
-        )
+        log_event(f"DB no disponible - Proceso: {name} (PID: {pid}) - RAM: {ram_mb:.2f}MB - CPU: {cpu_percent:.2f}%")
         return
-
     try:
         async with AsyncSessionLocal() as session:
-            new_entry = ProcessHistory(
-                timestamp=time.time(),
-                pid=pid,
-                name=name,
-                ram_mb=ram_mb,
-                cpu_percent=cpu_percent,
-            )
+            new_entry = ProcessHistory(timestamp=time.time(), pid=pid, name=name, ram_mb=ram_mb, cpu_percent=cpu_percent)
             session.add(new_entry)
             await session.commit()
     except Exception as e:
@@ -172,77 +162,27 @@ async def store_process_data(pid: int, name: str, ram_mb: float, cpu_percent: fl
 
 async def store_optimization_event(freed_ram_mb: float) -> None:
     """Almacena evento de optimización en la base de datos si está disponible."""
-    from .database import AsyncSessionLocal, log_event, OptimizationEvent # Import here to avoid circular dependency
-
     if AsyncSessionLocal is None:
         log_event(f"DB no disponible - Optimización: {freed_ram_mb:.2f}MB liberados")
         return
-
     try:
         async with AsyncSessionLocal() as session:
-            new_entry = OptimizationEvent(
-                timestamp=time.time(), freed_ram_mb=freed_ram_mb
-            )
+            new_entry = OptimizationEvent(timestamp=time.time(), freed_ram_mb=freed_ram_mb)
             session.add(new_entry)
             await session.commit()
     except Exception as e:
         log_event(f"Error almacenando evento de optimización: {e}")
 
 
-async def store_watchdog_decision(
-    program_name: str, action: str, cpu_usage: float | None = None, ram_usage: float | None = None
-) -> None:
+async def store_watchdog_decision(program_name: str, action: str, cpu_usage: float | None = None, ram_usage: float | None = None) -> None:
     """Almacena decisión del watchdog en la base de datos."""
-    from .database import AsyncSessionLocal, log_event, WatchdogDecision # Import here to avoid circular dependency
-
     if AsyncSessionLocal is None:
         log_event(f"DB no disponible - Decisión watchdog: {program_name} - {action}")
         return
-
     try:
         async with AsyncSessionLocal() as session:
-            new_entry = WatchdogDecision(
-                timestamp=time.time(),
-                program_name=program_name,
-                action=action,
-                cpu_usage=cpu_usage,
-                ram_usage=ram_usage,
-            )
+            new_entry = WatchdogDecision(timestamp=time.time(), program_name=program_name, action=action, cpu_usage=cpu_usage, ram_usage=ram_usage)
             session.add(new_entry)
             await session.commit()
     except Exception as e:
         log_event(f"Error almacenando decisión del watchdog: {e}", level="error")
-
-
-# Simple in-memory database simulation for compatibility
-class SimpleTable:
-    def __init__(self, name):
-        self.name = name
-        self.data = []
-
-    def find(self, order_by=None, limit=100, offset=0):
-        data = self.data.copy()
-        if order_by and order_by.startswith('-'):
-            # Sort descending by timestamp
-            data.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
-        return data[offset:offset + limit]
-
-    def insert(self, item):
-        self.data.append(item)
-
-class SimpleDB:
-    def __init__(self):
-        self.tables = {}
-
-    def __getitem__(self, table_name):
-        if table_name not in self.tables:
-            self.tables[table_name] = SimpleTable(table_name)
-        return self.tables[table_name]
-
-# Global database instance
-db = SimpleDB()
-
-def notify(message: str, title: str = "BackendBot Notification"):
-    """Simple notification function"""
-    log_event(f"NOTIFICATION: {title} - {message}")
-    print(f"🔔 {title}: {message}")
