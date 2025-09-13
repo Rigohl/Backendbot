@@ -9,14 +9,14 @@ class I18nService {
         this.translations = {};
         this.fallbackLang = 'es';
         this.observers = [];
-        
+
         this.init();
     }
 
     async init() {
         // Cargar idioma por defecto
         await this.loadLanguage(this.currentLang);
-        
+
         // Suscribirse a cambios de configuración
         if (window.useConfigStore) {
             window.useConfigStore.subscribe((state) => {
@@ -37,7 +37,7 @@ class I18nService {
 
         const browserLang = navigator.language || navigator.userLanguage;
         const lang = browserLang.split('-')[0]; // es-ES -> es
-        
+
         return this.isSupportedLanguage(lang) ? lang : this.fallbackLang;
     }
 
@@ -53,17 +53,17 @@ class I18nService {
             if (!response.ok) {
                 throw new Error(`Language file not found: ${lang}`);
             }
-            
+
             this.translations[lang] = await response.json();
             return true;
         } catch (error) {
             console.warn(`Error loading language ${lang}:`, error);
-            
+
             // Intentar con fallback
             if (lang !== this.fallbackLang) {
                 return this.loadLanguage(this.fallbackLang);
             }
-            
+
             return false;
         }
     }
@@ -84,18 +84,18 @@ class I18nService {
 
         this.currentLang = lang;
         localStorage.setItem('backendbot_language', lang);
-        
+
         // Notificar a observadores
         this.notifyObservers();
-        
+
         // Actualizar configuración global
         if (window.useConfigStore) {
             window.useConfigStore.getState().setLanguage(lang);
         }
 
         // Disparar evento personalizado
-        window.dispatchEvent(new CustomEvent('languageChanged', { 
-            detail: { language: lang } 
+        window.dispatchEvent(new CustomEvent('languageChanged', {
+            detail: { language: lang }
         }));
 
         return true;
@@ -105,12 +105,12 @@ class I18nService {
     t(key, params = {}) {
         const keys = key.split('.');
         let value = this.translations[this.currentLang];
-        
+
         // Navegar por la estructura anidada
         for (const k of keys) {
             value = value?.[k];
         }
-        
+
         // Fallback al idioma por defecto
         if (!value && this.currentLang !== this.fallbackLang) {
             value = this.translations[this.fallbackLang];
@@ -118,7 +118,7 @@ class I18nService {
                 value = value?.[k];
             }
         }
-        
+
         // Fallback a la key si no se encuentra
         if (!value) {
             console.warn(`Translation missing for key: ${key}`);
