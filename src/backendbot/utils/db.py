@@ -6,10 +6,10 @@ from src.backendbot.config import settings
 # Intentar importar psycopg2, pero no fallar si no está disponible
 try:
     import psycopg2
-    print("✅ psycopg2 importado correctamente")
+    print("psycopg2 importado correctamente")
 except ImportError as e:
-    print(f"⚠️  psycopg2 no disponible: {e}")
-    print("Continuando sin psycopg2 explícito...")
+    print(f"psycopg2 no disponible: {e}")
+    print("Continuando sin psycopg2 explicito...")
 
 # Crear engine con configuración optimizada para Railway
 engine = create_engine(

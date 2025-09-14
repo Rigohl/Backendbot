@@ -158,9 +158,5 @@ def get_bot_state(bot_name: str, state_key: str):
         print("This is normal if the database is not available during testing.")
         return None
 
-# Asegurarse de que las tablas se creen al importar este módulo
-try:
-    create_messaging_tables()
-except Exception as e:
-    print(f"Warning: Could not create messaging tables on import: {e}")
-    print("This is normal if the database is not available during testing.")
+# Tablas se crearán automáticamente en el lifespan del servidor
+# No llamar create_messaging_tables() aquí para evitar errores de conexión

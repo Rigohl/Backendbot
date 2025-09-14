@@ -34,8 +34,5 @@ def log_bot_action(bot_name: str, action_type: str, status: str, target: str = N
     finally:
         db.close()
 
-# Asegurarse de que las tablas se creen al importar este módulo
-try:
-    create_db_tables()
-except Exception as e:
-    print(f"Warning: Could not create DB tables on import: {e}. DB might not be available.")
+# Tablas se crearán automáticamente en el lifespan del servidor
+# No llamar create_db_tables() aquí para evitar errores de conexión
