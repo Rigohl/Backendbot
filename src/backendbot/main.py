@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from fastapi.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 from src.backendbot.utils.logging_config import logger
 from src.backendbot.utils.db_logger import log_system_event, create_db_tables
 from src.backendbot.utils.db_messaging import create_messaging_tables
+from src.backendbot.templates import templates
 
 # --- App State and Lifespan Management ---
 
@@ -34,7 +34,6 @@ async def lifespan(app: FastAPI):
 
 # --- FastAPI App Initialization ---
 
-templates = Jinja2Templates(directory="src/backendbot/templates")
 app = FastAPI(title="BackendBot Orchestrator", lifespan=lifespan)
 
 # Import routers after app initialization to avoid circular dependencies

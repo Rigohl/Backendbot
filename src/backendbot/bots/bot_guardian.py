@@ -8,9 +8,9 @@ from src.backendbot.utils.db_logger import log_system_event
 # Lista de bots que el guardián debe supervisar.
 # Cada bot es una tupla con su nombre (para logging) y la ruta al script.
 BOTS_TO_MANAGE = [
-    ("Bot Monitor", [sys.executable, "-u", "src/backendbot/bots/bot_monitor.py"]),
-    ("Bot Organizer", [sys.executable, "-u", "src/backendbot/bots/bot_organizer.py"]),
-    ("Bot Indexer", [sys.executable, "-u", "src/backendbot/bots/bot_indexer.py"]),
+    ("Bot Monitor", [sys.executable, "-m", "src.backendbot.bots.bot_monitor"]),
+    ("Bot Organizer", [sys.executable, "-m", "src.backendbot.bots.bot_organizer"]),
+    ("Bot Indexer", [sys.executable, "-m", "src.backendbot.bots.bot_indexer"]),
 ]
 
 def guardian_worker():

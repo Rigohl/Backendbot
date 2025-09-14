@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     try:
         # Start the Guardian Bot first, as it will manage other bots
-        guardian_cmd = [sys.executable, "src/backendbot/bots/bot_guardian.py"]
+        guardian_cmd = [sys.executable, "-m", "src.backendbot.bots.bot_guardian"]
         start_process("Bot Guardián", guardian_cmd)
         time.sleep(2) # Give guardian a moment to start its bots
 

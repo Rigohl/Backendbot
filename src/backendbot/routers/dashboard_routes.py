@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from src.backendbot.main import templates
+from src.backendbot.templates import templates
 from src.backendbot.utils.logging_config import logger
 
 router = APIRouter(
