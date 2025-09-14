@@ -13,24 +13,36 @@ app_state = {}
 async def lifespan(app: FastAPI):
     # On startup
     logger.info("Orquestador: Iniciando...")
-    log_system_event(level="INFO", source="Orquestador", message="Iniciando Orquestador.")
+    try:
+        log_system_event(level="INFO", source="Orquestador", message="Iniciando Orquestador.")
+    except Exception as e:
+        logger.warning(f"No se pudo loggear el inicio: {e}")
+    
     try:
         # Crear tablas de la base de datos si no existen
         create_db_tables()
         create_messaging_tables()
         logger.info("Orquestador: Tablas de base de datos verificadas/creadas.")
-        log_system_event(level="INFO", source="Orquestador", message="Tablas de base de datos verificadas/creadas.")
-
+        try:
+            log_system_event(level="INFO", source="Orquestador", message="Tablas de base de datos verificadas/creadas.")
+        except Exception as e:
+            logger.warning(f"No se pudo loggear la creación de tablas: {e}")
     except Exception as e:
         logger.error(f"Orquestador: Error al conectar con DB o crear tablas - {e}")
         logger.error("Orquestador: Asegúrate de que la DB está en ejecución y configurada.")
-        log_system_event(level="ERROR", source="Orquestador", message=f"Error de inicio: {e}", details=str(e))
+        try:
+            log_system_event(level="ERROR", source="Orquestador", message=f"Error de inicio: {e}", details=str(e))
+        except Exception as log_e:
+            logger.warning(f"No se pudo loggear el error: {log_e}")
     
     yield
     
     # On shutdown
     logger.info("Orquestador: Apagado.")
-    log_system_event(level="INFO", source="Orquestador", message="Orquestador apagado.")
+    try:
+        log_system_event(level="INFO", source="Orquestador", message="Orquestador apagado.")
+    except Exception as e:
+        logger.warning(f"No se pudo loggear el apagado: {e}")
 
 # --- FastAPI App Initialization ---
 
@@ -44,6 +56,16 @@ def read_root():
     logger.info("Acceso al endpoint raíz.")
     return {"message": "Welcome to BackendBot Orchestrator"}
 
+@app.get("/health", tags=["Health"])
+def health_check():
+    """Health check endpoint for Railway deployment monitoring."""
+    return {
+        "status": "healthy",
+        "timestamp": "2025-09-14T10:56:00Z",
+        "service": "BackendBot Orchestrator",
+        "version": "1.0.0"
+    }
+
 # Include routers
 app.include_router(history_routes.router)
 app.include_router(monitor_routes.router)
@@ -51,3 +73,15 @@ app.include_router(dashboard_routes.router)
 app.include_router(organizer_routes.router)
 app.include_router(indexer_routes.router)
 app.include_router(events_routes.router)
+
+# --- Server Startup ---
+if __name__ == "__main__":
+    import uvicorn
+    logger.info("Iniciando servidor FastAPI en http://localhost:8000")
+    uvicorn.run(
+        "src.backendbot.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        log_level="info"
+    )
