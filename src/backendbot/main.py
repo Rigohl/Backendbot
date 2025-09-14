@@ -1,147 +1,54 @@
-import asyncio
-import time
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-import platform
-import threading
+from fastapi import FastAPI
+from fastapi.templating import Jinja2Templates
+from contextlib import asynccontextmanager
+from src.backendbot.utils.logging_config import logger
+from src.backendbot.utils.db_logger import log_system_event, create_db_tables
+from src.backendbot.utils.db_messaging import create_messaging_tables
 
-from .api_routes import router
-from .config import Settings
-from .database import init_db
-from .utils import log_event
-from .watchdog import watchdog
-from .routers import tasks_routes
-from .staging_automation import run_preview_workflow
-from .railway_integration import railway, init_railway
-from .cache import cache
-from .webhooks import webhooks
-from .rate_limit import rate_limit_store
+# --- App State and Lifespan Management ---
 
-settings = Settings()
+app_state = {}
 
-app = FastAPI(
-    title="BackendBot Pro", description="Monitoreo + Automatización + Dashboard"
-)
-
-app.include_router(router)
-app.include_router(tasks_routes.router, prefix="/celery", tags=["celery"])
-
-@app.middleware("http")
-async def rate_limit_middleware(request: Request, call_next):
-    """Middleware para rate limiting usando Redis."""
-    client_ip = getattr(request.client, 'host', None) if request.client else "test_client"
-    if not client_ip or client_ip == "testserver":
-        client_ip = "test_client"
-
-    if not rate_limit_store.set_rate_limit(
-        identifier=client_ip,
-        window_seconds=settings.RATE_LIMIT_WINDOW,
-        max_requests=settings.RATE_LIMIT_REQUESTS
-    ):
-        return JSONResponse(
-            status_code=429,
-            content={"detail": "Rate limit exceeded"}
-        )
-    return await call_next(request)
-
-@app.get("/")
-async def root():
-    """Endpoint raíz para verificar que el backend está funcionando."""
-    railway_info = railway.get_railway_info() if railway.initialized else None
-    return {
-        "message": "BackendBot is running",
-        "status": "ok",
-        "railway_enabled": railway.is_railway_environment(),
-        "railway_info": railway_info
-    }
-
-@app.get("/health")
-async def health_check():
-    """Endpoint de health check avanzado con métricas de Railway."""
-    if railway.initialized:
-        return await railway.get_system_status()
-    else:
-        return {
-            "status": "ok",
-            "message": "BackendBot is running (Railway integration not initialized)",
-            "timestamp": time.time()
-        }
-
-@app.post("/optimize")
-async def optimize_system():
-    """Endpoint para ejecutar optimización del sistema."""
-    if not railway.initialized:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Railway integration not available"}
-        )
-
-    return await railway.optimize_system()
-
-@app.get("/railway/status")
-async def railway_status():
-    """Obtener estado detallado de Railway."""
-    if not railway.initialized:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Railway integration not available"}
-        )
-
-    return await railway.get_system_status()
-
-@app.get("/railway/cache/stats")
-async def cache_stats():
-    """Obtener estadísticas del cache Redis."""
-    if not railway.initialized:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Railway integration not available"}
-        )
-
-    return cache.get_cache_stats()
-
-@app.post("/railway/webhook")
-async def railway_webhook(request: Request):
-    """Endpoint para webhooks de Railway."""
-    if not railway.initialized:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Railway integration not available"}
-        )
-
-    return await webhooks.handle_webhook(request)
-
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
-
-    # Inicializar integración de Railway
-    if await init_railway():
-        log_event("Railway integration initialized successfully")
-    else:
-        log_event("Railway integration failed to initialize")
-
-    asyncio.create_task(watchdog())  # Start watchdog as an asyncio task
-    # Run staging preview on startup (dry-run)
-    plan = run_preview_workflow()
-    log_event(f"Staging preview executed: {len(plan)} components")
-
-    # Agregar el directorio padre al path para imports relativos
-
-# --- Integración con bandeja de sistema (tray icon) ---
-def start_tray_icon():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # On startup
+    logger.info("Orquestador: Iniciando...")
+    log_system_event(level="INFO", source="Orquestador", message="Iniciando Orquestador.")
     try:
-        from backendbot.tray_icon import icon
-        icon.run_detached()
+        # Crear tablas de la base de datos si no existen
+        create_db_tables()
+        create_messaging_tables()
+        logger.info("Orquestador: Tablas de base de datos verificadas/creadas.")
+        log_system_event(level="INFO", source="Orquestador", message="Tablas de base de datos verificadas/creadas.")
+
     except Exception as e:
-        print(f"Error iniciando tray icon: {e}")
+        logger.error(f"Orquestador: Error al conectar con DB o crear tablas - {e}")
+        logger.error("Orquestador: Asegúrate de que la DB está en ejecución y configurada.")
+        log_system_event(level="ERROR", source="Orquestador", message=f"Error de inicio: {e}", details=str(e))
+    
+    yield
+    
+    # On shutdown
+    logger.info("Orquestador: Apagado.")
+    log_system_event(level="INFO", source="Orquestador", message="Orquestador apagado.")
 
-# Solo iniciar tray si estamos en Windows y el usuario lo permite
-if platform.system() == "Windows" and os.environ.get("BACKENDBOT_TRAY", "1") == "1":
-    threading.Thread(target=start_tray_icon, daemon=True).start()
+# --- FastAPI App Initialization ---
 
-# Log inicial para indicar que el backend se ha iniciado
-log_event("BackendBot iniciado correctamente")
+templates = Jinja2Templates(directory="src/backendbot/templates")
+app = FastAPI(title="BackendBot Orchestrator", lifespan=lifespan)
 
-# Para Railway/Fly.io: expone 'app' para uvicorn
-# No es necesario el bloque __main__ para producción
+# Import routers after app initialization to avoid circular dependencies
+from .routers import history_routes, monitor_routes, dashboard_routes, organizer_routes, indexer_routes, events_routes
+
+@app.get("/", tags=["Root"])
+def read_root():
+    logger.info("Acceso al endpoint raíz.")
+    return {"message": "Welcome to BackendBot Orchestrator"}
+
+# Include routers
+app.include_router(history_routes.router)
+app.include_router(monitor_routes.router)
+app.include_router(dashboard_routes.router)
+app.include_router(organizer_routes.router)
+app.include_router(indexer_routes.router)
+app.include_router(events_routes.router)

@@ -1,9 +1,0 @@
-{
-    "automation": {
-        "branch_prefix": "feature/auto",
-        "ram_threshold_mb": 500,
-        "restart_on_ram_limit": false,
-        "log_rotation_max_size_mb": 10,
-        "log_rotation_keep_files": 5
-    }
-}

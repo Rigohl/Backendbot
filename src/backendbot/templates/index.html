@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BackendBot Dashboard</title>
+    <style>
+        body { font-family: sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { text-align: center; }
+        h1 { color: #00aaff; }
+        .organizer { margin-top: 20px; padding: 20px; background-color: #1e1e1e; border-radius: 8px; }
+        .organizer h2 { color: #00aaff; }
+        .organizer form { margin-bottom: 20px; }
+        .organizer input, .organizer button { padding: 8px; margin: 5px; }
+        .organizer button { background-color: #00aaff; color: white; border: none; cursor: pointer; }
+        .organizer pre { text-align: left; background-color: #2e2e2e; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .search { margin-top: 20px; padding: 20px; background-color: #1e1e1e; border-radius: 8px; }
+        .search h2 { color: #00aaff; }
+        .search form { margin-bottom: 20px; }
+        .search input, .search button { padding: 8px; margin: 5px; }
+        .search button { background-color: #00aaff; color: white; border: none; cursor: pointer; }
+        .search pre { text-align: left; background-color: #2e2e2e; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        .logs { margin-top: 20px; padding: 20px; background-color: #1e1e1e; border-radius: 8px; }
+        .logs h2 { color: #00aaff; }
+        .logs button { padding: 8px; margin: 5px; background-color: #00aaff; color: white; border: none; cursor: pointer; }
+        .logs pre { text-align: left; background-color: #2e2e2e; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        nav { background-color: #1e1e1e; padding: 10px; margin-bottom: 20px; }
+        nav button { background-color: #00aaff; color: white; border: none; padding: 10px; margin: 5px; cursor: pointer; }
+        nav button:hover { background-color: #0088cc; }
+        .section { display: none; }
+        .section.active { display: block; }
+        @media (max-width: 768px) {
+            nav { display: flex; flex-wrap: wrap; }
+            nav button { flex: 1; min-width: 100px; }
+            .container { padding: 10px; }
+            input, textarea { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BackendBot Dashboard</h1>
+        <nav>
+            <button onclick="showSection('monitor')">Monitor</button>
+            <button onclick="showSection('organizer')">Organizer</button>
+            <button onclick="showSection('search')">Search</button>
+            <button onclick="showSection('logs')">Logs</button>
+        </nav>
+        <div id="monitor" class="section active">
+        <div id="monitor" class="section active">
+            <h2>System Monitor</h2>
+            <div class="stats">
+                <h3>System Stats</h3>
+                <pre id="stats-display">Loading...</pre>
+            </div>
+        </div>
+        <div id="organizer" class="section">
+            <h2>File Organizer</h2>
+            <form id="scan-form">
+                <input type="text" id="scan-path" placeholder="Enter path to scan" required>
+                <button type="submit">Start Scan for Duplicates</button>
+            </form>
+            <button id="load-duplicates">Load Duplicates</button>
+            <pre id="duplicates-display">No duplicates loaded.</pre>
+            <form id="delete-form">
+                <textarea id="delete-files" placeholder="Enter file paths to delete (one per line)" rows="5" required></textarea>
+                <button type="submit">Delete Selected Duplicates</button>
+            </form>
+        </div>
+        <div id="search" class="section">
+            <h2>File Search</h2>
+            <form id="search-form">
+                <input type="text" id="search-query" placeholder="Enter search keywords" required>
+                <button type="submit">Search Files</button>
+            </form>
+            <pre id="search-results">No search performed.</pre>
+        </div>
+        <div id="logs" class="section">
+            <h2>System Logs</h2>
+            <button id="load-logs">Load Logs</button>
+            <pre id="logs-display">No logs loaded.</pre>
+        </div>
+    </div>
+    <script>
+        async function fetchStats() {
+            const display = document.getElementById('stats-display');
+            display.textContent = 'Loading stats...';
+            try {
+                const response = await fetch('/api/v1/monitor/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    display.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    display.textContent = 'Stats not available yet.';
+                }
+            } catch (error) {
+                display.textContent = 'Error fetching stats.';
+            }
+        }
+        // Fetch stats on load and every 5 seconds
+        fetchStats();
+        setInterval(fetchStats, 5000);
+
+        // Organizer functions
+        document.getElementById('scan-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const path = document.getElementById('scan-path').value;
+            const button = e.target.querySelector('button');
+            button.textContent = 'Scanning...';
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/v1/organizer/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path })
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('Error starting scan.');
+            } finally {
+                button.textContent = 'Start Scan for Duplicates';
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('load-duplicates').addEventListener('click', async () => {
+            const button = document.getElementById('load-duplicates');
+            const display = document.getElementById('duplicates-display');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/v1/organizer/duplicates');
+                const duplicates = await response.json();
+                display.textContent = JSON.stringify(duplicates, null, 2);
+            } catch (error) {
+                display.textContent = 'Error loading duplicates.';
+            } finally {
+                button.textContent = 'Load Duplicates';
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('delete-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const filesText = document.getElementById('delete-files').value;
+            const files = filesText.split('\n').map(f => f.trim()).filter(f => f);
+            const button = e.target.querySelector('button');
+            button.textContent = 'Deleting...';
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/v1/organizer/delete_duplicates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ files })
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('Error deleting duplicates.');
+            } finally {
+                button.textContent = 'Delete Selected Duplicates';
+                button.disabled = false;
+            }
+        });
+
+        // Search functions
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('search-query').value;
+            const button = e.target.querySelector('button');
+            const display = document.getElementById('search-results');
+            button.textContent = 'Searching...';
+            button.disabled = true;
+            display.textContent = 'Searching...';
+            try {
+                const response = await fetch(`/api/v1/indexer/search?query=${encodeURIComponent(query)}`);
+                const results = await response.json();
+                display.textContent = JSON.stringify(results, null, 2);
+            } catch (error) {
+                display.textContent = 'Error performing search.';
+            } finally {
+                button.textContent = 'Search Files';
+                button.disabled = false;
+            }
+        });
+
+        // Logs functions
+        document.getElementById('load-logs').addEventListener('click', async () => {
+            const button = document.getElementById('load-logs');
+            const display = document.getElementById('logs-display');
+            button.textContent = 'Loading...';
+            button.disabled = true;
+            display.textContent = 'Loading logs...';
+            try {
+                const response = await fetch('/api/v1/history/');
+                const logs = await response.json();
+                display.textContent = JSON.stringify(logs, null, 2);
+            } catch (error) {
+                display.textContent = 'Error loading logs.';
+            } finally {
+                button.textContent = 'Load Logs';
+                button.disabled = false;
+            }
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>

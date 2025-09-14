@@ -1,72 +1,162 @@
-{
-  "scheduled": {
-    "task": {
-      "name": "staging_opt",
-      "command": "python staging_runner.py",
-      "schedule": "daily",
-      "next_run": "2025-09-14 02:16:19.432245"
-    },
-    "dry_run": true,
-    "message": "Task prepared. Set dry_run=False to actually create it using a controlled mechanism."
+[
+  {
+    "id": 100,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Eliminar la dependencia de Redis de requirements.txt.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": []
   },
-  "powershell_cmds": [
-    "Start-Job -ScriptBlock { <# your script here #> } -Name BackendBot_Staging",
-    "Register-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File C:\\path\\to\\script.ps1') -Trigger (New-ScheduledTaskTrigger -Daily -At 3am) -TaskName 'BackendBot_Staging'",
-    "Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile -WindowStyle Hidden -File C:\\path\\to\\start_staging.ps1' -WindowStyle Hidden"
-  ],
-  "ram_preview": {
-    "dry_run": true,
-    "candidates": [
-      {
-        "pid": 1234,
-        "name": "notepad.exe",
-        "memory_mb": 50,
-        "memory_percent": 2.1,
-        "cpu_percent": 1.2
-      },
-      {
-        "pid": 2345,
-        "name": "some_background_worker.exe",
-        "memory_mb": 150,
-        "memory_percent": 6.3,
-        "cpu_percent": 5.8
-      }
-    ],
-    "estimated_freed_mb": 200,
-    "total_candidates": 2,
-    "timestamp": "2025-09-13T02:16:19.432245"
+  {
+    "id": 101,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Implementar la capa de comunicación basada en PostgreSQL (src/backendbot/utils/db_messaging.py) con tablas para comandos, resultados y estados.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [100]
   },
-  "disk_preview": {
-    "dry_run": true,
-    "preview": [
-      {
-        "path": "C:\\Users\\DELL\\AppData\\Local\\Temp",
-        "exists": true,
-        "files_count": 0,
-        "total_bytes": 0,
-        "sample_files": []
-      },
-      {
-        "path": "C:\\Users\\DELL\\AppData\\Local\\Temp",
-        "exists": true,
-        "files_count": 0,
-        "total_bytes": 0,
-        "sample_files": []
-      },
-      {
-        "path": "C:\\Windows\\Prefetch",
-        "exists": true,
-        "files_count": 0,
-        "total_bytes": 0,
-        "sample_files": []
-      }
-    ],
-    "summary": {
-      "total_directories": 3,
-      "total_files": 0,
-      "total_bytes": 0,
-      "total_mb": 0.0
-    },
-    "timestamp": "2025-09-13T02:16:19.457464"
+  {
+    "id": 102,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar main.py (Orquestador) para usar db_messaging en lugar de Redis.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [101]
+  },
+  {
+    "id": 103,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/routers/monitor_routes.py para usar db_messaging para obtener estadísticas.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [102]
+  },
+  {
+    "id": 104,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/bots/bot_monitor.py para usar db_messaging para publicar estadísticas.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [103]
+  },
+  {
+    "id": 105,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/routers/organizer_routes.py para usar db_messaging para enviar/recibir comandos/resultados.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [102]
+  },
+  {
+    "id": 106,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/bots/bot_organizer.py para usar db_messaging para comandos/resultados.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [105]
+  },
+  {
+    "id": 107,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/routers/indexer_routes.py para usar db_messaging para enviar/recibir comandos/resultados.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [102]
+  },
+  {
+    "id": 108,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/bots/bot_indexer.py para usar db_messaging para comandos/resultados.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [107]
+  },
+  {
+    "id": 109,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Refactorizar src/backendbot/bots/bot_guardian.py para no depender de Redis.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [104, 106, 108]
+  },
+  {
+    "id": 110,
+    "phase": "1: Comunicación DB",
+    "description": "(Backend) Actualizar launch.py para no iniciar Redis y asegurar que los bots se inicien correctamente con la nueva comunicación.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [109]
+  },
+  {
+    "id": 200,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar tests de integración para la nueva API de monitoreo (leyendo de DB).",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [103]
+  },
+  {
+    "id": 201,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar el Dashboard para consumir datos de monitoreo vía polling desde la API del Orquestador (leyendo de DB).",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [200]
+  },
+  {
+    "id": 202,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar la UI del Dashboard para el Organizador de Archivos a la nueva comunicación.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [105]
+  },
+  {
+    "id": 203,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar tests para las APIs del Bot Organizador a la nueva comunicación.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [105]
+  },
+  {
+    "id": 204,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar la UI de búsqueda en el Dashboard a la nueva comunicación.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [107]
+  },
+  {
+    "id": 205,
+    "phase": "2: Adaptación Frontend/Tests",
+    "description": "(Frontend/Tests) Adaptar tests para la API de búsqueda a la nueva comunicación.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [107]
+  },
+  {
+    "id": 206,
+    "phase": "3: Finalización Refactorización",
+    "description": "(Frontend/Tests) Realizar una revisión final de la UI/UX del Dashboard.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [201, 202, 204]
+  },
+  {
+    "id": 207,
+    "phase": "3: Finalización Refactorización",
+    "description": "(Frontend/Tests) Ejecutar suite de tests completa y generar informe de cobertura.",
+    "status": "completed",
+    "assigned_to": "Copilot",
+    "dependencies": [203, 205]
+  },
+  {
+    "id": 300,
+    "phase": "3: Finalización Refactorización",
+    "description": "(Backend) Actualizar README.md para reflejar la arquitectura final de 'La Colmena' con PostgreSQL.",
+    "status": "completed",
+    "assigned_to": "Gemini",
+    "dependencies": [110, 207]
   }
-}
+]

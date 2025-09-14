@@ -1,0 +1,58 @@
+{
+  "app": {
+    "title": "BackendBot Pro",
+    "description": "Sistema de monitoreo y automatización",
+    "version": "1.0.0",
+    "host": "0.0.0.0",
+    "port": 8001
+  },
+  "security": {
+    "api_key": "a1aad660de335c8771976b49d045d5a52bea5ab45b04b31be720725ae08a6527",
+    "admin_username": "admin",
+    "admin_password": "backendbot2025!",
+    "jwt_secret": "super-secret-jwt-key-change-in-production",
+    "jwt_algorithm": "HS256",
+    "jwt_expire_minutes": 30
+  },
+  "monitoring": {
+    "cpu_threshold": 80,
+    "ram_threshold": 4000,
+    "check_interval": 60,
+    "debug": false
+  },
+  "processes": {
+    "hibernables": ["Discord.exe", "Steam.exe"],
+    "important": ["explorer.exe", "chrome.exe"],
+    "to_close": {
+      "videojuego": ["Discord.exe", "Steam.exe", "chrome.exe"],
+      "editor": ["chrome.exe", "discord.exe"],
+      "diario": ["Code.exe", "powershell.exe"],
+      "streaming": ["Code.exe", "Steam.exe"],
+      "multimedia": ["chrome.exe", "vlc.exe"]
+    }
+  },
+  "database": {
+    "url": "sqlite:///data/backend_data.db"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/backend.log",
+    "max_size": 10485760,
+    "backups": 5
+  },
+  "ai": {
+    "enabled": true,
+    "model": "llama2",
+    "base_url": "http://localhost:11434",
+    "analysis_interval": 300,
+    "max_conversations": 100
+  },
+  "rate_limit": {
+    "requests": 100,
+    "window_seconds": 60
+  },
+  "watchdog": {
+    "suspension_threshold": 3,
+    "rejection_threshold": 3
+  }
+}
