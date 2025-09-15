@@ -2870,3 +2870,136 @@ connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection re
 
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
 2025-09-14 10:55:37,686 - backendbot - INFO - Iniciando servidor FastAPI en http://localhost:8000
+2025-09-14 17:19:18,020 - backendbot - INFO - Iniciando servidor FastAPI en http://localhost:8000
+2025-09-14 17:19:19,191 - backendbot - INFO - Orquestador: Iniciando...
+2025-09-14 17:19:23,283 - backendbot - WARNING - No se pudo loggear el inicio: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:19:27,381 - backendbot - ERROR - Orquestador: Error al conectar con DB o crear tablas - (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:19:27,381 - backendbot - ERROR - Orquestador: Asegúrate de que la DB está en ejecución y configurada.
+2025-09-14 17:19:31,485 - backendbot - WARNING - No se pudo loggear el error: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:19:40,522 - backendbot - INFO - Iniciando servidor FastAPI en http://localhost:8000
+2025-09-14 17:19:41,676 - backendbot - INFO - Orquestador: Iniciando...
+2025-09-14 17:19:45,765 - backendbot - WARNING - No se pudo loggear el inicio: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:19:49,864 - backendbot - ERROR - Orquestador: Error al conectar con DB o crear tablas - (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:19:49,865 - backendbot - ERROR - Orquestador: Asegúrate de que la DB está en ejecución y configurada.
+2025-09-14 17:19:53,984 - backendbot - WARNING - No se pudo loggear el error: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:24:48,899 - backendbot - INFO - Orquestador: Apagado.
+2025-09-14 17:24:53,020 - backendbot - WARNING - No se pudo loggear el apagado: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:24:54,255 - backendbot - INFO - Orquestador: Iniciando...
+2025-09-14 17:24:58,354 - backendbot - WARNING - No se pudo loggear el inicio: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:25:02,459 - backendbot - ERROR - Orquestador: Error al conectar con DB o crear tablas - (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:25:02,460 - backendbot - ERROR - Orquestador: Asegúrate de que la DB está en ejecución y configurada.
+2025-09-14 17:25:06,556 - backendbot - WARNING - No se pudo loggear el error: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:00,040 - backendbot - INFO - Orquestador: Apagado.
+2025-09-14 17:59:04,150 - backendbot - WARNING - No se pudo loggear el apagado: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:16,788 - backendbot - INFO - Iniciando servidor FastAPI en http://localhost:8000
+2025-09-14 17:59:18,527 - backendbot - INFO - Orquestador: Iniciando...
+2025-09-14 17:59:22,635 - backendbot - WARNING - No se pudo loggear el inicio: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:26,725 - backendbot - ERROR - Orquestador: Error al conectar con DB o crear tablas - (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:26,726 - backendbot - ERROR - Orquestador: Asegúrate de que la DB está en ejecución y configurada.
+2025-09-14 17:59:30,834 - backendbot - WARNING - No se pudo loggear el error: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:32,580 - backendbot - INFO - Orquestador: Apagado.
+2025-09-14 17:59:36,711 - backendbot - WARNING - No se pudo loggear el apagado: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:43,575 - backendbot - INFO - Iniciando servidor FastAPI en http://localhost:8000
+2025-09-14 17:59:45,016 - backendbot - INFO - Orquestador: Iniciando...
+2025-09-14 17:59:49,124 - backendbot - WARNING - No se pudo loggear el inicio: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:53,236 - backendbot - ERROR - Orquestador: Error al conectar con DB o crear tablas - (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 17:59:53,237 - backendbot - ERROR - Orquestador: Asegúrate de que la DB está en ejecución y configurada.
+2025-09-14 17:59:57,360 - backendbot - WARNING - No se pudo loggear el error: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 18:00:25,821 - backendbot - INFO - Orquestador: Apagado.
+2025-09-14 18:00:29,939 - backendbot - WARNING - No se pudo loggear el apagado: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused (0x0000274D/10061)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-09-14 18:00:47,997 - backendbot - INFO - Acceso al endpoint raíz.

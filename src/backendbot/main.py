@@ -59,9 +59,10 @@ def read_root():
 @app.get("/health", tags=["Health"])
 def health_check():
     """Health check endpoint for Railway deployment monitoring."""
+    from datetime import datetime
     return {
         "status": "healthy",
-        "timestamp": "2025-09-14T10:56:00Z",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
         "service": "BackendBot Orchestrator",
         "version": "1.0.0"
     }
