@@ -1,5 +1,33 @@
 # BackendBot - La Colmena (The Hive)
 
+## 🚀 NUEVO: Sistema Automático Completo
+
+**¡La forma más fácil de ejecutar BackendBot!** El sistema ahora incluye automatización completa que hace todo por ti.
+
+### Inicio Automático (Recomendado)
+```bash
+# Windows - Sistema completo automático
+python complete_auto_system.py
+
+# O usando el batch file
+auto_run.bat
+```
+
+**Este comando automáticamente:**
+- ✅ Instala todas las dependencias
+- 🗄️ Configura la base de datos (PostgreSQL o SQLite)
+- 🚀 Inicia el servidor
+- 🔍 Ejecuta verificaciones completas en paralelo
+- 📊 Monitorea el sistema continuamente
+
+### Verificación Independiente
+```bash
+# Solo ejecutar verificaciones
+python auto_verify.py
+```
+
+---
+
 Este repositorio contiene BackendBot, un sistema de monitoreo y gestión de recursos locales reconstruido con una **arquitectura de micro-servicios (bots)**. Diseñado para ser modular, resiliente y extensible, BackendBot opera como una "colmena" de bots especializados, orquestados por una API central.
 
 ## 🏛️ Arquitectura del Proyecto: La Colmena
@@ -41,6 +69,7 @@ La API principal se encuentra en `http://127.0.0.1:8000`.
 | Método | Endpoint                      | Descripción                                                                        |
 | :----- | :---------------------------- | :--------------------------------------------------------------------------------- |
 | `GET`  | `/`                           | Endpoint raíz que devuelve un mensaje de bienvenida.                               |
+| `GET`  | `/health`                     | Devuelve el estado de salud del servicio (útil para monitoreo en Railway).         |
 | `GET`  | `/dashboard`                  | Muestra un dashboard web (actualmente un placeholder).                             |
 | `GET`  | `/api/v1/monitor/stats`       | Devuelve un JSON con las últimas estadísticas de uso de CPU y RAM.                 |
 | `GET`  | `/api/v1/history/`            | **(Placeholder)** Devuelve una lista de ejemplo de eventos del sistema.            |
@@ -54,31 +83,40 @@ La API principal se encuentra en `http://127.0.0.1:8000`.
 
 ## 🚀 Instalación y Ejecución
 
-### 0. Prerrequisitos
-
-- **Base de Datos PostgreSQL:** Asegúrate de tener una base de datos PostgreSQL accesible. Para desarrollo local, puedes usar Docker o una instalación directa. Railway proveerá esto en producción.
+Para poner en marcha BackendBot, sigue estos pasos:
 
 ### 1. Instalar Dependencias
+
+Asegúrate de tener Python instalado (versión 3.9+ recomendada). Luego, instala las dependencias del proyecto:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configurar el Entorno
+### 2. Configurar el Entorno (`.env`)
 
-Crea un archivo `.env` en la raíz del proyecto con la URL de tu base de datos. Ejemplo para PostgreSQL local o Railway:
+Crea un archivo `.env` en la raíz del proyecto para definir la URL de tu base de datos.
 
+*   **Para empezar rápidamente con SQLite (recomendado para desarrollo local):**
+    ```
+    DATABASE_URL="sqlite:///./data/backend_data.db"
+    ```
+*   **Para usar PostgreSQL localmente:**
+    ```
+    DATABASE_URL="postgresql://user:password@host:port/dbname"
+    ```
+    (Reemplaza `user`, `password`, `host`, `port` y `dbname` con tus credenciales de PostgreSQL).
+
+### 3. Configurar Base de Datos PostgreSQL (Opcional, solo si usas PostgreSQL localmente)
+
+Si estás usando PostgreSQL y necesitas configurar la base de datos y el usuario, puedes ejecutar el script `setup_postgres.py` **una sola vez**:
+
+```bash
+python setup_postgres.py
 ```
-DATABASE_URL="postgresql://user:password@host:port/dbname"
-```
+**⚠️ Advertencia de Seguridad:** El script `setup_postgres.py` (y `grant_permissions.py`) contiene credenciales de base de datos hardcodeadas. Para entornos de producción o si compartes el código, es **crucial** externalizar estas credenciales a variables de entorno o un sistema de gestión de secretos.
 
-Para una base de datos SQLite local (recomendado para empezar a probar):
-
-```
-DATABASE_URL="sqlite:///./data/backend_data.db"
-```
-
-### 3. Ejecutar los Tests
+### 4. Ejecutar los Tests (Opcional)
 
 Para verificar que toda la configuración es correcta y la aplicación funciona:
 
@@ -86,7 +124,9 @@ Para verificar que toda la configuración es correcta y la aplicación funciona:
 pytest
 ```
 
-### 4. Iniciar el Sistema (Orquestador + Bots)
+### 5. Iniciar el Sistema (Orquestador + Bots)
+
+Este es el paso principal para lanzar toda la "Colmena":
 
 ```bash
 python launch.py
@@ -94,12 +134,28 @@ python launch.py
 
 Este script iniciará el Orquestador FastAPI y el Bot Guardián, que a su vez gestionará los demás bots trabajadores. Presiona `Ctrl+C` en la terminal para detener todos los procesos de forma segura.
 
-### 5. Acceder a la API y Dashboard
+### 6. Acceder a la API y Dashboard
 
 Una vez iniciado, puedes acceder a:
 
-- **API:** `http://127.0.0.1:8000`
-- **Dashboard:** `http://127.0.0.1:8000/dashboard`
+-   **API:** `http://127.0.0.1:8000`
+-   **Dashboard:** `http://127.0.0.1:8000/dashboard`
+
+## 🧪 Verificación de Despliegue en Railway
+
+Para verificar que tu despliegue en Railway funciona correctamente, puedes usar el script `verificar_railway.py`.
+
+```bash
+python verificar_railway.py <URL_DE_TU_SERVICIO_WEB_EN_RAILWAY>
+```
+
+Ejemplo:
+
+```bash
+python verificar_railway.py https://backendbot-xyz.up.railway.app
+```
+
+Este script probará los endpoints principales de tu API y te dará un resumen del estado de tu despliegue.
 
 ## ☁️ Despliegue en Railway
 
@@ -143,3 +199,50 @@ Para desplegar BackendBot en Railway, seguirás estos pasos para configurar dos 
 ## 🤖 Flujo de Trabajo de Desarrollo (IA)
 
 Este proyecto fue reconstruido por un equipo de IAs (Gemini y Copilot) coordinadas a través de un plan de tareas en `data/staging_plan.json`, demostrando un flujo de trabajo de desarrollo de software autónomo y asíncrono.
+
+## 💡 Cómo Usar BackendBot
+
+Una vez que el sistema BackendBot esté en ejecución (después de `python launch.py`), puedes interactuar con él de las siguientes maneras:
+
+### 🌐 Dashboard Web
+
+Accede al dashboard en tu navegador: `http://127.0.0.1:8000/dashboard`
+
+Desde aquí podrás:
+*   Ver métricas de CPU, RAM y Disco en tiempo real.
+*   Activar la optimización del sistema.
+*   Refrescar los datos.
+
+### 🚀 API REST
+
+Puedes interactuar con la API utilizando herramientas como `curl`, Postman, Insomnia o directamente desde tu código. Aquí algunos ejemplos de endpoints clave:
+
+*   **Ver estado del sistema:**
+    ```bash
+    curl http://127.0.0.1:8000/health
+    ```
+*   **Obtener métricas detalladas:**
+    ```bash
+    curl http://127.0.0.1:8000/metrics
+    ```
+*   **Obtener lista de procesos:**
+    ```bash
+    curl http://127.0.0.1:8000/processes
+    ```
+*   **Iniciar un escaneo de duplicados (Bot Organizador):**
+    ```bash
+    curl -X POST http://127.0.0.1:8000/api/v1/organizer/scan -H "Content-Type: application/json" -d '{"path": "/ruta/a/escanear"}'
+    ```
+    (Reemplaza `"/ruta/a/escanear"` con la ruta real en tu sistema).
+
+*   **Buscar archivos (Bot Indexador):**
+    ```bash
+    curl http://127.0.0.1:8000/api/v1/indexer/search?query=mi_archivo
+    ```
+    (Reemplaza `mi_archivo` con tu término de búsqueda).
+
+Para una lista completa de endpoints, consulta la sección "Endpoints de la API" más arriba.
+
+### 🛑 Detener el Sistema
+
+Para detener todos los componentes de BackendBot, simplemente presiona `Ctrl+C` en la terminal donde ejecutaste `python launch.py`.

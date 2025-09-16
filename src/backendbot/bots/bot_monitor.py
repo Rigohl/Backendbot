@@ -6,6 +6,8 @@ from src.backendbot.utils.logging_config import logger
 from src.backendbot.utils.db_logger import log_system_event
 from src.backendbot.utils.db_messaging import set_bot_state
 
+STATS_LATEST_KEY = "system_stats_latest"
+
 async def monitor_worker():
     """Worker que monitorea y publica estadísticas del sistema en la DB."""
     logger.info("🤖 Bot Monitor: Iniciando...")
@@ -24,7 +26,7 @@ async def monitor_worker():
             stats_json = json.dumps(stats)
 
             # Publicar en la DB
-            set_bot_state(bot_name="Bot Monitor", state_key="system_stats_latest", state_value=stats)
+            set_bot_state(bot_name="Bot Monitor", state_key=STATS_LATEST_KEY, state_value=stats)
             logger.info(f"🤖 Bot Monitor: Estadísticas publicadas: {stats_json}")
             
             await asyncio.sleep(1) # Publicar cada segundo

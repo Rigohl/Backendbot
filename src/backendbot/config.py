@@ -2,14 +2,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 import os
 
-# Cargar variables de entorno desde .env
-# Asegurarse de que se carga desde la raíz del proyecto
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.env'))
+# Cargar variables de entorno desde .env en la raíz del proyecto
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+env_path = os.path.join(project_root, '.env')
+load_dotenv(dotenv_path=env_path)
 
 class Settings(BaseSettings):
     database_url: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=env_path)
 
 
 settings = Settings()
@@ -17,3 +18,4 @@ settings = Settings()
 # Mensaje de depuración para verificar la carga
 print(f"DEBUG: DATABASE_URL cargada: {settings.database_url}")
 print(f"DEBUG: Directorio de trabajo actual: {os.getcwd()}")
+print(f"DEBUG: Ruta del .env: {env_path}")

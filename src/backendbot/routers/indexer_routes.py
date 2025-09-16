@@ -38,8 +38,8 @@ async def search_files(query: str = Query(..., min_length=1), db: Session = Depe
         # This is inefficient for large datasets, but works for basic demo
         files = db.query(BotState).filter(
             BotState.bot_name == "Bot Indexer",
-            BotState.state_key.like(f"indexed_file:%"),
-            BotState.state_value.ilike(f'%"filename": "%s%%"%' % term) # Case-insensitive search in filename
+            BotState.state_key.like(f"indexed_file:% "),
+            BotState.state_value.ilike(f'%"filename": "{term}%"%') # Case-insensitive search in filename
         ).all()
         for file_state in files:
             try:

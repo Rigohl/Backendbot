@@ -1,0 +1,347 @@
+{
+  "timestamp": 1757987706.156321,
+  "summary": {
+    "total": 56,
+    "success": 54,
+    "errors": 2,
+    "timeouts": 0
+  },
+  "details": {
+    "syntax_py_11": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "file_structure_3": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "requirements.txt: OK\n",
+      "stderr": ""
+    },
+    "file_structure_4": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": ".env: OK\n",
+      "stderr": ""
+    },
+    "syntax_py_7": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "database_0": {
+      "status": "error",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "  File \"<string>\", line 1\n    try: from src.backendbot.utils.db import get_db; db = next(get_db()); print(\"DB connection OK\"); except Exception as e: print(f\"DB Error: {e}\")\n                                                                                                     ^^^^^^\nSyntaxError: invalid syntax\n"
+    },
+    "syntax_py_37": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_21": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_3": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_39": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_20": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_5": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_30": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "config_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": ".env exists: True\n",
+      "stderr": ""
+    },
+    "database_1": {
+      "status": "error",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "  File \"<string>\", line 1\n    try: from src.backendbot.models import SystemEvent, BotAction; print(\"Models OK\"); except Exception as e: print(f\"Models Error: {e}\")\n                                                                                       ^^^^^^\nSyntaxError: invalid syntax\n"
+    },
+    "syntax_py_24": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_15": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_33": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_10": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "file_structure_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "src/backendbot/main.py: OK\n",
+      "stderr": ""
+    },
+    "syntax_py_12": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_22": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_26": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "file_structure_1": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "src/backendbot/models.py: OK\n",
+      "stderr": ""
+    },
+    "file_structure_2": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "src/backendbot/config.py: OK\n",
+      "stderr": ""
+    },
+    "syntax_py_36": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_9": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_18": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_6": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_32": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_14": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_28": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_19": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_29": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_2": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_16": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_31": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_23": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_35": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_17": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_13": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_1": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_8": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_27": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_4": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_34": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "syntax_py_25": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "config_1": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "DATABASE_URL: sqlite:///C:\\Users\\DELL\\Desktop\\BackendBot\\data\backend_data.db\n",
+      "stderr": ""
+    },
+    "syntax_py_38": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "import_2": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "DEBUG: DATABASE_URL cargada: sqlite:///C:\\Users\\DELL\\Desktop\\BackendBot\\data\backend_data.db\nDEBUG: Directorio de trabajo actual: C:\\Users\\DELL\\Desktop\\BackendBot\nDEBUG: Ruta del .env: C:\\Users\\DELL\\Desktop\\BackendBot\\.env\n",
+      "stderr": ""
+    },
+    "import_3": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "DEBUG: DATABASE_URL cargada: sqlite:///C:\\Users\\DELL\\Desktop\\BackendBot\\data\backend_data.db\nDEBUG: Directorio de trabajo actual: C:\\Users\\DELL\\Desktop\\BackendBot\nDEBUG: Ruta del .env: C:\\Users\\DELL\\Desktop\\BackendBot\\.env\npsycopg2 importado correctamente\n",
+      "stderr": ""
+    },
+    "import_1": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "DEBUG: DATABASE_URL cargada: sqlite:///C:\\Users\\DELL\\Desktop\\BackendBot\\data\backend_data.db\nDEBUG: Directorio de trabajo actual: C:\\Users\\DELL\\Desktop\\BackendBot\nDEBUG: Ruta del .env: C:\\Users\\DELL\\Desktop\\BackendBot\\.env\npsycopg2 importado correctamente\n",
+      "stderr": ""
+    },
+    "dependencies_1": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "Extra deps OK\n",
+      "stderr": ""
+    },
+    "dependencies_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "Core deps OK\n",
+      "stderr": ""
+    },
+    "import_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "DEBUG: DATABASE_URL cargada: sqlite:///C:\\Users\\DELL\\Desktop\\BackendBot\\data\backend_data.db\nDEBUG: Directorio de trabajo actual: C:\\Users\\DELL\\Desktop\\BackendBot\nDEBUG: Ruta del .env: C:\\Users\\DELL\\Desktop\\BackendBot\\.env\npsycopg2 importado correctamente\n",
+      "stderr": ""
+    },
+    "api_0": {
+      "status": "success",
+      "returncode": 0,
+      "stdout": "API docs: 200\n",
+      "stderr": ""
+    }
+  }
+}
