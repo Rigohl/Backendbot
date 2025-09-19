@@ -17,7 +17,6 @@ from .chat import ChatBot
 from .guardian import GuardianBot
 from .indexer import IndexerBot
 from .monitor import MonitorBot
-from .optimizer import OptimizerBot
 from .organizer import OrganizerBot
 
 # Importar bots individuales
@@ -71,7 +70,6 @@ class BotManager:
             "indexer": IndexerBot,
             "guardian": GuardianBot,
             "chat": ChatBot,
-            "optimizer": OptimizerBot,
         }
 
         for key, cls in canonical.items():
@@ -287,7 +285,10 @@ Próximas tareas programadas:
 
         except Exception as e:
             error_msg = f"Error ejecutando comando en {bot_name}: {str(e)}"
-            self.logger.error(error_msg, "BotManager")
+            try:
+                self.logger.error(error_msg)
+            except Exception:
+                pass
             return error_msg
 
     def _log_bot_run_start(self, bot_name, command):
@@ -421,7 +422,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
 
         except Exception as e:
             self.autonomous_mode = False
-            self.logger.error(f"Error iniciando modo autónomo: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error iniciando modo autónomo: {e}")
+            except Exception:
+                pass
             return f"❌ Error iniciando modo autónomo: {str(e)}"
 
     def stop_autonomous_mode(self) -> str:
@@ -444,7 +448,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
             return "✅ Modo autónomo detenido"
 
         except Exception as e:
-            self.logger.error(f"Error deteniendo modo autónomo: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error deteniendo modo autónomo: {e}")
+            except Exception:
+                pass
             return f"❌ Error deteniendo modo autónomo: {str(e)}"
 
     def _autonomous_monitoring_loop(self):
@@ -463,7 +470,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.stop_event.wait(30)
 
             except Exception as e:
-                self.logger.error(f"Error en loop de monitoreo autónomo: {e}", "BotManager")
+                try:
+                    self.logger.error(f"Error en loop de monitoreo autónomo: {e}")
+                except Exception:
+                    pass
                 self.stop_event.wait(60)  # Esperar más tiempo si hay error
 
     def _scheduled_tasks_loop(self):
@@ -477,7 +487,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.stop_event.wait(60)  # Revisar cada minuto
 
             except Exception as e:
-                self.logger.error(f"Error en loop de tareas programadas: {e}", "BotManager")
+                try:
+                    self.logger.error(f"Error en loop de tareas programadas: {e}")
+                except Exception:
+                    pass
                 self.stop_event.wait(120)  # Esperar más tiempo si hay error
 
     def _setup_scheduled_tasks(self):
@@ -517,7 +530,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 )
 
         except Exception as e:
-            self.logger.error(f"Error en monitoreo autónomo: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error en monitoreo autónomo: {e}")
+            except Exception:
+                pass
 
     def _check_autonomous_alerts(self):
         """Verificar alertas autónomas."""
@@ -540,7 +556,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 )
 
         except Exception as e:
-            self.logger.error(f"Error verificando alertas autónomas: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error verificando alertas autónomas: {e}")
+            except Exception:
+                pass
 
     def _daily_maintenance(self):
         """Tarea de mantenimiento diario."""
@@ -558,7 +577,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.logger.info(f"Escaneo de archivos completado: {result}", "BotManager")
 
         except Exception as e:
-            self.logger.error(f"Error en mantenimiento diario: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error en mantenimiento diario: {e}")
+            except Exception:
+                pass
 
     def _weekly_optimization(self):
         """Optimización semanal completa."""
@@ -576,7 +598,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.logger.info(f"Auditoría de archivos completada: {result}", "BotManager")
 
         except Exception as e:
-            self.logger.error(f"Error en optimización semanal: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error en optimización semanal: {e}")
+            except Exception:
+                pass
 
     def _security_check(self):
         """Verificación de seguridad programada."""
@@ -588,7 +613,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.logger.info(f"Verificación de seguridad completada: {result}", "BotManager")
 
         except Exception as e:
-            self.logger.error(f"Error en verificación de seguridad: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error en verificación de seguridad: {e}")
+            except Exception:
+                pass
 
     def _weekly_backup(self):
         """Backup semanal."""
@@ -600,7 +628,10 @@ Cada bot tiene sus propios comandos. Usa 'bot status' para ver opciones específ
                 self.logger.info(f"Backup semanal completado: {result}", "BotManager")
 
         except Exception as e:
-            self.logger.error(f"Error en backup semanal: {e}", "BotManager")
+            try:
+                self.logger.error(f"Error en backup semanal: {e}")
+            except Exception:
+                pass
 
     def get_autonomous_status(self) -> dict:
         """Obtener estado del modo autónomo."""

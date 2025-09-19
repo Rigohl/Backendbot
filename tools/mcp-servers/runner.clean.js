@@ -29,15 +29,20 @@ function startServer(s) {
   const outStream = fs.createWriteStream(path.join(logsDir, `${name}.log`), { flags: 'a' });
   const errStream = fs.createWriteStream(path.join(logsDir, `${name}.err`), { flags: 'a' });
   try {
-    const child = spawn(s.cmd, s.args || [], { cwd: workspace, shell: true });
+    const childEnv = Object.assign({}, process.env, s.env || {});
+    const child = spawn(s.cmd, s.args || [], { cwd: workspace, shell: true, env: childEnv });
     procs[name] = { child, cfg: s };
     outStream.write(`[${new Date().toISOString()}] START ${name} ${s.cmd} ${(s.args || []).join(' ')}\n`);
     child.stdout.on('data', d => outStream.write(d));
     child.stderr.on('data', d => errStream.write(d));
+    child.on('error', (err) => {
+      errStream.write(`${new Date().toISOString()} ERROR ${name} ${err.stack || err}\n`);
+    });
     child.on('exit', (code, sig) => {
       outStream.write(`[${new Date().toISOString()}] EXIT ${name} code=${code} sig=${sig}\n`);
+      const delay = typeof s.restartDelayMs === 'number' ? s.restartDelayMs : (s.restartDelay || 3000);
       if (!s.optional) {
-        setTimeout(() => startServer(s), 3000);
+        setTimeout(() => startServer(s), delay);
       }
     });
   } catch (e) {

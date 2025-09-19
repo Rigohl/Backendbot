@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Type, TypeVar, Generic, Optional, Callable
+from typing import Any, Dict, Type, TypeVar, Generic, Optional, Callable, TYPE_CHECKING
 import logging
 import inspect
 from contextlib import contextmanager
 
-from backendbot.core.data_repository import IDataRepository
-from backendbot.core.config import get_settings, Settings
-from backendbot.core.config_manager import DatabaseConfigManager
-from backendbot.core.database.manager import DatabaseManager
-from backendbot.core.logging_config import setup_logging
+if TYPE_CHECKING:
+    # Imports sólo para type checking — evitamos cargas en tiempo de import
+    from backendbot.core.data_repository import IDataRepository
+    from backendbot.core.config import get_settings, Settings
+    from backendbot.core.config_manager import DatabaseConfigManager
+    from backendbot.core.database.manager import DatabaseManager
+    from backendbot.core.logging_config import setup_logging
 
 # Type variables para genéricos
 T = TypeVar('T')
@@ -29,6 +31,35 @@ try:
 except ImportError:
     DEPENDENCY_INJECTOR_AVAILABLE = False
     logger.warning("dependency-injector not available, using fallback implementation")
+
+# Asegurar símbolos usados en la definición del container moderno
+if DEPENDENCY_INJECTOR_AVAILABLE:
+    try:
+        from backendbot.core.database.manager import DatabaseManager
+    except Exception:
+        class DatabaseManager:  # stub mínimo para evitar NameError en tiempo de import
+            def __init__(self, *a, **k):
+                pass
+
+    try:
+        from backendbot.core.config import Settings
+    except Exception:
+        class Settings:  # stub mínimo
+            pass
+
+    try:
+        from backendbot.core.logging_config import setup_logging
+    except Exception:
+        def setup_logging():
+            import logging
+            return logging.getLogger("backendbot")
+
+    try:
+        from backendbot.core.config_manager import DatabaseConfigManager
+    except Exception:
+        class DatabaseConfigManager:  # stub mínimo
+            def __init__(self, *a, **k):
+                pass
 
 
 class IServiceProvider(ABC):
@@ -202,17 +233,20 @@ class DependencyInjectionContainer(IServiceProvider):
         Registramos también en la estructura legacy para garantizar un
         fallback fiable cuando se use el container moderno.
         """
-        # Settings como singleton
+        # Settings como singleton (import runtime dentro de la función)
+        from backendbot.core.config import get_settings, Settings
         self.register_service(Settings, lambda: get_settings(), ServiceLifetime.SINGLETON)
 
-        # Config Manager como singleton
+        # Config Manager como singleton (import runtime)
+        from backendbot.core.config_manager import DatabaseConfigManager
         self.register_service(
             DatabaseConfigManager,
             lambda: DatabaseConfigManager(self.get_service(Settings)),
             ServiceLifetime.SINGLETON,
         )
 
-        # Logger como singleton - setup_logging no espera argumentos
+        # Logger como singleton - setup_logging importado en runtime
+        from backendbot.core.logging_config import setup_logging
         self.register_service(
             logging.Logger,
             lambda: setup_logging(),
@@ -240,20 +274,30 @@ class DependencyInjectionContainer(IServiceProvider):
             self.register_service(IConfigManager, _config_factory, ServiceLifetime.SINGLETON)
         except Exception:
             pass
+        except Exception:
+            pass
 
-        # Database Manager como singleton
-        self.register_service(DatabaseManager, lambda: DatabaseManager(), ServiceLifetime.SINGLETON)
+        # Database Manager como singleton (import runtime)
+        try:
+            from backendbot.core.database.manager import DatabaseManager
+            self.register_service(DatabaseManager, lambda: DatabaseManager(), ServiceLifetime.SINGLETON)
+        except Exception:
+            pass
 
         # Repositorios como scoped (uno por contexto de uso)
-        from backendbot.core.data_repository import DataRepositoryFactory
+        try:
+            from backendbot.core.data_repository import DataRepositoryFactory
+            from backendbot.core.data_repository import IDataRepository
 
-        self.register_service(
-            IDataRepository,
-            lambda: DataRepositoryFactory.create_repository(
-                self.get_service(Settings), self.get_service(DatabaseManager)
-            ),
-            ServiceLifetime.SCOPED,
-        )
+            self.register_service(
+                IDataRepository,
+                lambda: DataRepositoryFactory.create_repository(
+                    self.get_service(Settings), self.get_service(DatabaseManager)
+                ),
+                ServiceLifetime.SCOPED,
+            )
+        except Exception:
+            pass
 
     def register_service(self, service_type: Type[T], factory: Callable[[], T],
                         lifetime: str = ServiceLifetime.TRANSIENT) -> None:

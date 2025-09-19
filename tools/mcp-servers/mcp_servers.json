@@ -2,24 +2,31 @@
   {
     "name": "memory",
     "cmd": "npx",
-    "args": ["@modelcontextprotocol/server-memory", "--memoryFilePath", "./.mcp_memory_store.json"],
+    "pkg": "@modelcontextprotocol/server-memory",
+    "args": ["@modelcontextprotocol/server-memory", "--memoryFilePath", "c:/Users/DELL/Desktop/BackendBot/tools/mcp-servers/.mcp_memory_store.json"],
+    "env": { "MCP_MEMORY_STORE": "c:/Users/DELL/Desktop/BackendBot/tools/mcp-servers/.mcp_memory_store.json" },
+    "restartDelayMs": 2000,
     "optional": false
   },
   {
     "name": "sequentialthinking",
     "cmd": "npx",
+    "pkg": "@modelcontextprotocol/server-sequential-thinking",
     "args": ["@modelcontextprotocol/server-sequential-thinking"],
+    "restartDelayMs": 2000,
     "optional": false
   },
   {
     "name": "pylance",
     "cmd": "npx",
+    "pkg": "@modelcontextprotocol/server-pylance",
     "args": ["@modelcontextprotocol/server-pylance@latest"],
     "optional": true
   },
   {
     "name": "context7",
     "cmd": "npx",
+    "pkg": "@modelcontextprotocol/server-context7",
     "args": ["@modelcontextprotocol/server-context7@latest"],
     "optional": true
   }
