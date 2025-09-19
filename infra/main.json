@@ -1,0 +1,225 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.37.4.10188",
+      "templateHash": "7380458260962713656"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "defaultValue": "backendbot-dev",
+      "metadata": {
+        "description": "Nombre del entorno"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Ubicación de los recursos"
+      }
+    },
+    "containerImage": {
+      "type": "string",
+      "defaultValue": "backendbot:latest",
+      "metadata": {
+        "description": "Imagen del contenedor"
+      }
+    },
+    "containerRegistryName": {
+      "type": "string",
+      "defaultValue": "backendbotacr",
+      "metadata": {
+        "description": "Nombre del Container Registry"
+      }
+    },
+    "containerAppName": {
+      "type": "string",
+      "defaultValue": "backendbot-app",
+      "metadata": {
+        "description": "Nombre del Container App"
+      }
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "backendbot-identity",
+      "metadata": {
+        "description": "Nombre de la Managed Identity"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "backendbotstorage",
+      "metadata": {
+        "description": "Nombre del Storage Account"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {
+        "Environment": "Development",
+        "Project": "BackendBot",
+        "Owner": "DevTeam"
+      },
+      "metadata": {
+        "description": "Tags para los recursos"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2023-01-31",
+      "name": "[format('{0}-{1}', parameters('managedIdentityName'), parameters('environmentName'))]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-07-01",
+      "name": "[format('{0}{1}', parameters('containerRegistryName'), uniqueString(resourceGroup().id))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic"
+      },
+      "properties": {
+        "adminUserEnabled": false
+      },
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2020-08-01",
+      "name": "[format('backendbotlogs{0}', uniqueString(resourceGroup().id))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30
+      },
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}{1}', parameters('storageAccountName'), uniqueString(resourceGroup().id))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "allowBlobPublicAccess": false,
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true
+      },
+      "tags": "[parameters('tags')]"
+    },
+    {
+      "type": "Microsoft.App/managedEnvironments",
+      "apiVersion": "2023-05-01",
+      "name": "[format('backendbot-env-{0}', parameters('environmentName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "appLogsConfiguration": {
+          "destination": "log-analytics",
+          "logAnalyticsConfiguration": {
+            "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('backendbotlogs{0}', uniqueString(resourceGroup().id))), '2020-08-01').customerId]",
+            "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('backendbotlogs{0}', uniqueString(resourceGroup().id))), '2020-08-01').primarySharedKey]"
+          }
+        }
+      },
+      "tags": "[parameters('tags')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', format('backendbotlogs{0}', uniqueString(resourceGroup().id)))]"
+      ]
+    },
+    {
+      "type": "Microsoft.App/containerApps",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}-{1}', parameters('containerAppName'), parameters('environmentName'))]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-{1}', parameters('managedIdentityName'), parameters('environmentName'))))]": {}
+        }
+      },
+      "properties": {
+        "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('backendbot-env-{0}', parameters('environmentName')))]",
+        "configuration": {
+          "ingress": {
+            "external": true,
+            "targetPort": 80,
+            "transport": "http"
+          },
+          "registries": [
+            {
+              "server": "[reference(resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('containerRegistryName'), uniqueString(resourceGroup().id))), '2023-07-01').loginServer]",
+              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-{1}', parameters('managedIdentityName'), parameters('environmentName')))]"
+            }
+          ]
+        },
+        "template": {
+          "containers": [
+            {
+              "image": "[parameters('containerImage')]",
+              "name": "backendbot",
+              "resources": {
+                "cpu": 1,
+                "memory": "1.0Gi"
+              }
+            }
+          ],
+          "scale": {
+            "minReplicas": 1,
+            "maxReplicas": 10,
+            "rules": [
+              {
+                "name": "http-scaling",
+                "http": {
+                  "metadata": {
+                    "concurrentRequests": "10"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "tags": "[parameters('tags')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.App/managedEnvironments', format('backendbot-env-{0}', parameters('environmentName')))]",
+        "[resourceId('Microsoft.ContainerRegistry/registries', format('{0}{1}', parameters('containerRegistryName'), uniqueString(resourceGroup().id)))]",
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-{1}', parameters('managedIdentityName'), parameters('environmentName')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "containerAppUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.App/containerApps', format('{0}-{1}', parameters('containerAppName'), parameters('environmentName'))), '2023-05-01').configuration.ingress.fqdn)]"
+    },
+    "containerRegistryName": {
+      "type": "string",
+      "value": "[format('{0}{1}', parameters('containerRegistryName'), uniqueString(resourceGroup().id))]"
+    },
+    "managedIdentityClientId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-{1}', parameters('managedIdentityName'), parameters('environmentName'))), '2023-01-31').clientId]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "value": "[format('{0}{1}', parameters('storageAccountName'), uniqueString(resourceGroup().id))]"
+    },
+    "logAnalyticsWorkspaceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', format('backendbotlogs{0}', uniqueString(resourceGroup().id)))]"
+    }
+  }
+}

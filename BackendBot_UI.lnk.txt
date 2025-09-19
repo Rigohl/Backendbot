@@ -1,0 +1,8 @@
+[InternetShortcut]
+URL=pythonw.exe src/backendbot/main_ui_launcher.py
+IconFile=src/backendbot/ui/icons/icono_rojo.png
+IconIndex=0
+
+# NOTA: Renombra este archivo a .lnk y ajusta la ruta de pythonw.exe si es necesario.
+# Alternativamente, crea un acceso directo manual apuntando a:
+# pythonw.exe src/backendbot/main_ui_launcher.py

@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "environmentName": {
+            "value": "backendbot-dev"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "containerImage": {
+            "value": "backendbot:latest"
+        },
+        "containerRegistryName": {
+            "value": "backendbotacr"
+        },
+        "logAnalyticsWorkspaceName": {
+            "value": "backendbot-logs"
+        },
+        "containerAppName": {
+            "value": "backendbot-app"
+        },
+        "managedIdentityName": {
+            "value": "backendbot-identity"
+        },
+        "storageAccountName": {
+            "value": "backendbotstorage"
+        },
+        "databaseName": {
+            "value": "backendbot-db"
+        },
+        "tags": {
+            "value": {
+                "Environment": "Development",
+                "Project": "BackendBot",
+                "Owner": "DevTeam"
+            }
+        }
+    }
+}

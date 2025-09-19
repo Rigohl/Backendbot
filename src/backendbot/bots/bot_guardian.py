@@ -3,7 +3,6 @@ import subprocess
 import sys
 import os
 from src.backendbot.utils.logging_config import logger
-from src.backendbot.utils.db_logger import log_system_event
 
 # Lista de bots que el guardián debe supervisar.
 # Cada bot es una tupla con su nombre (para logging) y la ruta al script.
@@ -16,13 +15,11 @@ BOTS_TO_MANAGE = [
 def guardian_worker():
     """Worker que supervisa y reinicia otros bots si fallan."""
     logger.info("🛡️ Bot Guardián: Iniciando... Supervisando a los trabajadores.")
-    log_system_event(level="INFO", source="Bot Guardián", message="Bot Guardián iniciado.")
     bot_processes = {}
 
     # Iniciar todos los bots por primera vez
     for bot_name, bot_command in BOTS_TO_MANAGE:
         logger.info(f"🛡️ Bot Guardián: Iniciando {bot_name}...")
-        log_system_event(level="INFO", source="Bot Guardián", message=f"Iniciando {bot_name}.")
         bot_processes[bot_name] = subprocess.Popen(bot_command)
 
     # Bucle de supervisión
@@ -32,7 +29,6 @@ def guardian_worker():
             process = bot_processes.get(bot_name)
             if process is None or process.poll() is not None: # Si el proceso no existe o ha terminado
                 logger.warning(f"🛡️ Bot Guardián: ¡Alerta! {bot_name} se ha caído. Reiniciando...")
-                log_system_event(level="WARNING", source="Bot Guardián", message=f"{bot_name} se ha caído. Reiniciando.")
                 bot_processes[bot_name] = subprocess.Popen(bot_command)
 
 if __name__ == "__main__":

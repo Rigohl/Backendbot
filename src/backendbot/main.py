@@ -1,88 +1,109 @@
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from src.backendbot.utils.logging_config import logger
-from src.backendbot.utils.db_logger import log_system_event, create_db_tables
-from src.backendbot.utils.db_messaging import create_messaging_tables
-from src.backendbot.templates import templates
+"""
+BackendBot - Aplicación de escritorio simple y eficiente
+Punto de entrada único para la aplicación desktop pura.
+"""
 
-# --- App State and Lifespan Management ---
+import sys
+import os
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QTimer
 
-app_state = {}
+# Añadir el directorio raíz al path
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # On startup
-    logger.info("Orquestador: Iniciando...")
-    try:
-        log_system_event(level="INFO", source="Orquestador", message="Iniciando Orquestador.")
-    except Exception as e:
-        logger.warning(f"No se pudo loggear el inicio: {e}")
-    
-    try:
-        # Crear tablas de la base de datos si no existen
-        create_db_tables()
-        create_messaging_tables()
-        logger.info("Orquestador: Tablas de base de datos verificadas/creadas.")
+from src.backendbot.ui.tray_icon import TrayIcon
+from src.backendbot.ui.chat_panel import ChatPanel
+from src.backendbot.bots.manager import BotManager
+from src.backendbot.core.di.container import container
+
+# Exponer una app mínima de FastAPI para compatibilidad con tests y orquestación ligera
+try:
+    # Prefer re-exporting the API app from core to ensure routers are included
+    from src.backendbot.core.main import app as app
+except Exception:
+    app = None
+
+
+class BackendBot:
+    """Aplicación principal de BackendBot - 100% desktop"""
+
+    def __init__(self):
+        # Inicializar contenedor de dependencias
+        self.logger = container.get_logger()
+        self.config = container.get_config_manager()
+        self.data_repo = container.get_data_repository()
+
+        self.logger.info("Inicializando BackendBot", "Main")
+
+        self.app = QApplication(sys.argv)
+        self.app.setQuitOnLastWindowClosed(False)  # No cerrar al cerrar ventanas
+
+        # Componentes principales
+        self.tray = TrayIcon()
+        self.chat = ChatPanel()
+        self.bots = BotManager()
+
+        # Conectar señales
+        self._connect_signals()
+
+        self.logger.info("BackendBot inicializado correctamente", "Main")
+
+    def _connect_signals(self):
+        """Conectar señales entre componentes"""
+        # El tray icon controla mostrar/ocultar el chat
+        self.tray.show_chat_signal.connect(self.chat.show)
+        self.tray.hide_chat_signal.connect(self.chat.hide)
+
+        # El chat procesa comandos a través de los bots
+        self.chat.command_signal.connect(self._process_command)
+
+    def _process_command(self, command):
+        """Procesar comando del usuario"""
         try:
-            log_system_event(level="INFO", source="Orquestador", message="Tablas de base de datos verificadas/creadas.")
+            self.logger.info(f"Procesando comando: {command}", "Main")
+            response = self.bots.process_command(command)
+            self.chat.add_message("BackendBot", response)
+
+            # Guardar en el repositorio de datos
+            self.data_repo.save_bot_action(
+                bot_name="System",
+                action_type="command",
+                status="completed",
+                target=command,
+                result=response
+            )
+
         except Exception as e:
-            logger.warning(f"No se pudo loggear la creación de tablas: {e}")
-    except Exception as e:
-        logger.error(f"Orquestador: Error al conectar con DB o crear tablas - {e}")
-        logger.error("Orquestador: Asegúrate de que la DB está en ejecución y configurada.")
-        try:
-            log_system_event(level="ERROR", source="Orquestador", message=f"Error de inicio: {e}", details=str(e))
-        except Exception as log_e:
-            logger.warning(f"No se pudo loggear el error: {log_e}")
-    
-    yield
-    
-    # On shutdown
-    logger.info("Orquestador: Apagado.")
+            error_msg = f"Error procesando comando: {str(e)}"
+            self.logger.error(error_msg, "Main")
+            self.chat.add_message("Error", error_msg)
+
+            # Guardar error en el repositorio
+            self.data_repo.save_system_event(
+                level="ERROR",
+                source="Main",
+                message=error_msg,
+                details=str(e)
+            )
+
+    def run(self):
+        """Ejecutar la aplicación"""
+        # Mostrar tray icon
+        self.tray.show()
+
+        # Iniciar aplicación Qt
+        return self.app.exec_()
+
+
+def main():
+    """Función principal"""
     try:
-        log_system_event(level="INFO", source="Orquestador", message="Orquestador apagado.")
+        bot = BackendBot()
+        sys.exit(bot.run())
     except Exception as e:
-        logger.warning(f"No se pudo loggear el apagado: {e}")
+        print(f"Error iniciando BackendBot: {e}")
+        sys.exit(1)
 
-# --- FastAPI App Initialization ---
 
-app = FastAPI(title="BackendBot Orchestrator", lifespan=lifespan)
-
-# Import routers after app initialization to avoid circular dependencies
-from .routers import history_routes, monitor_routes, dashboard_routes, organizer_routes, indexer_routes, events_routes
-
-@app.get("/", tags=["Root"])
-def read_root():
-    logger.info("Acceso al endpoint raíz.")
-    return {"message": "Welcome to BackendBot Orchestrator"}
-
-@app.get("/health", tags=["Health"])
-def health_check():
-    """Health check endpoint for Railway deployment monitoring."""
-    from datetime import datetime
-    return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
-        "service": "BackendBot Orchestrator",
-        "version": "1.0.0"
-    }
-
-# Include routers
-app.include_router(history_routes.router)
-app.include_router(monitor_routes.router)
-app.include_router(dashboard_routes.router)
-app.include_router(organizer_routes.router)
-app.include_router(indexer_routes.router)
-app.include_router(events_routes.router)
-
-# --- Server Startup ---
 if __name__ == "__main__":
-    import uvicorn
-    logger.info("Iniciando servidor FastAPI en http://localhost:8000")
-    uvicorn.run(
-        "src.backendbot.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+    main()

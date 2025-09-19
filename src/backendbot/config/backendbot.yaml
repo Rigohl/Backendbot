@@ -1,0 +1,105 @@
+# Configuración BackendBot v2.0.0
+# Archivo de configuración unificado
+
+app:
+  name: "BackendBot"
+  version: "2.0.0"
+  debug: false
+  log_level: "INFO"
+  data_dir: "data"
+  logs_dir: "logs"
+
+modes:
+  default_mode: "balanced"
+  auto_switch: true
+  switch_thresholds:
+    cpu_high: 80
+    memory_high: 85
+    disk_high: 90
+    network_high: 100
+
+monitoring:
+  enabled: true
+  interval_seconds: 30
+  metrics_retention_days: 30
+  alert_thresholds:
+    cpu_critical: 95
+    memory_critical: 95
+    disk_critical: 95
+
+learning:
+  enabled: true
+  confidence_threshold: 0.7
+  max_patterns: 1000
+  adaptation_rate: 0.1
+  pattern_retention_days: 90
+
+ui:
+  theme: "system"  # system, light, dark
+  language: "es"
+  tray_icon: true
+  notifications: true
+  auto_start: false
+  window_size:
+    width: 1200
+    height: 800
+
+tasks:
+  enabled: true
+  max_concurrent: 5
+  default_schedule: "0 */4 * * *"  # Cada 4 horas
+  cleanup_interval_hours: 24
+
+bots:
+  organizer:
+    enabled: true
+    auto_organize: false
+    rules:
+      - pattern: "*.log"
+        action: "archive"
+      - pattern: "*.tmp"
+        action: "delete"
+  indexer:
+    enabled: true
+    index_extensions: [".txt", ".md", ".py", ".js", ".html"]
+    exclude_dirs: ["__pycache__", "node_modules", ".git"]
+  monitor:
+    enabled: true
+    system_metrics: true
+    process_monitoring: true
+    network_monitoring: true
+  auditor:
+    enabled: true
+    scan_interval_hours: 24
+    quarantine_dir: "quarantine"
+
+security:
+  encryption_enabled: true
+  secure_delete: true
+  audit_log: true
+  max_login_attempts: 3
+
+performance:
+  lazy_loading: true
+  caching_enabled: true
+  compression_enabled: true
+  memory_limit_mb: 512
+
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # 2 AM diario
+  retention_days: 30
+  compression: true
+  encryption: true
+
+notifications:
+  enabled: true
+  types:
+    system_alerts: true
+    task_completion: true
+    error_alerts: true
+    learning_updates: false
+  channels:
+    desktop: true
+    email: false
+    webhook: false

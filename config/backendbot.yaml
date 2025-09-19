@@ -1,0 +1,25 @@
+app:
+  debug: false
+  log_level: INFO
+  name: BackendBot
+  version: 2.0.0
+learning:
+  confidence_threshold: 0.7
+  enabled: true
+  max_patterns: 1000
+modes:
+  auto_switch: true
+  default_mode: balanced
+  switch_thresholds:
+    cpu_high: 80
+    disk_high: 90
+    memory_high: 85
+monitoring:
+  enabled: true
+  interval_seconds: 30
+  metrics_retention_days: 30
+ui:
+  language: es
+  notifications: true
+  theme: system
+  tray_icon: true

@@ -1,24 +1,9 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from src.backendbot.config import settings
+"""Wrapper de persistencia compatible con importaciones del proyecto.
 
-# Intentar importar psycopg2, pero no fallar si no está disponible
-try:
-    import psycopg2
-    print("psycopg2 importado correctamente")
-except ImportError as e:
-    print(f"psycopg2 no disponible: {e}")
-    print("Continuando sin psycopg2 explicito...")
+Exporta `db_manager`, `config_manager`, `migration_manager` e `init_database`.
+"""
 
-# Crear engine con configuración optimizada para Railway
-engine = create_engine(
-    settings.database_url,
-    pool_pre_ping=True,  # Verificar conexiones antes de usarlas
-    pool_recycle=300,    # Reciclar conexiones cada 5 minutos
-    echo=False           # Desactivar logs de SQL en producción
-)
+from .database_manager import db_manager, config_manager, migration_manager, init_database
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
+__all__ = ["db_manager", "config_manager", "migration_manager", "init_database"]
+# Este módulo está deshabilitado. No se utiliza base de datos externa en BackendBot.

@@ -2,7 +2,7 @@ import logging
 import os
 
 LOG_FILE = "logs/backend.log"
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 
 def setup_logging():
     # Ensure logs directory exists

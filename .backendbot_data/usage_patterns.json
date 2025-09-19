@@ -1,0 +1,174 @@
+{
+  "learned_patterns": {
+    "pattern_documents_1": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "pattern_documents_2": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_1": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_images": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_3": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_4": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_1": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "test_pattern": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_5": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_6": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_2": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_7": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_8": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_2": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_9": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_10": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_3": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_11": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_12": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_3": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_13": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_14": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_4": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_15": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_16": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_4": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_17": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_18": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_5": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_19": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_20": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_5": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    }
+  },
+  "learned_counters": {
+    "pattern_documents": 20,
+    "pattern_images": 5,
+    "test_pattern": 5
+  }
+}

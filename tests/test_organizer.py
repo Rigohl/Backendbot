@@ -9,7 +9,8 @@ client = TestClient(app)
 
 def test_scan_duplicates():
     """Test starting scan for duplicates."""
-    response = client.post("/api/v1/organizer/scan", json={"path": "/test/path"})
+    test_path = os.path.dirname(os.path.dirname(__file__))  # Directorio del proyecto
+    response = client.post("/api/v1/organizer/scan", json={"path": test_path})
     assert response.status_code == 200
     assert "Escaneo de duplicados iniciado" in response.json()["message"]
 
@@ -21,8 +22,24 @@ def test_get_duplicates_no_data():
 
 def test_delete_duplicates():
     """Test deleting approved duplicates."""
-    response = client.post("/api/v1/organizer/delete_duplicates", json={"files": ["/test/file1", "/test/file2"]})
+    # Crear archivos temporales para el test
+    temp_dir = os.path.join(os.path.dirname(__file__), "temp_test_files")
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_file1 = os.path.join(temp_dir, "test_file1.txt")
+    temp_file2 = os.path.join(temp_dir, "test_file2.txt")
+    
+    # Crear archivos
+    with open(temp_file1, 'w') as f:
+        f.write("test content")
+    with open(temp_file2, 'w') as f:
+        f.write("test content")
+    
+    response = client.post("/api/v1/organizer/delete_duplicates", json={"files": [temp_file1, temp_file2]})
     assert response.status_code == 200
-    assert "Orden de eliminación de duplicados enviada" in response.json()["message"]
+    assert "Eliminados" in response.json()["message"]
+    
+    # Limpiar
+    import shutil
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
 # TODO: Add tests for success cases when Redis is connected

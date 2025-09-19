@@ -15,8 +15,9 @@ def test_search_files_no_data():
 
 def test_start_indexing():
     """Test starting indexing."""
-    response = client.post("/api/v1/indexer/start_indexing", json={"path": "/test/path"})
+    test_path = os.path.dirname(os.path.dirname(__file__))  # Directorio del proyecto
+    response = client.post("/api/v1/indexer/start_indexing", json={"path": test_path})
     assert response.status_code == 200
-    assert "Indexación de /test/path iniciada" in response.json()["message"]
+    assert f"Indexación de {test_path} completada" in response.json()["message"]
 
 # TODO: Add tests for success cases when Redis is connected and has indexed data
