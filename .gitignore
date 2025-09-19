@@ -107,6 +107,28 @@ celerybeat-schedule
 env/
 venv/
 
+# Local virtualenvs used for testing
+.venv_test/
+
+# Editor / OS
+.vscode/
+.vs/
+
+# Project artifacts
+Archivos_Grandes/
+backups/
+*.bak
+*.db
+backendbot.db
+
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+
+
 # Spyder project settings
 .spyderproject
 .spyproject
