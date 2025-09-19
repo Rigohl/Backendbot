@@ -11,6 +11,12 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 # Ahora importar los módulos
+try:
+    from backendbot.core.env import ensure_loaded
+    ensure_loaded()
+except Exception:
+    pass
+
 from src.backendbot.main_ui_launcher import main
 
 if __name__ == "__main__":

@@ -12,6 +12,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from PyQt5.QtWidgets import QApplication
 
+# Ensure .env is loaded early
+try:
+    from backendbot.core.env import ensure_loaded
+    ensure_loaded()
+except Exception:
+    # Keep startup tolerant if env helper is missing or fails
+    pass
+
 # Importar contenedor moderno con wiring
 from backendbot.core.di.enhanced_container import ModernDependencyInjectionContainer
 from backendbot.core.di.container import container as legacy_container, ServiceFactory
@@ -66,7 +74,11 @@ class BackendBot:
             self.chat = chat_panel
             self.bots = bot_manager
 
-        self.logger.info("BackendBot inicializado con arquitectura SOLID moderna", "Main")
+        try:
+            self.logger.info("BackendBot inicializado con arquitectura SOLID moderna")
+        except Exception:
+            # Logging should never break startup
+            pass
 
     def run(self):
         """Ejecutar la aplicación"""
@@ -121,7 +133,7 @@ def main(
             container.shutdown_resources()
 
 
-if __name__ == "__main__":
+    if __name__ == "__main__":
     # Configurar wiring para inyección automática
     # from dependency_injector.wiring import register
     # register(...)  # Comentado por compatibilidad
