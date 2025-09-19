@@ -416,6 +416,36 @@ class IntegratedDashboard(QMainWindow):
 
         tabs.addTab(systems_tab, "⚙️ Sistemas Avanzados")
 
+    def _create_chat_tab(self, tabs):
+        """Crear tab de chat"""
+        chat_tab = QWidget()
+        chat_layout = QVBoxLayout(chat_tab)
+
+        # Área de chat
+        chat_group = QGroupBox("💬 Chat Interactivo")
+        chat_layout_inner = QVBoxLayout(chat_group)
+
+        self.chat_area = QTextEdit()
+        self.chat_area.setReadOnly(True)
+        self.chat_area.setMaximumHeight(300)
+        chat_layout_inner.addWidget(self.chat_area)
+
+        # Input de chat
+        input_layout = QHBoxLayout()
+        self.chat_input = QTextEdit()
+        self.chat_input.setMaximumHeight(60)
+        self.chat_input.setPlaceholderText("Escribe un comando...")
+        input_layout.addWidget(self.chat_input)
+
+        send_button = QPushButton("📤 Enviar")
+        send_button.clicked.connect(self._send_chat_message)
+        input_layout.addWidget(send_button)
+
+        chat_layout_inner.addLayout(input_layout)
+        chat_layout.addWidget(chat_group)
+
+        tabs.addTab(chat_tab, "💬 Chat")
+
     def _update_metrics(self, metrics: SystemMetrics):
         """Actualizar métricas en la UI"""
         self.cpu_progress.setValue(int(metrics.cpu_percent))
