@@ -24858,3 +24858,82 @@ LINE 1: INSERT INTO system_events (timestamp, level, source, message...
 2025-09-18 19:17:50,105 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
 2025-09-18 19:17:51,822 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
 2025-09-18 19:17:51,840 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 20:58:12,601 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 20:58:12,627 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:04:15,901 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:04:15,917 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:06:07,400 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:06:07,418 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:15:33,126 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:15:33,143 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:21:43,763 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:21:43,800 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:38:30,291 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:38:30,307 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:44:59,407 - backendbot - INFO - Acceso al endpoint de búsqueda con query: test
+2025-09-18 21:44:59,408 - backendbot - INFO - Búsqueda completada. Encontrados 0 resultados.
+2025-09-18 21:44:59,416 - backendbot - INFO - Comando recibido: Iniciar indexación en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:45:05,860 - backendbot - INFO - Indexación completada: 25982 archivos indexados.
+2025-09-18 21:45:05,868 - backendbot - INFO - Acceso al endpoint de historial.
+2025-09-18 21:45:27,834 - backendbot - INFO - Comando recibido: Iniciar escaneo de duplicados en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:45:27,840 - backendbot - INFO - Acceso al endpoint de duplicados encontrados.
+2025-09-18 21:45:27,840 - backendbot - INFO - No hay duplicados encontrados todavía.
+2025-09-18 21:45:27,846 - backendbot - INFO - Comando recibido: Eliminar 2 duplicados aprobados.
+2025-09-18 21:45:27,847 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file1.txt
+2025-09-18 21:45:27,847 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file2.txt
+2025-09-18 21:48:24,445 - backendbot - INFO - Acceso al endpoint de historial.
+2025-09-18 21:48:24,461 - backendbot - INFO - Acceso al endpoint de búsqueda con query: test
+2025-09-18 21:48:24,464 - backendbot - INFO - Búsqueda completada. Encontrados 0 resultados.
+2025-09-18 21:48:24,493 - backendbot - INFO - Comando recibido: Iniciar indexación en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:48:41,532 - backendbot - INFO - Indexación completada: 25987 archivos indexados.
+2025-09-18 21:48:41,541 - backendbot - INFO - Acceso al endpoint de estadísticas de monitoreo (local).
+2025-09-18 21:48:47,581 - backendbot - INFO - Comando recibido: Iniciar escaneo de duplicados en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:48:47,587 - backendbot - INFO - Acceso al endpoint de duplicados encontrados.
+2025-09-18 21:48:47,587 - backendbot - INFO - No hay duplicados encontrados todavía.
+2025-09-18 21:48:47,596 - backendbot - INFO - Comando recibido: Eliminar 2 duplicados aprobados.
+2025-09-18 21:48:47,598 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file1.txt
+2025-09-18 21:48:47,598 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file2.txt
+2025-09-18 21:48:48,660 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:48:48,678 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:54:52,461 - backendbot - INFO - Acceso al endpoint de historial.
+2025-09-18 21:54:52,470 - backendbot - INFO - Acceso al endpoint de búsqueda con query: test
+2025-09-18 21:54:52,470 - backendbot - INFO - Búsqueda completada. Encontrados 0 resultados.
+2025-09-18 21:54:52,476 - backendbot - INFO - Comando recibido: Iniciar indexación en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:55:02,060 - backendbot - INFO - Indexación completada: 25996 archivos indexados.
+2025-09-18 21:55:02,070 - backendbot - INFO - Acceso al endpoint de estadísticas de monitoreo (local).
+2025-09-18 21:55:08,132 - backendbot - INFO - Comando recibido: Iniciar escaneo de duplicados en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:55:08,142 - backendbot - INFO - Acceso al endpoint de duplicados encontrados.
+2025-09-18 21:55:08,142 - backendbot - INFO - No hay duplicados encontrados todavía.
+2025-09-18 21:55:08,158 - backendbot - INFO - Comando recibido: Eliminar 2 duplicados aprobados.
+2025-09-18 21:55:08,159 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file1.txt
+2025-09-18 21:55:08,159 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file2.txt
+2025-09-18 21:55:09,541 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:55:09,700 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 21:56:04,301 - backendbot - INFO - Acceso al endpoint de historial.
+2025-09-18 21:56:04,312 - backendbot - INFO - Acceso al endpoint de búsqueda con query: test
+2025-09-18 21:56:04,313 - backendbot - INFO - Búsqueda completada. Encontrados 0 resultados.
+2025-09-18 21:56:04,322 - backendbot - INFO - Comando recibido: Iniciar indexación en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:56:15,621 - backendbot - INFO - Indexación completada: 25998 archivos indexados.
+2025-09-18 21:56:15,638 - backendbot - INFO - Acceso al endpoint de estadísticas de monitoreo (local).
+2025-09-18 21:56:21,756 - backendbot - INFO - Comando recibido: Iniciar escaneo de duplicados en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 21:56:21,794 - backendbot - INFO - Acceso al endpoint de duplicados encontrados.
+2025-09-18 21:56:21,796 - backendbot - INFO - No hay duplicados encontrados todavía.
+2025-09-18 21:56:21,819 - backendbot - INFO - Comando recibido: Eliminar 2 duplicados aprobados.
+2025-09-18 21:56:21,820 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file1.txt
+2025-09-18 21:56:21,821 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file2.txt
+2025-09-18 21:56:23,125 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 21:56:23,463 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 22:01:50,186 - backendbot - INFO - Acceso al endpoint de historial.
+2025-09-18 22:01:50,197 - backendbot - INFO - Acceso al endpoint de búsqueda con query: test
+2025-09-18 22:01:50,198 - backendbot - INFO - Búsqueda completada. Encontrados 0 resultados.
+2025-09-18 22:01:50,210 - backendbot - INFO - Comando recibido: Iniciar indexación en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 22:02:00,192 - backendbot - INFO - Indexación completada: 26007 archivos indexados.
+2025-09-18 22:02:00,200 - backendbot - INFO - Acceso al endpoint de estadísticas de monitoreo (local).
+2025-09-18 22:02:06,245 - backendbot - INFO - Comando recibido: Iniciar escaneo de duplicados en C:\Users\DELL\Desktop\BackendBot
+2025-09-18 22:02:06,252 - backendbot - INFO - Acceso al endpoint de duplicados encontrados.
+2025-09-18 22:02:06,253 - backendbot - INFO - No hay duplicados encontrados todavía.
+2025-09-18 22:02:06,262 - backendbot - INFO - Comando recibido: Eliminar 2 duplicados aprobados.
+2025-09-18 22:02:06,262 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file1.txt
+2025-09-18 22:02:06,263 - backendbot - INFO - Archivo eliminado: C:\Users\DELL\Desktop\BackendBot\tests\temp_test_files\test_file2.txt
+2025-09-18 22:02:07,319 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 22:02:07,331 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada

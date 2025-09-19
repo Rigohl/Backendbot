@@ -215,9 +215,9 @@ class TestLearningSystemIntegration:
                 }
             ]
 
-            from backendbot.core.adaptive_learning import AdaptiveLearning
+            from backendbot.core.adaptive_learning import adaptive_learning
 
-            learning = AdaptiveLearning()
+            learning = adaptive_learning
 
             # Simular carga de patrones desde BD
             patterns = mock_db.execute_query("SELECT * FROM learning_patterns")

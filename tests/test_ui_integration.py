@@ -1,8 +1,8 @@
 """
 Prueba de integración básica entre la UI y los bots usando BotBridge y BotUIConnector.
 """
-from src.backendbot.ui.bot_bridge import BotBridge
-from src.backendbot.bots.bot_ui_connector import BotUIConnector
+from backendbot.ui.bot_bridge import BotBridge
+from backendbot.bots.bot_ui_connector import BotUIConnector
 import time
 
 def test_ui_bot_communication():

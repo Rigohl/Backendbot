@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 def test_guardian_import():
     """Test that the guardian module can be imported."""
     try:
-        from src.backendbot.bots.bot_guardian import guardian_worker, BOTS_TO_MANAGE
+        from backendbot.bots.bot_guardian import guardian_worker, BOTS_TO_MANAGE
         assert len(BOTS_TO_MANAGE) == 3  # Monitor, Organizer, Indexer
     except ImportError:
         assert False, "Failed to import guardian"

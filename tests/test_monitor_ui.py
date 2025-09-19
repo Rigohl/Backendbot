@@ -1,9 +1,9 @@
 """
 Prueba de integración del Bot Monitor con la UI.
 """
-from src.backendbot.ui.bot_bridge import BotBridge
-from src.backendbot.bots.bot_ui_connector import BotUIConnector
-from src.backendbot.bots.bot_monitor_ui import BotMonitorUI
+from backendbot.ui.bot_bridge import BotBridge
+from backendbot.bots.bot_ui_connector import BotUIConnector
+from backendbot.bots.bot_monitor_ui import BotMonitorUI
 import time
 
 def test_monitor_ui_message():

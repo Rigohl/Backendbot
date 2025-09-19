@@ -1,0 +1,399 @@
+{
+  "nodes": [
+    "backendbot"
+  ],
+  "edges": {
+    "backendbot_launcher.py": [
+      "backendbot.apps.api.main",
+      "backendbot.core.orchestrator"
+    ],
+    "backup_system.py": [
+      "backendbot.core.di.container"
+    ],
+    "dashboard.py": [
+      "backendbot.core.di.container"
+    ],
+    "demo_circular_dependencies.py": [
+      "backendbot.core.di.enhanced_container"
+    ],
+    "demo_completa.py": [
+      "backendbot.core.di.container",
+      "backendbot.core.operation_mode_manager"
+    ],
+    "demo_guardian_worker.py": [
+      "backendbot.packages.bots.guardian_worker",
+      "backendbot.packages.models.models"
+    ],
+    "demo_indexer_worker.py": [
+      "backendbot.packages.bots.indexer_worker"
+    ],
+    "demo_modern_di.py": [
+      "backendbot.core.di.enhanced_container",
+      "backendbot.core.services.config_service",
+      "backendbot.core.services.logger_service"
+    ],
+    "demo_monitor_worker.py": [
+      "backendbot.packages.bots.monitor_worker"
+    ],
+    "demo_organizer_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.bots.organizer_worker"
+    ],
+    "main.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.config.advanced_config",
+      "backendbot.core.di.container",
+      "backendbot.core.di.enhanced_container",
+      "backendbot.core.services.config_service",
+      "backendbot.core.services.logger_service",
+      "backendbot.ui.chat_panel",
+      "backendbot.ui.tray_icon"
+    ],
+    "notification_system.py": [
+      "backendbot.core.di.container"
+    ],
+    "power_management.py": [
+      "backendbot.core.di.container"
+    ],
+    "tmp_db_test.py": [
+      "backendbot.core.database.manager",
+      "backendbot.core.database.models"
+    ],
+    "backendbot\\main.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container",
+      "backendbot.core.main",
+      "backendbot.ui.chat_panel",
+      "backendbot.ui.tray_icon"
+    ],
+    "backendbot\\main_integrated.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container",
+      "backendbot.ui.chat_panel"
+    ],
+    "backendbot\\main_ui_launcher.py": [
+      "backendbot.main_integrated"
+    ],
+    "backendbot\\api\\server.py": [
+      "backendbot.core.config"
+    ],
+    "backendbot\\apps\\api\\backup_router.py": [
+      "backendbot.backup_system",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\apps\\api\\bots_router.py": [
+      "backendbot.core.di.container",
+      "backendbot.core.orchestrator",
+      "backendbot.packages.bots.guardian_worker",
+      "backendbot.packages.bots.indexer_worker",
+      "backendbot.packages.bots.monitor_worker",
+      "backendbot.packages.bots.organizer_worker",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\apps\\api\\config_router.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\apps\\api\\main.py": [
+      "backendbot.core.orchestrator"
+    ],
+    "backendbot\\apps\\api\\main_enhanced.py": [
+      "backendbot.core.orchestrator"
+    ],
+    "backendbot\\apps\\api\\notifications_router.py": [
+      "backendbot.core.di.container",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\apps\\api\\power_router.py": [
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\apps\\api\\system_router.py": [
+      "backendbot.core.di.container",
+      "backendbot.packages.core.database",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\apps\\api\\ui_router.py": [
+      "backendbot.core.di.container",
+      "backendbot.packages.bots.guardian_worker",
+      "backendbot.packages.bots.indexer_worker",
+      "backendbot.packages.bots.monitor_worker",
+      "backendbot.packages.bots.organizer_worker",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\bots\\auditor_files.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\auditor_programs.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\bot_guardian.py": [
+      "backendbot.utils.logging_config"
+    ],
+    "backendbot\\bots\\bot_monitor.py": [
+      "backendbot.utils.gpu_monitor",
+      "backendbot.utils.logging_config"
+    ],
+    "backendbot\\bots\\bot_monitor_ui.py": [
+      "backendbot.modes",
+      "backendbot.modes.adaptive_learning",
+      "backendbot.utils.gpu_monitor"
+    ],
+    "backendbot\\bots\\chat.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\guardian.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\indexer.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\manager.py": [
+      "backendbot.core.database.models",
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\monitor.py": [
+      "backendbot.core.bot_base",
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\optimizer.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\bots\\organizer.py": [
+      "backendbot.core.bot_base",
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\core\\data_repository.py": [
+      "backendbot.core.config",
+      "backendbot.core.database",
+      "backendbot.core.models"
+    ],
+    "backendbot\\core\\main.py": [
+      "backendbot.core.adaptive_learning",
+      "backendbot.core.task_scheduler",
+      "backendbot.utils.database_manager"
+    ],
+    "backendbot\\core\\modes.py": [
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\core\\orchestrator.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\core\\config\\advanced_config.py": [
+      "backendbot.core.config"
+    ],
+    "backendbot\\core\\database\\migrations\\env.py": [
+      "backendbot.core.database.models"
+    ],
+    "backendbot\\core\\di\\container.py": [
+      "backendbot.api.server",
+      "backendbot.bots.manager",
+      "backendbot.core.config",
+      "backendbot.core.config_manager",
+      "backendbot.core.data_repository",
+      "backendbot.core.database.manager",
+      "backendbot.core.logging_config",
+      "backendbot.ui.chat_panel",
+      "backendbot.ui.dashboard",
+      "backendbot.ui.tray_icon"
+    ],
+    "backendbot\\core\\di\\enhanced_container.py": [
+      "backendbot.core.services.config_service",
+      "backendbot.core.services.logger_service"
+    ],
+    "backendbot\\packages\\bots\\guardian_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\packages\\bots\\indexer_worker.py": [
+      "backendbot.packages.bots.base_bot"
+    ],
+    "backendbot\\packages\\bots\\monitor_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.core.database",
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\packages\\bots\\organizer_worker.py": [
+      "backendbot.packages.bots.base_bot"
+    ],
+    "backendbot\\packages\\core\\config_manager.py": [
+      "backendbot.core.database.manager",
+      "backendbot.core.database.models"
+    ],
+    "backendbot\\packages\\core\\di\\container.py": [
+      "backendbot.core.database.manager"
+    ],
+    "backendbot\\tests\\conftest.py": [
+      "backendbot.packages.core.config"
+    ],
+    "backendbot\\tests\\unit\\test_api.py": [
+      "backendbot.apps.api.main"
+    ],
+    "backendbot\\tests\\unit\\test_bots_count.py": [
+      "backendbot.apps.api.main"
+    ],
+    "backendbot\\tests\\unit\\test_bot_base.py": [
+      "backendbot.packages.core.bot_base"
+    ],
+    "backendbot\\tests\\unit\\test_models.py": [
+      "backendbot.packages.models.models"
+    ],
+    "backendbot\\ui\\chat_panel.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container"
+    ],
+    "backendbot\\ui\\main_window.py": [
+      "backendbot.core.orchestrator"
+    ],
+    "backendbot\\ui\\tray_icon.py": [
+      "backendbot.core.di.container"
+    ],
+    "scripts\\init_persistence.py": [
+      "backendbot.utils.database_manager"
+    ],
+    "scripts\\task_scheduler_test.py": [
+      "backendbot.core.task_scheduler"
+    ],
+    "src\\backendbot\\main.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container",
+      "backendbot.core.main",
+      "backendbot.ui.chat_panel",
+      "backendbot.ui.tray_icon"
+    ],
+    "src\\backendbot\\main_integrated.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container",
+      "backendbot.ui.chat_panel",
+      "backendbot.ui.tray_icon"
+    ],
+    "src\\backendbot\\main_ui_launcher.py": [
+      "backendbot.main_integrated"
+    ],
+    "src\\backendbot\\bots\\auditor_files.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\auditor_programs.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\bot_guardian.py": [
+      "backendbot.utils.logging_config"
+    ],
+    "src\\backendbot\\bots\\bot_monitor.py": [
+      "backendbot.utils.gpu_monitor",
+      "backendbot.utils.logging_config"
+    ],
+    "src\\backendbot\\bots\\guardian.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\indexer.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\manager.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\monitor.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\bots\\organizer.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\core\\modes.py": [
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\ui\\chat_panel.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container"
+    ],
+    "src\\backendbot\\ui\\tray_icon.py": [
+      "backendbot.core.di.container"
+    ],
+    "tests\\test_api_validation.py": [
+      "backendbot.apps.api.main"
+    ],
+    "tests\\test_bots.py": [
+      "backendbot.bots.chat",
+      "backendbot.bots.indexer",
+      "backendbot.bots.manager",
+      "backendbot.bots.monitor",
+      "backendbot.bots.organizer"
+    ],
+    "tests\\test_connections.py": [
+      "backendbot.main"
+    ],
+    "tests\\test_guardian.py": [
+      "backendbot.bots.bot_guardian"
+    ],
+    "tests\\test_history.py": [
+      "backendbot.main"
+    ],
+    "tests\\test_indexer.py": [
+      "backendbot.main"
+    ],
+    "tests\\test_monitor.py": [
+      "backendbot.main"
+    ],
+    "tests\\test_monitor_integration.py": [
+      "backendbot.bots.bot_monitor"
+    ],
+    "tests\\test_monitor_ui.py": [
+      "backendbot.bots.bot_monitor_ui",
+      "backendbot.bots.bot_ui_connector",
+      "backendbot.ui.bot_bridge"
+    ],
+    "tests\\test_organizer.py": [
+      "backendbot.main"
+    ],
+    "tests\\test_ui.py": [
+      "backendbot.ui"
+    ],
+    "tests\\test_ui_integration.py": [
+      "backendbot.bots.bot_ui_connector",
+      "backendbot.ui.bot_bridge"
+    ],
+    "tests\\e2e\\test_end_to_end.py": [
+      "backendbot.bots.bot_organizer",
+      "backendbot.core.adaptive_learning",
+      "backendbot.core.main",
+      "backendbot.core.task_scheduler",
+      "backendbot.utils.advanced_command_processor",
+      "backendbot.utils.system_monitor"
+    ],
+    "tests\\integration\\test_system_integration.py": [
+      "backendbot.core.adaptive_learning",
+      "backendbot.core.task_scheduler",
+      "backendbot.utils.advanced_command_processor",
+      "backendbot.utils.database_manager"
+    ],
+    "tests\\unit\\test_audit_locks.py": [
+      "backendbot.core.audit",
+      "backendbot.core.locks"
+    ],
+    "tests\\unit\\test_database.py": [
+      "backendbot.utils.database_manager"
+    ],
+    "tests\\unit\\test_guardian_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.bots.guardian_worker",
+      "backendbot.packages.models.models"
+    ],
+    "tests\\unit\\test_indexer_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.bots.indexer_worker"
+    ],
+    "tests\\unit\\test_monitor_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.bots.monitor_worker",
+      "backendbot.packages.models.models"
+    ],
+    "tests\\unit\\test_organizer_worker.py": [
+      "backendbot.packages.bots.base_bot",
+      "backendbot.packages.bots.organizer_worker",
+      "backendbot.packages.models.models"
+    ],
+    "tests\\unit\\test_solid_architecture.py": [
+      "backendbot.bots.manager",
+      "backendbot.core.di.container",
+      "backendbot.ui.chat_panel"
+    ]
+  }
+}

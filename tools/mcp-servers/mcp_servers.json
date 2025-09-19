@@ -1,0 +1,26 @@
+[
+  {
+    "name": "memory",
+    "cmd": "npx",
+    "args": ["@modelcontextprotocol/server-memory", "--memoryFilePath", "./.mcp_memory_store.json"],
+    "optional": false
+  },
+  {
+    "name": "sequentialthinking",
+    "cmd": "npx",
+    "args": ["@modelcontextprotocol/server-sequential-thinking"],
+    "optional": false
+  },
+  {
+    "name": "pylance",
+    "cmd": "npx",
+    "args": ["@modelcontextprotocol/server-pylance@latest"],
+    "optional": true
+  },
+  {
+    "name": "context7",
+    "cmd": "npx",
+    "args": ["@modelcontextprotocol/server-context7@latest"],
+    "optional": true
+  }
+]

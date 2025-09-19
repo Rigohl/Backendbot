@@ -10,9 +10,9 @@ from unittest.mock import Mock, patch
 # Añadir path para imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.backendbot.core.di.container import container
-from src.backendbot.bots.manager import BotManager, MonitorBot
-from src.backendbot.ui.chat_panel import ChatPanel
+from backendbot.core.di.container import container
+from backendbot.bots.manager import BotManager, MonitorBot
+from backendbot.ui.chat_panel import ChatPanel
 
 
 class TestSOLIDArchitecture:
@@ -21,7 +21,7 @@ class TestSOLIDArchitecture:
     def setup_method(self):
         """Configurar entorno de test"""
         # Limpiar container antes de cada test
-        from src.backendbot.core.di.container import container
+        from backendbot.core.di.container import container
         container._services = {}
         container._singletons = {}
         container._register_defaults()
@@ -29,7 +29,7 @@ class TestSOLIDArchitecture:
     def test_container_initialization(self):
         """Test que el contenedor se inicializa correctamente"""
         # Forzar reinicialización del container
-        from src.backendbot.core.di.container import container
+        from backendbot.core.di.container import container
         container._services = {}
         container._singletons = {}
         container._register_defaults()
@@ -92,7 +92,7 @@ class TestSOLIDArchitecture:
     def test_chat_panel_dependencies_available(self):
         """Test que las dependencias necesarias para ChatPanel están disponibles"""
         # Verificar que podemos crear las dependencias que usa ChatPanel
-        from src.backendbot.bots.manager import BotManager
+        from backendbot.bots.manager import BotManager
 
         bot_manager = BotManager()
 

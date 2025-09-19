@@ -1,0 +1,1 @@
+"""Demo Indexer Worker (archived)"""

@@ -1,3 +1,183 @@
+# BackendBot - La Colmena (The Hive) — v2.0 (Documentación organizada)
+
+Breve: BackendBot es un conjunto de bots locales que ayudan a optimizar, organizar y proteger tu equipo. Este README está reorganizado para facilitar instalación, ejecución local, pruebas y contribución; el README original se preserva íntegro al final del archivo.
+
+**Resumen rápido**
+ - Propósito: asistentes/bots locales para mantenimiento, organización, backups y automatización.
+ - Modo: 100% local, sin servicios externos obligatorios.
+ - Stack: Python 3.10+ (probado con 3.12), FastAPI para la API REST, PyQt5/GUI opcional.
+
+**Contenido del README**
+ - Instalación
+ - Ejecución local
+ - Pruebas
+ - Configuración y variables de entorno
+ - Estructura del proyecto
+ - Desarrollo y contribución
+ - Cambios recientes y notas de diseño
+ - README ORIGINAL (preservado)
+
+---
+
+## Instalación
+
+Recomendado: usar un entorno virtual y Python 3.10+ (3.12 funciona en la mayoría de las funciones).
+
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.\\.venv\\Scripts\\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Linux/macOS:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Notas:
+ - Si usas GPU o librerías opcionales, revisa `requirements.txt` y la sección de compatibilidades.
+ - Para desarrollo, recomendamos instalar `requirements-dev.txt`.
+
+---
+
+## Ejecución local
+
+Opciones principales:
+
+ - Versión integrada (recomendada, todo en una app):
+
+```powershell
+# Desde Windows Explorer: doble clic en `iniciar_backendbot_integrado.bat`
+# O desde PowerShell con entorno activado:
+python iniciar_backendbot_integrado.bat
+```
+
+ - Ejecutar componentes por separado:
+
+```powershell
+# API REST (FastAPI)
+python api_server.py
+# Dashboard (interfaz)
+python dashboard.py
+# Lanzador UI (antiguo)
+python src\\backendbot\\main_ui_launcher.py
+```
+
+ - Ejecución rápida de comprobación (script corto):
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+python -c "import sys; sys.path.insert(0,'src'); from backendbot.bots.manager import BotManager; print(BotManager()._get_status())"
+```
+
+---
+
+## Pruebas
+
+ - Ejecutar tests unitarios locales:
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+pytest -q
+```
+
+ - Nota: durante refactorizaciones la inicialización de `Settings` puede causar errores en la colección de tests si se instancia en import-time. Si ves `ValidationError` relacionados con `Settings`, asegúrate de tener un `.env` o de ejecutar en un entorno donde las variables necesarias estén definidas. El proyecto ahora expone `backendbot.core.config.get_settings()` para evitar validación en import-time.
+
+---
+
+## Configuración y variables de entorno
+
+ - El proyecto usa Pydantic (v2) para `Settings` y carga variables con prefijo `BACKENDBOT_` (o `backendbot_` según la versión). Para ejecutar en un entorno de CI o local sin errores, crea un archivo `.env` en la raíz con las variables mínimas requeridas.
+
+Ejemplo mínimo (`.env.example`):
+
+```
+BACKENDBOT_API_HOST=127.0.0.1
+BACKENDBOT_API_PORT=8000
+BACKENDBOT_DATABASE_URL=sqlite:///data/backendbot.db
+BACKENDBOT_ENABLE_METRICS=false
+# Claves opcionales
+BACKENDBOT_MASTER_API_KEY=your_api_key_here
+```
+
+ - Recomendación: No instanciar `Settings` en import-time. Usa `from backendbot.core.config import get_settings; settings = get_settings()` en puntos de ejecución.
+
+---
+
+## Estructura del proyecto (resumen)
+
+ - `src/` / `backendbot/` - paquete principal
+ - `api_server.py`, `dashboard.py`, `main.py` - entrypoints
+ - `backendbot/core/` - utilidades, config, logging, locks, audit
+ - `backendbot/bots/` - implementación de bots y manager
+ - `docs/` - documentación por subsistema
+ - `tests/` - pruebas unitarias y de integración
+ - `data/` - almacenamiento local, audit logs, persistencia ligera
+
+---
+
+## Desarrollo y Contribución
+
+ - Estilo: sigue principios SOLID; código claro, modular y con tests.
+ - Antes de crear PR:
+   - Ejecuta `pytest -q` y corrige fallos.
+   - Añade tests para nuevas funcionalidades.
+   - Mantén el comportamiento local reproducible (no dependas de variables de entorno secretas en tests).
+ - Para cambios grandes: abre un issue describiendo la propuesta y diseño. Se sugiere abrir PRs por feature/bug con una descripción clara y ejemplo de uso.
+
+---
+
+## Cambios recientes y notas de diseño
+
+ - Añadido sistema local de `locks` y `audit` con append-only JSONL para auditoría local y `filelock` para la serialización de accesos. Ideal para prototipos locales; en producción recomendamos migrar a Redis/DB para locks y a un sistema centralizado de logs/auditoría.
+ - `Settings` ahora debería instanciarse de forma perezosa con `get_settings()` para evitar ValidationsErrors en la colección de tests.
+ - Se comenzó una refactorización para introducir un `BaseBot` canonical y migrar bots a heredar de él (trabajo en progreso en ramas feature).
+
+---
+
+## Próximos pasos sugeridos (para mantener el repo sano)
+
+ - Añadir un `.env.example` (ya recomendado arriba). Yo puedo crearlo si quieres.
+ - Ejecutar la suite completa de tests e iterar sobre fallos residuales.
+ - Completar la unificación de bots bajo `BaseBot` y documentar la API interna para desarrolladores.
+ - Revisar `.gitignore` para evitar commitear archivos de `venv/`, `logs/` o data sensibles.
+
+---
+
+## README ORIGINAL (preservado)
+
+El contenido ORIGINAL del README se preserva a continuación exactamente como estaba al inicio de esta edición. No se ha eliminado información: el bloque a continuación es una copia fiel y puede servir de referencia o restauración.
+
+````markdown
+
+# 🐝 BackendBot - La Colmena (The Hive) **v2.0**
+
+## 📌 Descripción General
+
+BackendBot es un **asistente digital local avanzado** que funciona como una colmena de bots independientes, cada uno con una tarea específica, para optimizar tu PC, organizar tus archivos y gestionar recursos de forma eficiente, **sin depender de internet ni de servicios web**.  
+**Versión 2.0** incluye arquitectura SOLID completa, sistemas avanzados de notificaciones, gestión inteligente de energía, backup robusto, dashboard interactivo y API REST para integraciones.
+
+ - **100% local**: No requiere conexión a internet para funcionar.
+ - **Ligero**: Optimizado para usar la menor cantidad posible de memoria RAM.
+ - **Interfaz tipo aplicación**: No es una página web; es una app de escritorio con controles directos.
+ - **Icono en la bandeja del sistema** (junto al reloj de Windows):
+   - 🔴 **Rojo** = BackendBot encendido y trabajando.
+   - ⚪ **Gris** = BackendBot apagado.
+ - **Aprendizaje adaptativo**: Los bots aprenden de tus decisiones para mejorar con el tiempo.
+ - **Control por chat**: Puedes darle órdenes en lenguaje natural y ejecutar comandos directamente.
+ - **Panel flotante de reportes**: Ventanita tipo chat que muestra notificaciones y permite responder.
+ - **🆕 Arquitectura SOLID**: Principios de diseño orientado a objetos completamente implementados.
+ - **🆕 Sistemas avanzados**: Notificaciones, energía, backup, dashboard y API REST.
+ - **🆕 Inyección de dependencias**: Container para gestión de servicios y configuración.
+
+---
+
 # 🐝 BackendBot - La Colmena (The Hive) **v2.0**
 
 ## 📌 Descripción General

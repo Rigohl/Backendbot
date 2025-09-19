@@ -178,9 +178,9 @@ class TestEndToEndWorkflow:
             {'action': 'organize_files', 'context': 'documents', 'time': '2025-09-18T14:00:00'},
         ]
 
-        from backendbot.core.adaptive_learning import AdaptiveLearning
+        from backendbot.core.adaptive_learning import adaptive_learning
 
-        learning = AdaptiveLearning()
+        learning = adaptive_learning
 
         # Aprender de las interacciones
         for interaction in user_interactions:

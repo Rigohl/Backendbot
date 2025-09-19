@@ -1,12 +1,49 @@
+# Configuración de BackendBot - Sistema avanzado
+# Compatible con el nuevo sistema de configuración multi-fuente
+
+# Configuración de aplicación
 app:
   debug: false
   log_level: INFO
   name: BackendBot
   version: 2.0.0
+
+# Configuración de base de datos
+database:
+  url: "sqlite:///backendbot.db"
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+  pool_recycle: 3600
+
+# Configuración de logging
+logging:
+  level: "INFO"
+  file: "backendbot.log"
+  max_size: 10485760  # 10MB en bytes
+  backup_count: 5
+
+# Configuración de interfaz de usuario
+ui:
+  theme: "system"
+  language: "es"
+  tray_icon: true
+  notifications: true
+
+# Configuración de bots
+bot:
+  max_concurrent: 3
+  timeout: 300
+  retry_attempts: 3
+  retry_delay: 1.0
+
+# Configuración de aprendizaje (mantenida de configuración anterior)
 learning:
   confidence_threshold: 0.7
   enabled: true
   max_patterns: 1000
+
+# Configuración de modos (mantenida de configuración anterior)
 modes:
   auto_switch: true
   default_mode: balanced
@@ -14,12 +51,17 @@ modes:
     cpu_high: 80
     disk_high: 90
     memory_high: 85
+
+# Configuración de monitoreo (mantenida de configuración anterior)
 monitoring:
   enabled: true
   interval_seconds: 30
   metrics_retention_days: 30
-ui:
-  language: es
-  notifications: true
-  theme: system
-  tray_icon: true
+
+# Configuración de API
+api_port: 8000
+api_host: "localhost"
+ssl_enabled: false
+
+# Modo debug
+debug_mode: false

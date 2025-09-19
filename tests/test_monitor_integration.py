@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 def test_monitor_import():
     """Test that the monitor module can be imported."""
     try:
-        from src.backendbot.bots.bot_monitor import monitor_worker, STATS_LATEST_KEY
+        from backendbot.bots.bot_monitor import monitor_worker, STATS_LATEST_KEY
         assert STATS_LATEST_KEY == "system_stats_latest"
     except ImportError:
         assert False, "Failed to import monitor"
