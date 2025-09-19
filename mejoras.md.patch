@@ -1,0 +1,43 @@
+*** Patch for mejoras.md (locks & audit section added)
+
+--- mejoras.md.orig
++++ mejoras.md
+@@
+ *Estas mejoras mantienen el enfoque local del proyecto mientras expanden significativamente sus capacidades y usabilidad.*
++
++## 🔐 Locks y Auditoría / Retención (sugerencia práctica)
++
++### Resumen
++- **Objetivo:** garantizar integridad y trazabilidad de acciones de bots y del sistema cuando se ejecutan tareas concurrentes en un entorno local (desarrollo) y preparar una transición limpia a una base de datos en producción.
++- **Alcance:** bloqueos de acceso a recursos (locks), trazabilidad de eventos (auditoría) y políticas de retención de logs/alertas.
++
++### Enfoque local recomendado (fase A - prototipo local)
++- **Persistencia ligera:** usar archivos JSON por recurso (`data/audit/*.json`) y/o una pequeña base SQLite (`data/backendbot_local.db`) para indexar eventos. SQLite ofrece transacciones ACID sin dependencias servidor.
++- **Locks:** implementar un lock por recurso usando archivos lock basados en `filelock` (cross-platform) o `portalocker`:
++  - Lock a nivel de archivo para evitar escrituras concurrentes en el mismo JSON/DB.
++  - Tiempo de espera y reintentos configurables; caída con error claro si no se obtiene lock en X segundos.
++- **Auditoría:** cada acción crítica genera un registro mínimo con: `event_id`, `timestamp` (UTC), `actor` (bot/service), `action`, `resource`, `outcome`, `details`.
++  - Guardar auditoría en append-only files por día (`data/audit/2025-09-19.log.jsonl`) y opcionalmente indexar en SQLite para búsquedas.
++- **Retención:** política configurable en `backendbot/config.yaml` (p.ej. `retention_days: 30`). Un job periódico borra/archiva logs anteriores; antes de borrar, comprimir y mover a `backups/` si `archive=true`.
++
++### Consideraciones para producción (fase B - migración)
++- **DB centralizada:** migrar auditoría y métricas a Postgres/Managed DB; usar columnstore/particionado para retención eficiente.
++- **Locks distribuidos:** para múltiples instancias, usar Redis (Redlock) o DB advisory locks para coordinar acceso a recursos compartidos.
++- **Cumplimiento y seguridad:** cifrado en tránsito y en reposo, roles y acceso basado en RBAC para consultas de auditoría, y firma/HMAC de eventos para detección de manipulaciones.
++- **Retención avanzada:** políticas por tipo de evento (p.ej. alertas críticas retención 365 días, métricas 90 días) y posibilidad de exportar a S3/Blob con ciclo de vida.
++
++### Buenas prácticas operativas
++- **No confiar en imports con side-effects:** inicializar bots y recursos detrás de un orquestador y con lock inicial para evitar duplicados.
++- **Atomicidad mínima:** todas las operaciones que modifican estado + auditoría deben ocurrir en la misma transacción (o con compensación clara si no es posible).
++- **Pruebas:** añadir tests que simulen contención de concurrencia (threads/processes) para validar locks y reintentos.
++- **Observabilidad:** exponer métricas sobre locks (conteo de bloqueos, tiempos de espera) y auditoría (eventos por minuto) en el dashboard.
++
++### Paso corto a implementar ahora (acción inmediata)
++1. Añadir dependencia `filelock` al `requirements.txt` para locks locales.
++2. Implementar helper `backendbot/core/locks.py` con wrapper simple para `filelock` y helpers `with_lock(path, timeout)`.
++3. Crear `backendbot/core/audit.py` con función `record_audit(event)` que escribe JSONL y opcionalmente guarda un índice en SQLite.
++4. Añadir job periódico `audit_retention_job` que archive/comprime y borre según `settings.backup_retention_days`.
++
++Estas mejoras permiten que el sistema sea robusto en local y deje una traza clara para migración a DB cuando se decida.
+
+*** End Patch
