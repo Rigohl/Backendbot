@@ -77,13 +77,42 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def reset_dependencies():
-	from backendbot.core.di.container import container
-	yield
-	container.reset()
+
+    from backendbot.core.di.container import container
+    yield
+    container.reset()
 ```
 
 ## Nota corta - Azure best practices
 
 - Si planeas desplegar en Azure App Service o Container Apps, prefiero que el entrypoint sea un script pequeño (como `run_backendbot.py`) y que el servicio use readiness/liveness probes; evita instalar dependencias en el arranque del contenedor.
+
+## Archivos archivados / movidos
+
+Se trasladaron o archivaron los siguientes archivos demo/tmp desde la raíz a `docs/demos/` o `scripts/archive/`:
+
+- `demo_completa.py` -> `docs/demos/demo_completa.py` (stub)
+- `demo_organizer_worker.py` -> `docs/demos/demo_organizer_worker.py` (stub)
+- `demo_monitor_worker.py` -> `docs/demos/demo_monitor_worker.py` (stub)
+- `demo_indexer_worker.py` -> `docs/demos/demo_indexer_worker.py` (stub)
+- `demo_guardian_worker.py` -> `docs/demos/demo_guardian_worker.py` (stub)
+- `demo_modern_di.py` -> `docs/demos/demo_modern_di.py` (stub)
+- `tmp_inspect2.py`, `tmp_inspect3.py`, `tmp_import_check.py`, `tmp_check_task_scheduler.py` -> removed from repo root (archived)
+
+## Checklist
+
+- [x] Agregar entrypoint `run_backendbot.py` y `tools/env_loader.py`
+- [x] Archivar demos y remover `tmp_*.py`
+- [x] Añadir script `scripts/disable_precommit.ps1` para commits sin hooks localmente
+- [x] Validar imports y arranque parcial (import-check)
+- [ ] Ejecutar subset de tests relacionados con API/DI
+- [ ] Revisar pre-commit config y reducir hooks pesados
+
+## Verificación propuesta
+
+1. Revisar que la rama `chore/archive-demos` coincida con los cambios listados.
+2. Ejecutar `python -c "import importlib; importlib.import_module('run_backendbot'); print('OK')"` para asegurar imports.
+3. Si quieres tests, ejecuto un subset (`backendbot` unit tests y pruebas de container) y reporto resultados.
+
 
 
