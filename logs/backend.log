@@ -24346,3 +24346,515 @@ LINE 1: INSERT INTO system_events (timestamp, level, source, message...
 2025-09-18 18:33:01,569 - backendbot - INFO - Estrategia registrada: gaming
 2025-09-18 18:33:01,569 - backendbot - INFO - Estrategia registrada: desarrollo
 2025-09-18 18:33:01,569 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:48:07,609 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:48:07,611 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:48:07,611 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:48:07,612 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:48:07,612 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:48:07,612 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:07,921 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:07,922 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:07,922 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:07,922 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:07,923 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:07,923 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:07,934 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:07,934 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:07,934 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:07,934 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:07,934 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:07,934 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:17,874 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:17,874 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:17,874 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:17,874 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:17,874 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:17,874 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:17,882 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:17,882 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:17,883 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:17,883 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:17,883 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:17,883 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:30,346 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:30,346 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:30,347 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:30,347 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:30,347 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:30,347 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:52:30,354 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:52:30,354 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:52:30,354 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:52:30,355 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:52:30,355 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:52:30,355 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:54:03,948 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:54:03,948 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:54:03,949 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:54:03,949 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:54:03,949 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:54:03,949 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:54:04,097 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:54:04,097 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:54:04,097 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:54:04,098 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:54:04,098 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:54:04,098 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:56:15,285 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:56:15,286 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:56:15,286 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:56:15,286 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:56:15,287 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:56:15,287 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:56:15,314 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:15,314 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:15,317 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 18:56:15,322 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:56:15,324 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 18:56:15,324 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 18:56:15,325 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 18:56:16,710 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:56:16,710 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:56:16,710 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:56:16,711 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:56:16,711 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:56:16,711 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:56:17,094 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:17,094 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:17,198 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:17,198 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:17,298 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:17,298 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:17,301 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:56:17,303 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:56:17,306 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 18:56:17,308 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:56:17,310 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:56:18,334 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:56:18,335 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 18:56:18,336 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 18:56:18,338 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 18:56:18,338 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 18:56:18,338 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 18:56:18,338 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 18:56:18,338 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 18:56:18,338 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 18:56:18,338 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 18:56:18,461 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:56:18,463 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 18:56:18,463 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 18:56:18,463 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 18:56:18,479 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:56:18,485 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:18,486 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:18,487 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 18:56:18,504 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:56:18,504 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:56:18,529 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 18:56:20,013 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 18:56:24,142 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 18:56:25,726 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 18:56:25,741 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 18:57:37,388 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:57:37,388 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:57:37,388 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:57:37,388 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:57:37,389 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:57:37,389 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:57:37,402 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:57:37,402 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:57:37,403 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:57:37,403 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:57:37,403 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:57:37,403 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:58:45,359 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:58:45,360 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:58:45,360 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:58:45,360 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:58:45,360 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:58:45,360 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:58:45,495 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:58:45,495 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:58:45,495 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:58:45,496 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:58:45,496 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:58:45,496 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:59:05,647 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:59:05,648 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:59:05,648 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:59:05,648 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:59:05,648 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:59:05,649 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:59:05,673 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:05,673 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:05,677 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 18:59:05,680 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:59:05,681 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 18:59:05,682 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 18:59:05,682 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 18:59:06,891 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:59:06,892 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:59:06,892 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:59:06,892 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:59:06,892 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:59:06,892 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:59:07,085 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:07,085 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:07,190 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:07,190 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:07,307 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:07,307 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:07,309 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:59:07,313 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:59:07,315 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 18:59:07,318 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:59:07,321 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 18:59:08,358 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:59:08,359 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 18:59:08,360 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 18:59:08,361 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 18:59:08,361 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 18:59:08,361 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 18:59:08,361 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 18:59:08,361 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 18:59:08,361 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 18:59:08,362 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 18:59:08,509 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:59:08,512 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 18:59:08,512 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 18:59:08,512 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 18:59:08,536 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 18:59:08,550 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:08,550 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:08,554 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 18:59:08,580 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 18:59:08,580 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 18:59:08,615 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 18:59:10,854 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 18:59:15,055 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 18:59:15,825 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 18:59:15,840 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 18:59:25,957 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:59:25,958 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:59:25,958 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:59:25,958 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:59:25,959 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:59:25,959 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 18:59:25,977 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 18:59:25,978 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 18:59:25,978 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 18:59:25,978 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 18:59:25,978 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 18:59:25,978 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:00:45,943 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:00:45,943 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:00:45,943 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:00:45,944 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:00:45,944 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:00:45,944 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:00:45,954 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:00:45,954 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:00:45,954 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:00:45,954 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:00:45,955 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:00:45,955 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:00:49,381 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:00:49,381 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:00:49,382 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:00:49,382 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:00:49,382 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:00:49,382 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:00:49,392 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:00:49,393 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:00:49,393 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:00:49,393 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:00:49,393 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:00:49,393 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:01:11,083 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:01:11,083 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:01:11,083 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:01:11,083 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:01:11,083 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:01:11,083 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:01:11,102 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:11,102 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:11,104 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 19:01:11,106 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:01:11,107 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 19:01:11,108 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 19:01:11,108 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 19:01:12,067 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:01:12,068 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:01:12,068 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:01:12,068 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:01:12,068 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:01:12,068 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:01:12,243 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:12,243 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:12,383 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:12,383 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:12,546 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:12,546 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:12,551 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:01:12,563 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:01:12,568 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 19:01:12,572 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:01:12,575 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:01:13,604 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:01:13,606 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:01:13,607 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 19:01:13,608 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 19:01:13,609 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:01:13,609 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:01:13,609 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 19:01:13,609 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 19:01:13,609 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 19:01:13,609 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 19:01:13,734 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:01:13,736 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:01:13,736 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:01:13,738 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:01:13,753 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:01:13,759 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:13,759 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:13,762 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 19:01:13,785 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:01:13,785 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:01:13,808 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 19:01:15,103 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:01:19,244 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:01:20,984 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 19:01:20,998 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 19:02:50,763 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:02:50,763 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:02:50,763 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:02:50,764 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:02:50,764 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:02:50,764 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:02:50,784 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:50,784 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:50,787 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 19:02:50,790 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:02:50,792 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 19:02:50,793 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 19:02:50,793 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 19:02:51,700 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:02:51,700 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:02:51,700 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:02:51,700 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:02:51,700 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:02:51,700 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:02:51,859 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:51,859 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:51,961 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:51,961 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:52,073 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:52,073 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:52,076 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:02:52,079 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:02:52,082 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 19:02:52,084 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:02:52,087 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:02:53,117 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:02:53,119 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:02:53,121 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 19:02:53,123 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 19:02:53,123 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:02:53,123 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:02:53,123 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 19:02:53,124 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 19:02:53,124 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 19:02:53,124 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 19:02:53,284 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:02:53,286 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:02:53,286 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:02:53,288 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:02:53,317 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:02:53,324 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:53,324 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:53,330 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 19:02:53,355 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:02:53,355 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:02:53,391 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 19:02:54,682 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:02:58,977 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:03:00,589 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 19:03:00,606 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 19:03:36,581 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:03:36,582 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:03:36,582 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:03:36,582 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:03:36,582 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:03:36,582 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:03:36,769 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:03:36,770 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:03:36,770 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:03:36,770 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:03:36,770 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:03:36,770 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:08:38,979 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:08:38,981 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:08:38,981 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:08:38,981 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:08:38,981 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:08:38,981 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:08:38,996 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:08:38,997 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:08:38,997 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:08:38,997 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:08:38,997 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:08:38,997 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:09:30,999 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:09:30,999 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:09:31,000 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:09:31,000 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:09:31,000 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:09:31,000 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:09:31,023 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:09:31,023 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:09:31,023 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:09:31,023 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:09:31,023 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:09:31,023 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:10:45,568 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:10:45,568 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:10:45,569 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:10:45,569 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:10:45,569 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:10:45,569 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:10:45,583 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:10:45,584 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:10:45,584 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:10:45,584 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:10:45,584 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:10:45,584 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:10:48,190 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:10:48,190 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:10:48,190 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:10:48,190 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:10:48,190 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:10:48,191 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:11:03,593 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:11:03,593 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:11:03,593 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:11:03,593 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:11:03,593 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:11:03,594 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:11:03,613 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:11:03,613 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:11:03,613 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:11:03,613 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:11:03,614 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:11:03,614 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:11:03,725 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:03,725 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:15,946 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:11:15,947 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:11:15,947 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:11:15,947 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:11:15,947 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:11:15,947 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:11:15,965 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:15,965 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:15,968 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 19:11:15,970 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:11:15,972 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 19:11:15,973 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 19:11:15,973 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 19:11:17,283 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:11:17,283 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:11:17,283 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:11:17,283 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:11:17,284 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:11:17,284 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:11:17,484 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:17,484 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:17,611 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:17,611 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:17,739 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:17,740 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:17,744 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:11:17,746 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:11:17,750 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 19:11:17,753 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:11:17,758 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:11:18,793 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:11:18,794 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:11:18,795 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 19:11:18,797 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 19:11:18,797 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:11:18,797 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:11:18,797 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 19:11:18,797 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 19:11:18,798 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 19:11:18,798 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 19:11:18,995 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:11:18,998 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:11:18,998 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:11:18,998 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:11:19,032 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:11:19,045 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:19,046 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:19,057 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 19:11:19,114 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:11:19,114 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:11:19,143 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 19:11:20,625 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:11:24,775 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:11:26,344 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 19:11:26,361 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada
+2025-09-18 19:17:41,723 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:17:41,723 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:17:41,724 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:17:41,724 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:17:41,724 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:17:41,724 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:17:41,744 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:41,744 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:41,748 - backendbot - INFO - TaskScheduler inicializado con 1 tareas
+2025-09-18 19:17:41,750 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:17:41,756 - backendbot - INFO - Tarea programada agregada: test
+2025-09-18 19:17:41,756 - backendbot - INFO - Ejecutando tarea programada: test
+2025-09-18 19:17:41,756 - backendbot - INFO - Tarea test completada en 0.00s
+2025-09-18 19:17:42,876 - backendbot - INFO - Estrategia registrada: editor
+2025-09-18 19:17:42,876 - backendbot - INFO - Estrategia registrada: streaming
+2025-09-18 19:17:42,876 - backendbot - INFO - Estrategia registrada: relax
+2025-09-18 19:17:42,876 - backendbot - INFO - Estrategia registrada: gaming
+2025-09-18 19:17:42,877 - backendbot - INFO - Estrategia registrada: desarrollo
+2025-09-18 19:17:42,877 - backendbot - INFO - OperationModeManager inicializado en modo: editor
+2025-09-18 19:17:43,133 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:43,133 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:43,238 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:43,238 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:43,360 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:43,360 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:43,363 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:17:43,366 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:17:43,368 - backendbot - INFO - Patrón aprendido: pattern_images
+2025-09-18 19:17:43,371 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:17:43,375 - backendbot - INFO - Patrón aprendido: pattern_documents
+2025-09-18 19:17:44,410 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:17:44,411 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:17:44,412 - backendbot - INFO - Tarea programada agregada: task_2
+2025-09-18 19:17:44,413 - backendbot - INFO - Tarea programada agregada: task_3
+2025-09-18 19:17:44,413 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:17:44,413 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:17:44,413 - backendbot - INFO - Ejecutando tarea programada: task_2
+2025-09-18 19:17:44,414 - backendbot - INFO - Tarea task_2 completada en 0.00s
+2025-09-18 19:17:44,414 - backendbot - INFO - Ejecutando tarea programada: task_3
+2025-09-18 19:17:44,414 - backendbot - INFO - Tarea task_3 completada en 0.00s
+2025-09-18 19:17:44,555 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:17:44,559 - backendbot - INFO - Tarea programada agregada: task_1
+2025-09-18 19:17:44,559 - backendbot - INFO - Ejecutando tarea programada: task_1
+2025-09-18 19:17:44,560 - backendbot - INFO - Tarea task_1 completada en 0.00s
+2025-09-18 19:17:44,579 - backendbot - INFO - TaskScheduler inicializado con 0 tareas
+2025-09-18 19:17:44,585 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:44,585 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:44,588 - backendbot - INFO - Patrón aprendido: test_pattern
+2025-09-18 19:17:44,607 - backendbot - INFO - Optimizando intervalo de monitoreo: 3 -> 10
+2025-09-18 19:17:44,607 - backendbot - INFO - Sistema de aprendizaje adaptativo inicializado
+2025-09-18 19:17:44,632 - backendbot - INFO - Acceso al endpoint raíz.
+2025-09-18 19:17:45,938 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:17:50,105 - backendbot - INFO - Umbrales configurados para modo editor: {'cpu': 70.0, 'memory': 80.0, 'disk': 85.0, 'gpu': 75.0}
+2025-09-18 19:17:51,822 - backendbot.utils.database_manager - INFO - Conectado a base de datos: C:\Users\DELL\Desktop\BackendBot\src\backendbot\utils\..\..\..\data\backend_data.db
+2025-09-18 19:17:51,840 - backendbot.utils.database_manager - INFO - Conexión a BD cerrada

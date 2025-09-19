@@ -11,7 +11,7 @@ from PyQt5.QtCore import pyqtSignal
 # Añadir path para imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.backendbot.core.di.container import container
+from backendbot.core.di.container import container
 
 
 class TrayIcon(QtWidgets.QSystemTrayIcon):
@@ -29,9 +29,15 @@ class TrayIcon(QtWidgets.QSystemTrayIcon):
 
         # Proveer iconos por defecto si no se pasan
         if icon_active is None:
-            icon_active = QtGui.QIcon()
+            # Crear ícono rojo usando Qt
+            pixmap = QtGui.QPixmap(32, 32)
+            pixmap.fill(QtGui.QColor(255, 0, 0))  # Rojo
+            icon_active = QtGui.QIcon(pixmap)
         if icon_inactive is None:
-            icon_inactive = QtGui.QIcon()
+            # Crear ícono gris usando Qt
+            pixmap = QtGui.QPixmap(32, 32)
+            pixmap.fill(QtGui.QColor(128, 128, 128))  # Gris
+            icon_inactive = QtGui.QIcon(pixmap)
 
         super().__init__(icon_active, parent)
         self.icon_active = icon_active

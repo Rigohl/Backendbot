@@ -164,11 +164,191 @@
       "action": "file_organization",
       "context": "user_preference",
       "frequency": 5
+    },
+    "pattern_documents_21": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_22": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_6": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_23": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_24": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_6": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_25": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_26": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_7": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_27": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_28": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_7": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_29": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_30": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_8": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_31": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_32": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_8": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_33": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_34": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_9": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_35": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_36": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_9": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_37": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_38": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_10": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_39": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_40": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_10": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
+    },
+    "pattern_documents_41": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T10:00:00"
+    },
+    "pattern_documents_42": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T11:00:00"
+    },
+    "pattern_images_11": {
+      "action": "organize_files",
+      "context": "images",
+      "timestamp": "2025-09-18T12:00:00"
+    },
+    "pattern_documents_43": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T13:00:00"
+    },
+    "pattern_documents_44": {
+      "action": "organize_files",
+      "context": "documents",
+      "timestamp": "2025-09-18T14:00:00"
+    },
+    "test_pattern_11": {
+      "action": "file_organization",
+      "context": "user_preference",
+      "frequency": 5
     }
   },
   "learned_counters": {
-    "pattern_documents": 20,
-    "pattern_images": 5,
-    "test_pattern": 5
+    "pattern_documents": 44,
+    "pattern_images": 11,
+    "test_pattern": 11
   }
 }

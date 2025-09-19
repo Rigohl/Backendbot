@@ -9,17 +9,18 @@ from pathlib import Path
 
 # Configurar paths correctamente
 project_root = Path(__file__).parent.parent.parent
+src_path = project_root / "src"
+sys.path.insert(0, str(src_path))
 sys.path.insert(0, str(project_root))
-sys.path.insert(0, str(project_root / "src"))
 
 def main():
     """Función principal que inicia BackendBot"""
     try:
         # Importar después de configurar paths
-        from src.backendbot.main import main as run_backendbot
+        from backendbot.main_integrated import main as run_integrated_backendbot
 
-        # Ejecutar BackendBot
-        run_backendbot()
+        # Ejecutar BackendBot Integrado
+        run_integrated_backendbot()
 
     except ImportError as e:
         print(f"Error de importación: {e}")

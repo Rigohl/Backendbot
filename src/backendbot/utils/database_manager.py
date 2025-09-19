@@ -31,7 +31,8 @@ class DatabaseManager:
     def connect(self):
         """Establece conexión con la base de datos"""
         try:
-            self.connection = sqlite3.connect(self.db_path)
+            # Enable parsing of declared types and allow cross-thread usage
+            self.connection = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False)
             self.connection.row_factory = sqlite3.Row
             self.logger.info(f"Conectado a base de datos: {self.db_path}")
             return self.connection

@@ -11,8 +11,8 @@ from PyQt5.QtCore import pyqtSignal
 # Añadir path para imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.backendbot.core.di.container import container
-from src.backendbot.bots.manager import BotManager
+from backendbot.core.di.container import container
+from backendbot.bots.manager import BotManager
 
 
 class ChatPanel(QtWidgets.QWidget):

@@ -2,14 +2,14 @@ import time
 import subprocess
 import sys
 import os
-from src.backendbot.utils.logging_config import logger
+from backendbot.utils.logging_config import logger
 
 # Lista de bots que el guardián debe supervisar.
 # Cada bot es una tupla con su nombre (para logging) y la ruta al script.
 BOTS_TO_MANAGE = [
-    ("Bot Monitor", [sys.executable, "-m", "src.backendbot.bots.bot_monitor"]),
-    ("Bot Organizer", [sys.executable, "-m", "src.backendbot.bots.bot_organizer"]),
-    ("Bot Indexer", [sys.executable, "-m", "src.backendbot.bots.bot_indexer"]),
+    ("Bot Monitor", [sys.executable, "-m", "backendbot.bots.bot_monitor"]),
+    ("Bot Organizer", [sys.executable, "-m", "backendbot.bots.bot_organizer"]),
+    ("Bot Indexer", [sys.executable, "-m", "backendbot.bots.bot_indexer"]),
 ]
 
 def guardian_worker():

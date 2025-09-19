@@ -75,8 +75,7 @@ class BackupManager:
     def _init_database(self):
         """Inicializa la base de datos de tracking"""
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False) as conn:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS file_hashes (
                     path TEXT PRIMARY KEY,
@@ -301,8 +300,7 @@ class BackupManager:
         """Ejecuta un backup incremental"""
         changed_files = []
         total_size = 0
-
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False) as conn:
             for file_path in files:
                 if os.path.exists(file_path):
                     current_hash = self._calculate_file_hash(file_path)
@@ -381,7 +379,7 @@ class BackupManager:
 
     def _update_file_tracking(self, job: BackupJob, files: List[str]):
         """Actualiza el tracking de archivos en la base de datos"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False) as conn:
             for file_path in files:
                 if os.path.exists(file_path):
                     file_hash = self._calculate_file_hash(file_path)
@@ -396,7 +394,7 @@ class BackupManager:
 
     def _get_last_full_backup_time(self, job_name: str) -> datetime:
         """Obtiene la fecha del último backup completo"""
-        with sqlite3.connect(self.db_path) as conn:
+        with sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False) as conn:
             result = conn.execute('''
                 SELECT timestamp FROM backup_history
                 WHERE job_name = ? AND backup_type = ? AND success = 1

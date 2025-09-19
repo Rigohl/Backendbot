@@ -1,9 +1,12 @@
 [tool.ruff]
 line-length = 88
 select = ["E", "F", "W", "I", "UP", "ANN", "D", "RET", "RUF"]
-extend-ignore = ["E203", "W503"]
+ignore = ["E203"]
 
 [tool.isort]
 profile = "black"
 line_length = 88
 known_first_party = ["backendbot"]
+
+[tool.ruff.per-file-ignores]
+"tests/**" = ["D"]

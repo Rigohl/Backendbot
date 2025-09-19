@@ -2,11 +2,11 @@ import asyncio
 import psutil
 import json
 import time
-from src.backendbot.utils.logging_config import logger
+from backendbot.utils.logging_config import logger
 
 # Intentar importar monitoreo de GPU
 try:
-    from src.backendbot.utils.gpu_monitor import getGPUs
+    from backendbot.utils.gpu_monitor import getGPUs
     gpu_monitoring = True
 except ImportError:
     gpu_monitoring = False

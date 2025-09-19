@@ -1,86 +1,81 @@
 """
-Contenedor de dependencias - Dependency Inversion Principle
+Container de dependencias simple para BackendBot
 """
-from typing import Dict, Any, Optional
-import sys
-import os
 
-# Añadir path para imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
-from src.backendbot.core.interfaces.interfaces import IBot, ILogger, IConfigManager, IDataRepository, ITaskScheduler
-from src.backendbot.core.implementations.implementations import Logger, ConfigManager, DataRepository
+from typing import Any, Dict
+from ..config import config
 
 
-class DependencyContainer:
-    """Contenedor de dependencias para inyección de dependencias"""
+class SimpleContainer:
+    """Container simple de dependencias"""
 
     def __init__(self):
-        self._services: Dict[str, Any] = {}
-        self._singletons: Dict[str, Any] = {}
-
-        # Registrar implementaciones por defecto
+        self._services = {}
         self._register_defaults()
 
     def _register_defaults(self):
-        """Registrar implementaciones por defecto"""
-        self.register(ILogger, Logger, singleton=True)
-        self.register(IConfigManager, ConfigManager, singleton=True)
-        self.register(IDataRepository, DataRepository, singleton=True)
+        """Registrar servicios por defecto"""
+        self._services['config'] = config
+        self._services['logger'] = SimpleLogger()
+        self._services['data_repository'] = SimpleDataRepository()
 
-    def register(self, interface: type, implementation: type, singleton: bool = True):
-        """Registrar una implementación para una interfaz"""
-        key = f"{interface.__name__}"
-        self._services[key] = (implementation, singleton)
+    def get_config_manager(self):
+        """Obtener gestor de configuración"""
+        return self._services['config']
 
-    def register_instance(self, interface: type, instance: Any):
-        """Registrar una instancia específica"""
-        key = f"{interface.__name__}"
-        self._singletons[key] = instance
+    def get_logger(self):
+        """Obtener logger"""
+        return self._services['logger']
 
-    def resolve(self, interface: type) -> Any:
-        """Resolver una dependencia"""
-        key = f"{interface.__name__}"
-
-        # Si ya tenemos una instancia singleton
-        if key in self._singletons:
-            return self._singletons[key]
-
-        # Si está registrado como servicio
-        if key in self._services:
-            implementation, singleton = self._services[key]
-            instance = implementation()
-
-            if singleton:
-                self._singletons[key] = instance
-
-            return instance
-
-        raise ValueError(f"No se encontró implementación para {interface.__name__}")
-
-    def get_bot(self, bot_name: str) -> Optional[IBot]:
-        """Obtener un bot específico"""
-        try:
-            return self.resolve(IBot)  # Esto necesitaría ser más específico
-        except:
-            return None
-
-    def get_logger(self) -> ILogger:
-        """Obtener el logger"""
-        return self.resolve(ILogger)
-
-    def get_config_manager(self) -> IConfigManager:
-        """Obtener el gestor de configuración"""
-        return self.resolve(IConfigManager)
-
-    def get_data_repository(self) -> IDataRepository:
-        """Obtener el repositorio de datos"""
-        return self.resolve(IDataRepository)
-
-    def get_task_scheduler(self) -> ITaskScheduler:
-        """Obtener el programador de tareas"""
-        return self.resolve(ITaskScheduler)
+    def get_data_repository(self):
+        """Obtener repositorio de datos"""
+        return self._services['data_repository']
 
 
-# Instancia global del contenedor
-container = DependencyContainer()
+class SimpleLogger:
+    """Logger simple"""
+
+    def info(self, message: str, source: str = ""):
+        print(f"[INFO] {source}: {message}")
+
+    def error(self, message: str, source: str = ""):
+        print(f"[ERROR] {source}: {message}")
+
+    def warning(self, message: str, source: str = ""):
+        print(f"[WARNING] {source}: {message}")
+
+
+class SimpleDataRepository:
+    """Repositorio de datos simple (en memoria por ahora)"""
+
+    def __init__(self):
+        self._data = {}
+
+    def save_bot_action(self, bot_name: str, action_type: str, status: str, target: str, result: str):
+        """Guardar acción de bot"""
+        if 'bot_actions' not in self._data:
+            self._data['bot_actions'] = []
+        self._data['bot_actions'].append({
+            'bot_name': bot_name,
+            'action_type': action_type,
+            'status': status,
+            'target': target,
+            'result': result,
+            'timestamp': 'now'  # Simplificado
+        })
+
+    def save_system_event(self, level: str, source: str, message: str, details: str = ""):
+        """Guardar evento del sistema"""
+        if 'system_events' not in self._data:
+            self._data['system_events'] = []
+        self._data['system_events'].append({
+            'level': level,
+            'source': source,
+            'message': message,
+            'details': details,
+            'timestamp': 'now'
+        })
+
+
+# Instancia global
+container = SimpleContainer()

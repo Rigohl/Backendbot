@@ -11,15 +11,15 @@ from PyQt5.QtCore import QTimer
 # Añadir el directorio raíz al path
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.backendbot.ui.tray_icon import TrayIcon
-from src.backendbot.ui.chat_panel import ChatPanel
-from src.backendbot.bots.manager import BotManager
-from src.backendbot.core.di.container import container
+from backendbot.ui.tray_icon import TrayIcon
+from backendbot.ui.chat_panel import ChatPanel
+from backendbot.bots.manager import BotManager
+from backendbot.core.di.container import container
 
 # Exponer una app mínima de FastAPI para compatibilidad con tests y orquestación ligera
 try:
     # Prefer re-exporting the API app from core to ensure routers are included
-    from src.backendbot.core.main import app as app
+    from backendbot.core.main import app as app
 except Exception:
     app = None
 
