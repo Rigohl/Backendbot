@@ -56,3 +56,34 @@ git push origin chore/archive-demos
 gh pr create --title "chore: archive demos + add entrypoint" --body-file docs/PR_DESCRIPTION_ARCHIVE_DEMOS.md --base main
 ```
 
+## Snippets útiles para reviewers
+
+- FastAPI test example (use TestClient and lifespan context):
+
+```python
+from fastapi.testclient import TestClient
+from importlib import import_module
+
+app = import_module('apps.api.app').app
+with TestClient(app) as client:
+    resp = client.get('/health')
+    assert resp.status_code == 200
+```
+
+- Pytest fixture example for DI container reset:
+
+```python
+import pytest
+
+@pytest.fixture(autouse=True)
+def reset_dependencies():
+	from backendbot.core.di.container import container
+	yield
+	container.reset()
+```
+
+## Nota corta - Azure best practices
+
+- Si planeas desplegar en Azure App Service o Container Apps, prefiero que el entrypoint sea un script pequeño (como `run_backendbot.py`) y que el servicio use readiness/liveness probes; evita instalar dependencias en el arranque del contenedor.
+
+
