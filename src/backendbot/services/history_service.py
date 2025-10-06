@@ -1,13 +1,14 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from ..repositories.history_repository import HistoryRepository
 
+
 class HistoryService:
-    """
-    Service layer for historical data.
+    """Service layer for historical data.
     Provides business logic for retrieving historical data,
     depending on HistoryRepository for data access.
     """
+
     def __init__(self, repository: HistoryRepository):
         self.repository = repository
 

@@ -1,16 +1,17 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..utils import ProcessHistory, OptimizationEvent, WatchdogDecision
+from ..utils import OptimizationEvent, ProcessHistory, WatchdogDecision
+
 
 class HistoryRepository:
-    """
-    Repository layer for historical data.
+    """Repository layer for historical data.
     Encapsulates database operations related to process history,
     optimization events, and watchdog decisions.
     """
+
     def __init__(self, session: AsyncSession):
         self.session = session
 

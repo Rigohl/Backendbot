@@ -1,16 +1,17 @@
 import os
-from typing import Dict, List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    """Configuration settings for BackendBot."""
+
     CPU_THRESHOLD: int = 80
     RAM_THRESHOLD: int = 4000  # en MB
     CHECK_TIME: int = 60  # en segundos
-    HIBERNABLES: List[str] = ["Discord.exe", "Steam.exe", "RiotClientServices.exe"]
+    HIBERNABLES: list[str] = ["Discord.exe", "Steam.exe", "RiotClientServices.exe"]
     MODO: str = "diario"
-    PROCESOS_A_CERRAR: Dict[str, List[str]] = {
+    PROCESOS_A_CERRAR: dict[str, list[str]] = {
         "videojuego": [
             "Discord.exe",
             "Steam.exe",
@@ -57,7 +58,7 @@ class Settings(BaseSettings):
             "Spotify.exe",
         ],
     }
-    PROCESOS_IMPORTANTES: List[str] = [
+    PROCESOS_IMPORTANTES: list[str] = [
         "explorer.exe",
         "obs.exe",
         "DaVinci Resolve.exe",

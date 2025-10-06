@@ -138,7 +138,13 @@ def kill(pid: int) -> dict[str, str]:
 
 
 @process_router.post("/optimize", dependencies=[Depends(get_api_key)])
-def optimize():
+def optimize() -> dict[str, str | float]:
+    """Optimiza el sistema suspendiendo procesos hibernables.
+
+    Returns:
+        dict[str, str | float]: Estado y cantidad de RAM liberada en MB.
+
+    """
     freed = _optimize_processes()
     msg = f"Optimización automática: {round(freed/1024/1024,1)} MB liberados"
     log_event(msg, notify_user=True)
@@ -147,7 +153,19 @@ def optimize():
 
 
 @process_router.post("/set-modo/{modo}", dependencies=[Depends(get_api_key)])
-def set_modo(modo: str):
+def set_modo(modo: str) -> dict[str, str | list]:
+    """Cambia el modo de operación del sistema.
+
+    Args:
+        modo (str): El modo a activar (ej: 'diario', 'juego', etc.).
+
+    Returns:
+        dict[str, str | list]: Estado, modo activo y procesos cerrados.
+
+    Raises:
+        HTTPException: Si el modo no es válido.
+
+    """
     if modo not in settings.PROCESOS_A_CERRAR:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Modo no válido"
@@ -174,12 +192,23 @@ def set_modo(modo: str):
 
 
 @process_router.post("/restore-important", dependencies=[Depends(get_api_key)])
-def restore_important():
+def restore_important() -> dict[str, str]:
+    """Restaura procesos importantes que fueron cerrados.
+
+    Returns:
+        dict[str, str]: Estado de la operación.
+
+    """
     restore_closed_processes(settings.MODO)
     return {"status": "ok"}
 
 
 @process_router.get("/modos", dependencies=[Depends(get_api_key)])
-def get_modos():
-    """Retorna la lista de modos disponibles."""
+def get_modos() -> list[str]:
+    """Retorna la lista de modos disponibles.
+
+    Returns:
+        list[str]: Lista de nombres de modos disponibles.
+
+    """
     return list(settings.PROCESOS_A_CERRAR.keys())
