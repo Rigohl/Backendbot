@@ -70,9 +70,7 @@ async def watchdog() -> None: # Made async
         try:
             memory = load_memory()
             for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
-                await _handle_process_monitoring(p, uso_alto, memory) # Awaited
-            await asyncio.sleep(5) # Awaited
-        except Exception as e:
-            log_event(f"Error en watchdog principal: {e}")
+                await _handle_process_monitoring(p, uso_alto, memory)
+            await asyncio.sleep(5)
         except Exception as e:
             log_event(f"Error en watchdog principal: {e}")
