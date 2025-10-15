@@ -2,12 +2,15 @@ import json
 import os
 import subprocess
 import time
-from typing import AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
 
 import psutil
-from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 
 from .config import settings
 

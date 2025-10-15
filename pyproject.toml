@@ -3,7 +3,9 @@ line-length = 88
 target-version = ['py311']
 
 [tool.ruff]
-line-length = 88 # Aquí va line-length
+line-length = 88
+
+[tool.ruff.lint]
 select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
@@ -41,6 +43,9 @@ ignore = [
     "D107", # Missing docstring in __init__
     "D203", # Incompatible con D211
     "D213", # Incompatible con D212
+    "B008", # FastAPI Depends in defaults is acceptable pattern
+    "C901", # Complexity checks can be too strict
+    "PLW2901", # Reassigning loop variable is common in parsing
 ]
 exclude = [
     ".git",

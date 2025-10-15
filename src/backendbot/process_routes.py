@@ -1,6 +1,9 @@
+"""Process management routes for BackendBot API."""
+
 import psutil
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from .auth import get_api_key
 from .config import settings
 from .utils import (
     _get_process_info,
@@ -13,24 +16,14 @@ from .utils import (
 process_router = APIRouter()
 
 
-# Dependency to check API Key
-def get_api_key(
-    api_key: str = Depends(
-        HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-        )
-    )
-):
-    if api_key == settings.API_KEY:
-        return api_key
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API Key"
-    )
-
-
 @process_router.get("/procesos", dependencies=[Depends(get_api_key)])
-def listar():
+def listar() -> list[dict]:
+    """Lista todos los procesos activos del sistema.
+
+    Returns:
+        list[dict]: Lista de procesos con información de PID, nombre, RAM y CPU.
+
+    """
     out = []
     for p in psutil.process_iter(["pid", "name", "memory_info", "cpu_percent"]):
         info = _get_process_info(p)
@@ -40,7 +33,19 @@ def listar():
 
 
 @process_router.post("/apagar/{pid}", dependencies=[Depends(get_api_key)])
-def apagar(pid: int):
+def apagar(pid: int) -> dict[str, str]:
+    """Termina un proceso específico por su PID.
+
+    Args:
+        pid (int): El PID del proceso a terminar.
+
+    Returns:
+        dict[str, str]: Estado de la operación.
+
+    Raises:
+        HTTPException: Si el proceso no existe o no se puede terminar.
+
+    """
     try:
         psutil.Process(pid).terminate()
         log_event(f"Proceso terminado PID {pid}", notify_user=True)
@@ -63,7 +68,19 @@ def apagar(pid: int):
 
 
 @process_router.post("/resume/{pid}", dependencies=[Depends(get_api_key)])
-def resume(pid: int):
+def resume(pid: int) -> dict[str, str]:
+    """Reanuda un proceso suspendido por su PID.
+
+    Args:
+        pid (int): El PID del proceso a reanudar.
+
+    Returns:
+        dict[str, str]: Estado de la operación.
+
+    Raises:
+        HTTPException: Si el proceso no existe o no se puede reanudar.
+
+    """
     try:
         psutil.Process(pid).resume()
         log_event(f"Proceso reanudado PID {pid}", notify_user=True)
@@ -86,7 +103,19 @@ def resume(pid: int):
 
 
 @process_router.post("/kill/{pid}", dependencies=[Depends(get_api_key)])
-def kill(pid: int):
+def kill(pid: int) -> dict[str, str]:
+    """Mata forzadamente un proceso por su PID.
+
+    Args:
+        pid (int): El PID del proceso a matar.
+
+    Returns:
+        dict[str, str]: Estado de la operación.
+
+    Raises:
+        HTTPException: Si el proceso no existe o no se puede matar.
+
+    """
     try:
         psutil.Process(pid).kill()
         log_event(f"Proceso terminado (kill) PID {pid}", notify_user=True)
@@ -109,7 +138,13 @@ def kill(pid: int):
 
 
 @process_router.post("/optimize", dependencies=[Depends(get_api_key)])
-def optimize():
+def optimize() -> dict[str, str | float]:
+    """Optimiza el sistema suspendiendo procesos hibernables.
+
+    Returns:
+        dict[str, str | float]: Estado y cantidad de RAM liberada en MB.
+
+    """
     freed = _optimize_processes()
     msg = f"Optimización automática: {round(freed/1024/1024,1)} MB liberados"
     log_event(msg, notify_user=True)
@@ -118,7 +153,19 @@ def optimize():
 
 
 @process_router.post("/set-modo/{modo}", dependencies=[Depends(get_api_key)])
-def set_modo(modo: str):
+def set_modo(modo: str) -> dict[str, str | list]:
+    """Cambia el modo de operación del sistema.
+
+    Args:
+        modo (str): El modo a activar (ej: 'diario', 'juego', etc.).
+
+    Returns:
+        dict[str, str | list]: Estado, modo activo y procesos cerrados.
+
+    Raises:
+        HTTPException: Si el modo no es válido.
+
+    """
     if modo not in settings.PROCESOS_A_CERRAR:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Modo no válido"
@@ -145,12 +192,23 @@ def set_modo(modo: str):
 
 
 @process_router.post("/restore-important", dependencies=[Depends(get_api_key)])
-def restore_important():
+def restore_important() -> dict[str, str]:
+    """Restaura procesos importantes que fueron cerrados.
+
+    Returns:
+        dict[str, str]: Estado de la operación.
+
+    """
     restore_closed_processes(settings.MODO)
     return {"status": "ok"}
 
 
 @process_router.get("/modos", dependencies=[Depends(get_api_key)])
-def get_modos():
-    """Retorna la lista de modos disponibles."""
+def get_modos() -> list[str]:
+    """Retorna la lista de modos disponibles.
+
+    Returns:
+        list[str]: Lista de nombres de modos disponibles.
+
+    """
     return list(settings.PROCESOS_A_CERRAR.keys())

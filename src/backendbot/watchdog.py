@@ -1,13 +1,4 @@
-import time
-from typing import Dict
-
-import psutil
-
-from .config import settings
-from .utils import load_memory, log_event, notify, store_watchdog_decision
-
-
-import asyncio # Added import
+import asyncio  # Added import
 import time
 from typing import Dict
 
@@ -79,9 +70,7 @@ async def watchdog() -> None: # Made async
         try:
             memory = load_memory()
             for p in psutil.process_iter(["pid", "name", "cpu_percent", "memory_info"]):
-                await _handle_process_monitoring(p, uso_alto, memory) # Awaited
-            await asyncio.sleep(5) # Awaited
-        except Exception as e:
-            log_event(f"Error en watchdog principal: {e}")
+                await _handle_process_monitoring(p, uso_alto, memory)
+            await asyncio.sleep(5)
         except Exception as e:
             log_event(f"Error en watchdog principal: {e}")
